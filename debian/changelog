@@ -1,0 +1,110 @@
+xtables-addons (1.17-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Pierre Chifflier <pollux@debian.org>  Thu, 18 Jun 2009 16:08:45 +0200
+
+xtables-addons (1.16-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Pierre Chifflier <pollux@debian.org>  Sun, 07 Jun 2009 22:08:15 +0200
+
+xtables-addons (1.15-3) unstable; urgency=medium
+
+  * Make xtables-addons-common conflict with ipset (Closes: #528611)
+  * Urgency medium, serious bug
+
+ -- Pierre Chifflier <pollux@debian.org>  Thu, 14 May 2009 11:15:40 +0200
+
+xtables-addons (1.15-2) unstable; urgency=low
+
+  * Add pkg-config to xtables-addons-source dependencies (Closes: #528169)
+
+ -- Pierre Chifflier <pollux@debian.org>  Mon, 11 May 2009 17:37:49 +0200
+
+xtables-addons (1.15-1) unstable; urgency=low
+
+  * New Upstream Version (Closes: #527254):
+    This release adds the RAWNAT extension and fixes
+    subtle leftover bugs in condition, fuzzy, and ipp2p.
+  * Add build-dep on quilt, and patches (Closes: #517698):
+    - 10-uncouple-userspace-from-kernel-build.patch
+  * Re-introduce xtables-addons-common
+  * Thanks to John Wright for the original patches, merged with modifications
+
+ -- Pierre Chifflier <pollux@debian.org>  Wed, 06 May 2009 23:08:35 +0200
+
+xtables-addons (1.14-2) unstable; urgency=low
+
+  * Add dependency on pkg-config for the source module (Closes: #525088)
+  * Allow building against kernels different than the running one
+    (Closes: #525089, #517699)
+    Thanks to John Wright for the patch.
+
+ -- Pierre Chifflier <pollux@debian.org>  Wed, 22 Apr 2009 09:17:35 +0200
+
+xtables-addons (1.14-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Bump standards version (no changes)
+  * Set dependency on iptables-dev >= 1.4.3
+
+ -- Pierre Chifflier <pollux@debian.org>  Thu, 02 Apr 2009 15:34:21 +0200
+
+xtables-addons (1.12-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Remove generated map files (Closes: #517699)
+
+ -- Pierre Chifflier <pollux@debian.org>  Mon, 09 Mar 2009 17:56:57 +0100
+
+xtables-addons (1.10-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Upload to unstable
+  * Packaging has been rewritten (Closes: #511591)
+  * Add watch file
+  * Add postinst file to generated module to call depmod (Closes: #513492)
+
+ -- Pierre Chifflier <pollux@debian.org>  Wed, 25 Feb 2009 12:16:04 +0100
+
+xtables-addons (1.8-1) experimental; urgency=low
+
+  * New upstream release:
+    Some crashes with ipp2p have been fixed, and the TEE module
+    gained IPv6 capability.
+
+ -- Pierre Chifflier <pollux@debian.org>  Tue, 20 Jan 2009 09:43:51 +0100
+
+xtables-addons (1.7-2) experimental; urgency=low
+
+  * Remove generated modules.map files from binary module.
+
+ -- Pierre Chifflier <pollux@debian.org>  Sat, 10 Jan 2009 17:42:43 +0100
+
+xtables-addons (1.7-1) experimental; urgency=low
+
+  * Re-write package:
+    - remove xtables-addons-common package
+    - put complete modules and libs sources in -source package
+  * New upstream release:
+    - update ipset version
+    - fix build with the latest 2.6.28(-rc) kernel
+  * Add missing dependency on iptables-dev (Closes: #504563)
+
+ -- Pierre Chifflier <pollux@debian.org>  Tue, 06 Jan 2009 11:04:05 +0100
+
+xtables-addons (1.5.7-2) unstable; urgency=low
+
+  * Fix FTBFS: add headers for all linux versions, and build
+    for the installed headers version
+
+ -- Pierre Chifflier <pollux@debian.org>  Mon, 27 Oct 2008 22:31:20 +0100
+
+xtables-addons (1.5.7-1) unstable; urgency=low
+
+  * Initial release (Closes: #502402)
+
+ -- Pierre Chifflier <pollux@debian.org>  Sun, 19 Oct 2008 16:11:52 +0200
+
