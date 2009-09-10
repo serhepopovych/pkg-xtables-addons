@@ -4152,55 +4152,6 @@ _LT_TAGDECL([link_static_flag], [lt_prog_compiler_static], [1],
 ])# _LT_COMPILER_PIC
 
 
-# _LT_LINKER_STATIC_DYNAMIC([TAGNAME])
-# ------------------------------------
-# per-deplib flags for static or dynamic linking
-m4_defun([_LT_LINKER_STATIC_DYNAMIC],
-[_LT_TAGVAR(lt_prog_linker_static, $1)=
-_LT_TAGVAR(lt_prog_linker_dynamic, $1)=
-
-AC_MSG_CHECKING([for per-deplib static/dynamic linking flags])
-if test "$lt_cv_prog_gnu_ld" = yes; then
-  _LT_TAGVAR(lt_prog_linker_static, $1)='${wl}-Bstatic'
-  _LT_TAGVAR(lt_prog_linker_dynamic, $1)='${wl}-Bdynamic'
-else
-  case $host_os in
-  aix4.[[23]]|aix4.[[23]].*|aix5*)
-    _LT_TAGVAR(lt_prog_linker_static, $1)='${wl}-bstatic'
-    _LT_TAGVAR(lt_prog_linker_dynamic, $1)='${wl}-bshared'
-    ;;
-  hpux*)
-    _LT_TAGVAR(lt_prog_linker_static, $1)='${wl}-a ${wl}archive_shared'
-    _LT_TAGVAR(lt_prog_linker_dynamic, $1)='${wl}-a ${wl}shared_archive'
-    ;;
-  solaris*)
-    if test "$GCC" = yes; then
-      _LT_TAGVAR(lt_prog_linker_static, $1)='${wl}-Bstatic'
-      _LT_TAGVAR(lt_prog_linker_dynamic, $1)='${wl}-Bdynamic'
-    else
-      _LT_TAGVAR(lt_prog_linker_static, $1)='-Bstatic'
-      _LT_TAGVAR(lt_prog_linker_dynamic, $1)='-Bdynamic'
-    fi
-    ;;
-  irix* | \
-  sysv5* | sco3.2v5* | sco5v6* | unixware* | OpenUNIX*)
-    _LT_TAGVAR(lt_prog_linker_static, $1)='${wl}-Bstatic'
-    _LT_TAGVAR(lt_prog_linker_dynamic, $1)='${wl}-Bdynamic'
-    ;;
-  osf*)
-    _LT_TAGVAR(lt_prog_linker_static, $1)='${wl}-noso'
-    _LT_TAGVAR(lt_prog_linker_dynamic, $1)='${wl}-noarchive'
-    ;;
-  esac
-fi
-AC_MSG_RESULT([$_LT_TAGVAR(lt_prog_linker_static, $1)/$_LT_TAGVAR(lt_prog_linker_dynamic, $1)])
-_LT_TAGDECL([per_deplib_static_flag], [lt_prog_linker_static], [1],
-	 [Flag to prefer static linking for following libraries.])
-_LT_TAGDECL([per_deplib_dynamic_flag], [lt_prog_linker_dynamic], [1],
-	 [Flag to prefer dynamic linking for following libraries.])
-])# _LT_LINKER_STATIC_DYNAMIC
-
-
 # _LT_LINKER_SHLIBS([TAGNAME])
 # ----------------------------
 # See if the linker supports building shared libraries.
@@ -5316,7 +5267,6 @@ if test -n "$compiler"; then
   _LT_COMPILER_C_O($1)
   _LT_COMPILER_FILE_LOCKS($1)
   _LT_LINKER_SHLIBS($1)
-  _LT_LINKER_STATIC_DYNAMIC($1)
   _LT_SYS_DYNAMIC_LINKER($1)
   _LT_LINKER_HARDCODE_LIBPATH($1)
   LT_SYS_DLOPEN_SELF
@@ -6365,7 +6315,6 @@ if test "$_lt_caught_CXX_error" != yes; then
     _LT_COMPILER_C_O($1)
     _LT_COMPILER_FILE_LOCKS($1)
     _LT_LINKER_SHLIBS($1)
-    _LT_LINKER_STATIC_DYNAMIC($1)
     _LT_SYS_DYNAMIC_LINKER($1)
     _LT_LINKER_HARDCODE_LIBPATH($1)
 
@@ -6737,7 +6686,6 @@ if test "$_lt_disable_F77" != yes; then
     _LT_COMPILER_C_O($1)
     _LT_COMPILER_FILE_LOCKS($1)
     _LT_LINKER_SHLIBS($1)
-    _LT_LINKER_STATIC_DYNAMIC($1)
     _LT_SYS_DYNAMIC_LINKER($1)
     _LT_LINKER_HARDCODE_LIBPATH($1)
 
@@ -6884,7 +6832,6 @@ if test "$_lt_disable_FC" != yes; then
     _LT_COMPILER_C_O($1)
     _LT_COMPILER_FILE_LOCKS($1)
     _LT_LINKER_SHLIBS($1)
-    _LT_LINKER_STATIC_DYNAMIC($1)
     _LT_SYS_DYNAMIC_LINKER($1)
     _LT_LINKER_HARDCODE_LIBPATH($1)
 

@@ -79,9 +79,9 @@ tee_tg_route4(struct sk_buff *skb, const struct xt_tee_tginfo *info)
 		return false;
 	}
 
-	dst_release(skb->dst);
-	skb->dst      = &rt->u.dst;
-	skb->dev      = skb->dst->dev;
+	dst_release(skb_dst(skb));
+	skb_dst_set(skb, &rt->u.dst);
+	skb->dev      = rt->u.dst.dev;
 	skb->protocol = htons(ETH_P_IP);
 	return true;
 }
@@ -104,7 +104,7 @@ static inline bool dev_hh_avail(const struct net_device *dev)
  */
 static void tee_tg_send(struct sk_buff *skb)
 {
-	const struct dst_entry *dst  = skb->dst;
+	const struct dst_entry *dst  = skb_dst(skb);
 	const struct net_device *dev = dst->dev;
 	unsigned int hh_len = LL_RESERVED_SPACE(dev);
 
@@ -175,7 +175,7 @@ tee_tg4(struct sk_buff **pskb, const struct xt_target_param *par)
 	/*
 	 * Copy the skb, and route the copy. Will later return %XT_CONTINUE for
 	 * the original skb, which should continue on its way as if nothing has
-	 * happened. The copy should be independantly delivered to the TEE --gw.
+	 * happened. The copy should be independently delivered to the TEE --gw.
 	 */
 	skb = skb_copy(skb, GFP_ATOMIC);
 	if (skb == NULL) {
@@ -251,9 +251,9 @@ tee_tg_route6(struct sk_buff *skb, const struct xt_tee_tginfo *info)
 		return false;
 	}
 
-	dst_release(skb->dst);
-	skb->dst      = dst;
-	skb->dev      = skb->dst->dev;
+	dst_release(skb_dst(skb));
+	skb_dst_set(skb, dst);
+	skb->dev      = dst->dev;
 	skb->protocol = htons(ETH_P_IPV6);
 	return true;
 }
