@@ -124,7 +124,7 @@ $lt_unset CDPATH
 : ${MKDIR="mkdir"}
 : ${MV="mv -f"}
 : ${RM="rm -f"}
-: ${SED="/usr/bin/sed"}
+: ${SED="/opt/local/bin/gsed"}
 : ${SHELL="${CONFIG_SHELL-/bin/sh}"}
 : ${Xsed="$SED -e 1s/^X//"}
 
@@ -1558,8 +1558,6 @@ The following components of LINK-COMMAND are treated specially:
 
   -all-static       do not do any dynamic linking at all
   -avoid-version    do not add a version suffix if possible
-  -Bstatic          prefer static linking for following libraries
-  -Bdynamic         prefer dynamic linking for following libraries
   -dlopen FILE      \`-dlpreopen' FILE if it cannot be dlopened at runtime
   -dlpreopen FILE   link in FILE and add its symbols to lt_preloaded_symbols
   -export-dynamic   allow symbols from OUTPUT-FILE to be resolved with dlsym(3)
@@ -4087,10 +4085,8 @@ func_mode_link ()
     no_install=no
     objs=
     non_pic_objects=
-    per_deplib_static=no
     precious_files_regex=
     prefer_static_libs=no
-    prefer_static_mode=default
     preload=no
     prev=
     prevarg=
@@ -4143,9 +4139,6 @@ func_mode_link ()
 	build_libtool_libs=no
 	build_old_libs=yes
 	break
-	;;
-      -Bstatic | -Bdynamic)
-        per_deplib_static=yes
 	;;
       esac
     done
@@ -4416,9 +4409,6 @@ func_mode_link ()
       -all-static)
 	if test -n "$link_static_flag"; then
 	  # See comment for -static flag below, for more details.
-		if test "$per_deplib_static" = yes; then
-		  func_fatal_error "cannot have \`-all-static' together with per-deplib \`-Bstatic' flag."
-		fi
 	  func_append compile_command " $link_static_flag"
 	  func_append finalize_command " $link_static_flag"
 	fi
@@ -4432,12 +4422,6 @@ func_mode_link ()
 
       -avoid-version)
 	avoid_version=yes
-	continue
-	;;
-
-      -Bstatic | -Bdynamic)
-	# deplibs=$deplibs\ `$ECHO "X$arg" | $Xsed -e "s^/$wl//"`
-	deplibs="$deplibs $arg"
 	continue
 	;;
 
@@ -4972,7 +4956,6 @@ func_mode_link ()
     for deplib in $deplibs; do
       if $opt_duplicate_deps ; then
 	case "$libs " in
-	"-Bstatic " | "-Bdynamic ") ;;
 	*" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
 	esac
       fi
@@ -5084,16 +5067,6 @@ func_mode_link ()
 	lib=
 	found=no
 	case $deplib in
-	-Bstatic|-Bdynamic)
-	  if test "$linkmode,$pass" = "prog,link"; then
-	    compile_deplibs="$deplib $compile_deplibs"
-	    finalize_deplibs="$deplib $finalize_deplibs"
-	  else
-	    deplibs="$deplib $deplibs"
-	  fi
-	  prefer_static_mode=$deplib
-	  continue
-	  ;;
 	-mt|-mthreads|-kthread|-Kthread|-pthread|-pthreads|--thread-safe|-threads)
 	  if test "$linkmode,$pass" = "prog,link"; then
 	    compile_deplibs="$deplib $compile_deplibs"
@@ -5122,11 +5095,7 @@ func_mode_link ()
 	    searchdirs="$newlib_search_path $lib_search_path $sys_lib_search_path $shlib_search_path"
 	  fi
 	  for searchdir in $searchdirs; do
-	    case $prefer_static_mode in
-	    -Bstatic) search_exts=".la .a" ;;
-	    *)        search_exts=".la $std_shrext .so .a" ;;
-	    esac
-	    for search_ext in $search_exts; do
+	    for search_ext in .la $std_shrext .so .a; do
 	      # Search the libtool library
 	      lib="$searchdir/lib${name}${search_ext}"
 	      if test -f "$lib"; then
@@ -5535,9 +5504,8 @@ func_mode_link ()
 
 	if test "$linkmode,$pass" = "prog,link"; then
 	  if test -n "$library_names" &&
-	     { { { test "$prefer_static_libs" = no ||
-	           test "$prefer_static_libs,$installed" = "built,yes"; } &&
-		 test "$prefer_static_mode" != "-Bstatic"; } ||
+	     { { test "$prefer_static_libs" = no ||
+	         test "$prefer_static_libs,$installed" = "built,yes"; } ||
 	       test -z "$old_library"; }; then
 	    # We need to hardcode the library path
 	    if test -n "$shlibpath_var" && test -z "$avoidtemprpath" ; then
@@ -5584,9 +5552,6 @@ func_mode_link ()
 	use_static_libs=$prefer_static_libs
 	if test "$use_static_libs" = built && test "$installed" = yes; then
 	  use_static_libs=no
-	fi
-	if test "$prefer_static_mode" = "-Bstatic"; then
-	  use_static_libs=yes
 	fi
 	if test -n "$library_names" &&
 	   { test "$use_static_libs" = no || test -z "$old_library"; }; then
@@ -6033,7 +5998,7 @@ func_mode_link ()
 	    # Pragmatically, this seems to cause very few problems in
 	    # practice:
 	    case $deplib in
-	    -L*|-Bstatic|-Bdynamic) new_libs="$deplib $new_libs" ;;
+	    -L*) new_libs="$deplib $new_libs" ;;
 	    -R*) ;;
 	    *)
 	      # And here is the reason: when a library appears more
@@ -7591,17 +7556,6 @@ EOF
       done
       compile_deplibs="$new_libs"
 
-      # substitute per-deplib flags; make sure `$wl' is expanded in shell wrapper.
-      if test "$per_deplib_static" = yes; then
-	eval per_deplib_static_flag=`$ECHO "X$per_deplib_static_flag" | $Xsed`
-	eval per_deplib_dynamic_flag=`$ECHO "X$per_deplib_dynamic_flag" | $Xsed`
-	compile_deplibs=`$ECHO "X $compile_deplibs " | $Xsed -e "\
-	    s% -Bstatic % $per_deplib_static_flag %g
-	    s% -Bdynamic % $per_deplib_dynamic_flag %g"`
-	finalize_deplibs=`$ECHO "X $finalize_deplibs " | $Xsed -e "\
-	    s% -Bstatic % $per_deplib_static_flag %g
-	    s% -Bdynamic % $per_deplib_dynamic_flag %g"`
-      fi
 
       compile_command="$compile_command $compile_deplibs"
       finalize_command="$finalize_command $finalize_deplibs"
