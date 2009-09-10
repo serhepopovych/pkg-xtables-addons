@@ -1,3 +1,12 @@
+xtables-addons (1.18-1) unstable; urgency=low
+
+  * New Upstream Version
+    This version has support for 2.6.31 (Closes: #545542)
+  * Bump standards version (no changes)
+  * Depend on quilt (Closes: #533653)
+
+ -- Pierre Chifflier <pollux@debian.org>  Thu, 10 Sep 2009 21:42:05 +0200
+
 xtables-addons (1.17-1) unstable; urgency=low
 
   * New Upstream Version

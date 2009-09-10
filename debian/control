@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 5),
     iptables-dev (>= 1.4.3),
     module-assistant,
     quilt
-Standards-Version: 3.8.1
+Standards-Version: 3.8.3
 Homepage: http://xtables-addons.sourceforge.net/
 
 Package: xtables-addons-source
@@ -19,7 +19,8 @@ Depends: module-assistant,
     make,
     pkg-config,
     iptables-dev (>= 1.4.3),
-    bzip2
+    bzip2,
+    quilt
 Description: Source for the xtables-addons driver
  This package provides the source code for the xtables-addons kernel modules.
  The xtables-addons package is also required in order to make use of these
