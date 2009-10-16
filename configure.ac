@@ -1,9 +1,9 @@
 
-AC_INIT([xtables-addons], [1.18])
+AC_INIT([xtables-addons], [1.19])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
-AM_INIT_AUTOMAKE([-Wall foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.10 -Wall foreign subdir-objects])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_DISABLE_STATIC
@@ -14,10 +14,7 @@ AC_ARG_WITH([kbuild],
 	AS_HELP_STRING([--with-kbuild=PATH],
 	[Path to kernel build directory [[/lib/modules/CURRENT/build]]]),
 	[kbuilddir="$withval"])
-AC_ARG_WITH([ksource],
-	AS_HELP_STRING([--with-ksource=PATH],
-	[Path to kernel source directory [[/lib/modules/CURRENT/source]]]),
-	[ksourcedir="$withval"])
+AC_ARG_WITH([ksource],,[ksourcedir="$withval"])
 AC_ARG_WITH([xtables],
 	AS_HELP_STRING([--with-xtables=PATH],
 	[Path to the Xtables includes [[none]]]),
@@ -79,17 +76,16 @@ krel="${krel#*.}";
 kminor="${krel%%.*}";
 krel="${krel#*.}";
 kmicro="${krel%%.*}";
-krel2="${krel#*.}";
-if test "$krel" = "$krel2"; then
+if test "$kmicro" = "$krel"; then
 	kstable=0;
 else
-	kstable="${krel%%.*}";
+	kstable="${krel#*.}";
 	if test -z "$kstable"; then
 		kstable=0;
 	fi;
 fi;
 echo "Found kernel version $kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-if test "$kmajor" -gt 2 -o "$kminor" -gt 6 -o "$kmicro" -gt 31; then
+if test "$kmajor" -gt 2 -o "$kminor" -gt 6 -o "$kmicro" -gt 32; then
 	echo "WARNING: You are trying a newer kernel. Results may vary. :-)";
 elif test \( "$kmajor" -lt 2 -o "$kminor" -lt 6 -o "$kmicro" -lt 17 \) -o \
     \( "$kmajor" -eq 2 -a "$kminor" -eq 6 -a "$kmicro" -eq 18 -a \
@@ -104,5 +100,7 @@ AC_SUBST([kinclude_CFLAGS])
 AC_SUBST([kbuilddir])
 AC_SUBST([ksourcedir])
 AC_SUBST([xtlibdir])
-AC_CONFIG_FILES([Makefile extensions/GNUmakefile extensions/ipset/GNUmakefile])
+AC_CONFIG_FILES([Makefile Makefile.iptrules Makefile.mans
+	extensions/Makefile extensions/ACCOUNT/Makefile
+	extensions/ipset/Makefile extensions/pknock/Makefile])
 AC_OUTPUT
