@@ -1015,7 +1015,7 @@ static int ipt_acc_get_ctl(struct sock *sk, int cmd, void *user, int *len)
 	return ret;
 }
 
-static struct xt_target xt_acc_reg = {
+static struct xt_target xt_acc_reg __read_mostly = {
 	.name = "ACCOUNT",
 	.family = AF_INET,
 	.target = ipt_acc_target,
@@ -1037,7 +1037,7 @@ static struct nf_sockopt_ops ipt_acc_sockopts = {
 
 static int __init account_tg_init(void)
 {
-	init_MUTEX(&ipt_acc_userspace_mutex);
+	sema_init(&ipt_acc_userspace_mutex, 1);
 
 	if ((ipt_acc_tables =
 	    kmalloc(ACCOUNT_MAX_TABLES *
