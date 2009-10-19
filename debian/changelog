@@ -1,6 +1,7 @@
 xtables-addons (1.19-1) unstable; urgency=low
 
   * New upstream release
+  * Provides a better description for the packages (Closes: #548409)
   * Remove 10-uncouple-userspace-from-kernel-build.patch, upstream use a
     different build system allowing to build the .so files only
 

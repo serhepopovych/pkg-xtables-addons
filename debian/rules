@@ -183,6 +183,9 @@ install: build
 		debian/compat debian/control \
 		debian/$(psource)/usr/src/modules/$(sname)/debian/
 
+	rm $(CURDIR)/debian/xtables-addons-common/usr/lib/*.la
+	rm $(CURDIR)/debian/xtables-addons-common/usr/lib/*.so
+
 	cd debian/$(psource)/usr/src && tar c modules | bzip2 -9 > $(sname).tar.bz2 && rm -rf modules
 
 	dh_install
