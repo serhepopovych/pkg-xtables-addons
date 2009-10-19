@@ -1,3 +1,11 @@
+xtables-addons (1.19-1) unstable; urgency=low
+
+  * New upstream release
+  * Remove 10-uncouple-userspace-from-kernel-build.patch, upstream use a
+    different build system allowing to build the .so files only
+
+ -- Pierre Chifflier <pollux@debian.org>  Mon, 19 Oct 2009 17:32:30 +0200
+
 xtables-addons (1.18-1) unstable; urgency=low
 
   * New Upstream Version

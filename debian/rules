@@ -98,7 +98,8 @@ build-arch-stamp:
 	dh_testdir
 
 #	# Add here command to compile/build the package.
-	$(MAKE)
+	$(MAKE) -C extensions user-all-local
+	$(MAKE) -f Makefile.mans all
 
 	touch $@
 
@@ -162,7 +163,9 @@ install: build
 	dh_installdirs
 
 	# Install the libraries
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/$(cname)
+	$(MAKE) -C extensions user-install-local DESTDIR=$(CURDIR)/debian/$(cname)
+	$(MAKE) install-man DESTDIR=$(CURDIR)/debian/$(cname)
+	#$(MAKE) install DESTDIR=$(CURDIR)/debian/$(cname)
 
 	# Create the directories to install the source into
 	dh_installdirs -p$(psource)  usr/src/modules/$(sname)/debian
@@ -227,8 +230,8 @@ binary-arch: build install
 	dh_link -a
 	dh_compress -a
 	dh_fixperms -a
+	#dh_makeshlibs -a
 	dh_installdeb -a
-#	dh_makeshlibs -a
 	dh_shlibdeps -a
 	dh_strip -a
 	dh_gencontrol -a
