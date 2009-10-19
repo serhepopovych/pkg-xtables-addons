@@ -4,8 +4,11 @@ xtables-addons (1.19-1) unstable; urgency=low
   * Provides a better description for the packages (Closes: #548409)
   * Remove 10-uncouple-userspace-from-kernel-build.patch, upstream use a
     different build system allowing to build the .so files only
+  * Tweak build system to become more kbuild-friendly (Closes: #530799)
+    The following command now works:
+    make -C /lib/modules/$(uname -r)/build M=/usr/src/modules/xtables-addons
 
- -- Pierre Chifflier <pollux@debian.org>  Mon, 19 Oct 2009 17:32:30 +0200
+ -- Pierre Chifflier <pollux@debian.org>  Mon, 19 Oct 2009 23:04:42 +0200
 
 xtables-addons (1.18-1) unstable; urgency=low
 

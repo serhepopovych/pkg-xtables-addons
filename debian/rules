@@ -74,7 +74,7 @@ kdist_config: prep-deb-files
 # been made by the other kdist_commands (except for the .deb files created)
 kdist_clean:
 	dh_testdir
-	$(MAKE) -C extensions clean
+	$(MAKE) -C $(KSRC) M=$(CURDIR) XA_ABSTOPSRCDIR=$(CURDIR) clean
 	dh_clean
 ### end  KERNEL SETUP
 
@@ -111,18 +111,14 @@ build-arch-stamp:
 binary-modules:
 	dh_testroot
 	dh_clean -k
-	dh_installdirs lib/modules/$(KVERS)/kernel/net/netfilter
-	dh_installdirs lib/modules/$(KVERS)/kernel/net/netfilter/ipset
 
 	# Build the module
-	$(MAKE) -C extensions modules kbuilddir=$(KSRC)
+	$(MAKE) -C $(KSRC) M=$(CURDIR) XA_ABSTOPSRCDIR=$(CURDIR)
 
 	# Install the module
-	$(MAKE) -C extensions modules_install \
-		kbuilddir=$(KSRC) \
-		DESTDIR=$(CURDIR)/debian/$(PKGNAME)
-
-	rm -f debian/$(PKGNAME)/lib/modules/2.6.*/modules.*
+	$(MAKE) -C $(KSRC) M=$(CURDIR) XA_ABSTOPSRCDIR=$(CURDIR) modules_install \
+		INSTALL_MOD_PATH=$(CURDIR)/debian/$(PKGNAME) \
+		INSTALL_MOD_DIR=extra/$(sname)
 
 	dh_installdocs
 	dh_installchangelogs
@@ -171,8 +167,12 @@ install: build
 	dh_installdirs -p$(psource)  usr/src/modules/$(sname)/debian
 
 	# Copy only the driver source to the proper location
-	cp -r extensions debian/$(psource)/usr/src/modules/$(sname)/
-	cp mconfig debian/$(psource)/usr/src/modules/$(sname)/
+	cp -r extensions/* debian/$(psource)/usr/src/modules/$(sname)/
+	cp mconfig Makefile.extra Makefile.iptrules debian/$(psource)/usr/src/modules/$(sname)/
+
+	# create a correct kbuild file
+	cat mconfig extensions/Kbuild >debian/$(psource)/usr/src/modules/$(sname)/Kbuild
+	sed -i -e "s/^include/-include/" debian/$(psource)/usr/src/modules/$(sname)/Kbuild
 
 	# Copy the needed debian/ pieces to the proper location
 	cp debian/*modules.in* \
