@@ -1,3 +1,10 @@
+xtables-addons (1.19-2) unstable; urgency=medium
+
+  * Remove modules.* files if existing (Closes: #552301)
+  * Severity medium, grave bug
+
+ -- Pierre Chifflier <pollux@debian.org>  Mon, 26 Oct 2009 23:11:16 +0100
+
 xtables-addons (1.19-1) unstable; urgency=low
 
   * New upstream release
