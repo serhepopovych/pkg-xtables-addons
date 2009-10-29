@@ -2,8 +2,10 @@ xtables-addons (1.19-3) unstable; urgency=low
 
   * Create shlib file
   * Add call to ldconfig in postinst (Closes: #553130)
+  * Remove build dependency on quilt
+  * Install manpage for ipset
 
- -- Pierre Chifflier <pollux@debian.org>  Thu, 29 Oct 2009 16:34:36 +0100
+ -- Pierre Chifflier <pollux@debian.org>  Thu, 29 Oct 2009 16:50:44 +0100
 
 xtables-addons (1.19-2) unstable; urgency=medium
 

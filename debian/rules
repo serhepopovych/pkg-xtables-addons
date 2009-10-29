@@ -78,9 +78,7 @@ kdist_clean:
 	dh_clean
 ### end  KERNEL SETUP
 
-include /usr/share/quilt/quilt.make
-
-configure-stamp: patch configure
+configure-stamp: configure
 	dh_testdir
 	# Add here commands to configure the package.
 	cp -f /usr/share/misc/config.sub config.sub
@@ -142,8 +140,7 @@ build-indep-stamp:
 
 build: build-arch build-indep
 
-clean: clean-patched unpatch
-clean-patched:
+clean:
 	dh_testdir
 	#dh_testroot
 	# Add here commands to clean up after the build process.
@@ -164,6 +161,7 @@ install: build
 	# Install the libraries
 	$(MAKE) -C extensions user-install-local DESTDIR=$(CURDIR)/debian/$(cname)
 	$(MAKE) install-man DESTDIR=$(CURDIR)/debian/$(cname)
+	install -m 0644 extensions/ipset/ipset.8 $(CURDIR)/debian/$(cname)/usr/share/man/man8
 	#$(MAKE) install DESTDIR=$(CURDIR)/debian/$(cname)
 
 	# Create the directories to install the source into

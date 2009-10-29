@@ -7,8 +7,7 @@ Build-Depends: debhelper (>= 5),
     bzip2,
     pkg-config,
     iptables-dev (>= 1.4.3),
-    module-assistant,
-    quilt
+    module-assistant
 Standards-Version: 3.8.3
 Homepage: http://xtables-addons.sourceforge.net/
 
@@ -19,8 +18,7 @@ Depends: module-assistant,
     make,
     pkg-config,
     iptables-dev (>= 1.4.3),
-    bzip2,
-    quilt
+    bzip2
 Description: Extensions targets and matches for iptables [modules sources]
  Xtables-addons provides extra modules for iptables not present in the
  kernel, and is the successor of patch-o-matic.
