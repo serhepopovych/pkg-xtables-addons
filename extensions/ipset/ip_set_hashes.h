@@ -182,38 +182,46 @@ type##_list_header(const struct ip_set *set, void *data)		\
 
 #define HASH_LIST_MEMBERS_SIZE(type, dtype)				\
 static int								\
-type##_list_members_size(const struct ip_set *set)			\
+type##_list_members_size(const struct ip_set *set, char dont_align)	\
 {									\
 	const struct ip_set_##type *map = set->data;			\
 									\
-	return (map->hashsize * sizeof(dtype));				\
+	return (map->elements * IPSET_VALIGN(sizeof(dtype), dont_align));\
 }
 
 #define HASH_LIST_MEMBERS(type, dtype)					\
 static void								\
-type##_list_members(const struct ip_set *set, void *data)		\
+type##_list_members(const struct ip_set *set, void *data, char dont_align)\
 {									\
 	const struct ip_set_##type *map = set->data;			\
-	dtype *elem;							\
-	uint32_t i;							\
+	dtype *elem, *d;						\
+	uint32_t i, n = 0;						\
 									\
 	for (i = 0; i < map->hashsize; i++) {				\
 		elem = HARRAY_ELEM(map->members, dtype *, i);		\
-		((dtype *)data)[i] = *elem;				\
+		if (*elem) {						\
+			d = data + n * IPSET_VALIGN(sizeof(dtype), dont_align);\
+			*d = *elem;					\
+			n++;						\
+		}							\
 	}								\
 }
 
-#define HASH_LIST_MEMBERS_MEMCPY(type, dtype)				\
+#define HASH_LIST_MEMBERS_MEMCPY(type, dtype, nonzero)			\
 static void								\
-type##_list_members(const struct ip_set *set, void *data)		\
+type##_list_members(const struct ip_set *set, void *data, char dont_align)\
 {									\
 	const struct ip_set_##type *map = set->data;			\
 	dtype *elem;							\
-	uint32_t i;							\
+	uint32_t i, n = 0;						\
 									\
 	for (i = 0; i < map->hashsize; i++) {				\
 		elem = HARRAY_ELEM(map->members, dtype *, i);		\
-		memcpy((((dtype *)data)+i), elem, sizeof(dtype));	\
+		if (nonzero) {						\
+			memcpy(data + n * IPSET_VALIGN(sizeof(dtype), dont_align),\
+			       elem, sizeof(dtype));			\
+			n++;						\
+		}							\
 	}								\
 }
 

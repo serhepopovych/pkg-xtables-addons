@@ -1,5 +1,5 @@
 
-AC_INIT([xtables-addons], [1.19])
+AC_INIT([xtables-addons], [1.21])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
@@ -9,11 +9,18 @@ AM_PROG_CC_C_O
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
-kbuilddir="/lib/modules/$(uname -r)/build";
 AC_ARG_WITH([kbuild],
 	AS_HELP_STRING([--with-kbuild=PATH],
 	[Path to kernel build directory [[/lib/modules/CURRENT/build]]]),
-	[kbuilddir="$withval"])
+	[kbuilddir="$withval"],
+	[kbuilddir="/lib/modules/$(uname -r)/build"])
+#
+# check for --without-kbuild
+#
+if [[ "$kbuilddir" == no ]]; then
+	kbuilddir="";
+fi
+
 AC_ARG_WITH([ksource],,[ksourcedir="$withval"])
 AC_ARG_WITH([xtables],
 	AS_HELP_STRING([--with-xtables=PATH],
@@ -32,10 +39,10 @@ if [[ -n "$xtables_location" ]]; then
 	AC_MSG_CHECKING([xtables.h presence])
 	if [[ -f "$xtables_location/xtables.h" ]]; then
 		AC_MSG_RESULT([$xtables_location/xtables.h])
-		xtables_CFLAGS="-I $xtables_location";
+		libxtables_CFLAGS="-I $xtables_location";
 	elif [[ -f "$xtables_location/include/xtables.h" ]]; then
 		AC_MSG_RESULT([$xtables_location/include/xtables.h])
-		xtables_CFLAGS="-I $xtables_location/include";
+		libxtables_CFLAGS="-I $xtables_location/include";
 	fi;
 	if [[ -z "$xtables_CFLAGS" ]]; then
 		if [[ -f "$includedir/xtables.h" ]]; then
@@ -44,9 +51,14 @@ if [[ -n "$xtables_location" ]]; then
 			AC_MSG_RESULT([no])
 		fi;
 	fi;
+	libxtables_LIBS="-lxtables";
+	AC_SUBST([libxtables_CFLAGS])
+	AC_SUBST([libxtables_LIBS])
 else
 	PKG_CHECK_MODULES([libxtables], [xtables >= 1.4.3])
 fi;
+AC_CHECK_HEADERS([linux/netfilter/x_tables.h], [],
+	[AC_MSG_ERROR([You need to have linux/netfilter/x_tables.h, either through /usr/include or the iptables directory (--with-xtables=)])])
 
 regular_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
@@ -95,7 +107,6 @@ elif test \( "$kmajor" -lt 2 -o "$kminor" -lt 6 -o "$kmicro" -lt 17 \) -o \
 fi;
 
 AC_SUBST([regular_CFLAGS])
-AC_SUBST([xtables_CFLAGS])
 AC_SUBST([kinclude_CFLAGS])
 AC_SUBST([kbuilddir])
 AC_SUBST([ksourcedir])
