@@ -1,3 +1,9 @@
+xtables-addons (1.21-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Pierre Chifflier <pollux@debian.org>  Fri, 18 Dec 2009 13:53:37 +0100
+
 xtables-addons (1.19-3) unstable; urgency=low
 
   * Create shlib file
