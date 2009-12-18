@@ -21,6 +21,8 @@
 #include <getopt.h>
 #include <signal.h>
 
+#include <arpa/inet.h>
+#include <linux/types.h>
 #include <libxt_ACCOUNT_cl.h>
 
 bool exit_now;
@@ -33,15 +35,14 @@ static void sig_term(int signr)
 	exit_now = true;
 }
 
-char *addr_to_dotted(unsigned int);
-char *addr_to_dotted(unsigned int addr)
+static char *addr_to_dotted(unsigned int addr)
 {
-	static char buf[17];
+	static char buf[16];
 	const unsigned char *bytep;
 
+	addr = htonl(addr);
 	bytep = (const unsigned char *)&addr;
-	snprintf(buf, 16, "%u.%u.%u.%u", bytep[0], bytep[1], bytep[2], bytep[3]);
-	buf[16] = 0;
+	snprintf(buf, sizeof(buf), "%u.%u.%u.%u", bytep[0], bytep[1], bytep[2], bytep[3]);
 	return buf;
 }
 
@@ -188,7 +189,7 @@ int main(int argc, char *argv[])
 			{
 				printf("Read failed: %s\n", ctx.error_str);
 				ipt_ACCOUNT_deinit(&ctx);
-				exit(-1);
+				return EXIT_FAILURE;
 			}
 
 			if (!doCSV)
@@ -219,5 +220,5 @@ int main(int argc, char *argv[])
 
 	printf("Finished.\n");
 	ipt_ACCOUNT_deinit(&ctx);
-	exit(0);
+	return EXIT_SUCCESS;
 }
