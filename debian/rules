@@ -144,7 +144,7 @@ clean:
 	dh_testdir
 	#dh_testroot
 	# Add here commands to clean up after the build process.
-	[ ! -f Makefile ] || $(MAKE) distclean
+	[ ! -f Makefile ] || $(MAKE) distclean ||:
 	rm -f extensions/ipset/.*.d
 	rm -f xtables-addons.8 extensions/matches.man extensions/targets.man
 	rm -f config.sub config.guess
