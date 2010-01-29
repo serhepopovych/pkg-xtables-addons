@@ -148,6 +148,7 @@ clean:
 	rm -f extensions/ipset/.*.d
 	rm -f xtables-addons.8 extensions/matches.man extensions/targets.man
 	rm -f config.sub config.guess
+	rm -f config.log config.status
 	rm -f build-arch-stamp build-indep-stamp configure-stamp
 	dh_clean
 

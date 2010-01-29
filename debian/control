@@ -18,7 +18,8 @@ Depends: module-assistant,
     make,
     pkg-config,
     iptables-dev (>= 1.4.3),
-    bzip2
+    bzip2,
+    ${misc:Depends}
 Description: Extensions targets and matches for iptables [modules sources]
  Xtables-addons provides extra modules for iptables not present in the
  kernel, and is the successor of patch-o-matic.
@@ -31,7 +32,7 @@ Description: Extensions targets and matches for iptables [modules sources]
 
 Package: xtables-addons-common
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: xtables-addons-modules
 Provides: xtables-addons-common-${source:Upstream-Version}
 Conflicts: ipset
