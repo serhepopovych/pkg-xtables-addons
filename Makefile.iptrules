@@ -1,17 +1,17 @@
 # -*- Makefile -*-
 # MANUAL
 
-prefix          = @prefix@
-exec_prefix     = @exec_prefix@
-libexecdir      = @libexecdir@
-xtlibdir        = @xtlibdir@
+prefix          = /usr
+exec_prefix     = ${prefix}
+libexecdir      = /lib
+xtlibdir        = ${libexecdir}/xtables
 
-CC              = @CC@
+CC              = gcc
 CCLD            = ${CC}
 
-regular_CFLAGS  = @regular_CFLAGS@
-libxtables_CFLAGS = @libxtables_CFLAGS@
-libxtables_LIBS   = @libxtables_LIBS@
+regular_CFLAGS  = -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes 	-Winline -pipe -DXTABLES_LIBDIR=\"${xtlibdir}\"
+libxtables_CFLAGS =  
+libxtables_LIBS   = -L/lib -lxtables  
 AM_CFLAGS         = ${regular_CFLAGS} ${libxtables_CFLAGS}
 AM_DEPFLAGS     = -Wp,-MMD,$(@D)/.$(@F).d,-MT,$@
 
@@ -47,7 +47,7 @@ all: ${targets}
 install: ${targets}
 	@for i in ${subdirs_list}; do ${MAKE} -C $$i $@; done;
 	install -dm0755 "${DESTDIR}/${xtlibdir}";
-	@for i in $^; do install -pm0755 $$i "${DESTDIR}/${xtlibdir}"; done;
+	install -pm0755 $^ "${DESTDIR}/${xtlibdir}";
 
 clean:
 	@for i in ${subdirs_list}; do ${MAKE} -C $$i $@; done;
