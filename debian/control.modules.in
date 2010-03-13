@@ -1,12 +1,12 @@
 Source: xtables-addons
-Section: unknown
+Section: kernel
 Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Build-Depends: debhelper (>= 7),
     iptables-dev,
     pkg-config,
     kbuild
-Standards-Version: 3.8.1
+Standards-Version: 3.8.4
 
 Package: xtables-addons-modules-_KVERS_
 Architecture: any
