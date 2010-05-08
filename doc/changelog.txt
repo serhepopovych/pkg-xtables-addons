@@ -3,6 +3,33 @@ HEAD
 ====
 
 
+Xtables-addons 1.26 (April 30 2010)
+===================================
+- compat_xtables: fix 2.6.34 compile error due to a typo
+
+
+Xtables-addons 1.25 (April 26 2010)
+===================================
+- TEE: do rechecksumming in PREROUTING too
+- TEE: decrease TTL on cloned packet
+- TEE: set dont-fragment on cloned packets
+- TEE: free skb when route lookup failed
+- TEE: do not limit use to mangle table
+- TEE: do not retain iif and mark on cloned packet
+- TEE: new loop detection logic
+- TEE: use less expensive pskb_copy
+- condition: remove unnecessary RCU protection
+
+
+Xtables-addons 1.24 (March 17 2010)
+===================================
+- build: fix build of userspace modules against old (pre-2.6.25)
+  headers from linux-glibc-devel (/usr/include/linux)
+- ipp2p: updated bittorent command recognition
+- SYSRQ: let module load when crypto is unavailable
+- SYSRQ: allow processing of UDP-Lite
+
+
 Xtables-addons 1.23 (February 24 2010)
 ======================================
 - build: support for Linux 2.6.34

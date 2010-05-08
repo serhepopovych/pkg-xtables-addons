@@ -1,5 +1,5 @@
 
-AC_INIT([xtables-addons], [1.23])
+AC_INIT([xtables-addons], [1.26])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
@@ -34,7 +34,8 @@ AC_CHECK_HEADERS([linux/netfilter/x_tables.h], [],
 regular_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes \
-	-Winline -pipe -DXTABLES_LIBDIR=\\\"\${xtlibdir}\\\"";
+	-Winline -pipe -DXTABLES_LIBDIR=\\\"\${xtlibdir}\\\" \
+	-I\${XA_TOPSRCDIR}/include";
 
 #
 # check kernel version

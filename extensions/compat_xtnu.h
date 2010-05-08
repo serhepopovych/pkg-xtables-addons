@@ -85,7 +85,7 @@ struct xtnu_match {
 	struct list_head list;
 	char name[XT_FUNCTION_MAXNAMELEN - 1 - sizeof(void *)];
 	bool (*match)(const struct sk_buff *, const struct xt_match_param *);
-	bool (*checkentry)(const struct xt_mtchk_param *);
+	int (*checkentry)(const struct xt_mtchk_param *);
 	void (*destroy)(const struct xt_mtdtor_param *);
 	struct module *me;
 	const char *table;
@@ -101,7 +101,7 @@ struct xtnu_target {
 	char name[XT_FUNCTION_MAXNAMELEN - 1 - sizeof(void *)];
 	unsigned int (*target)(struct sk_buff **,
 		const struct xt_target_param *);
-	bool (*checkentry)(const struct xt_tgchk_param *);
+	int (*checkentry)(const struct xt_tgchk_param *);
 	void (*destroy)(const struct xt_tgdtor_param *);
 	struct module *me;
 	const char *table;
@@ -153,5 +153,7 @@ extern void xtnu_csum_replace4(__u16 __bitwise *, __be32, __be32);
 extern void xtnu_proto_csum_replace4(__u16 __bitwise *, struct sk_buff *,
 	__be32, __be32, bool);
 extern int xtnu_skb_linearize(struct sk_buff *);
+
+extern void *HX_memmem(const void *, size_t, const void *, size_t);
 
 #endif /* _COMPAT_XTNU_H */

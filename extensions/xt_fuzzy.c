@@ -125,7 +125,7 @@ fuzzy_mt(const struct sk_buff *skb, const struct xt_match_param *par)
 	return false;
 }
 
-static bool fuzzy_mt_check(const struct xt_mtchk_param *par)
+static int fuzzy_mt_check(const struct xt_mtchk_param *par)
 {
 	const struct xt_fuzzy_mtinfo *info = par->matchinfo;
 
@@ -133,10 +133,10 @@ static bool fuzzy_mt_check(const struct xt_mtchk_param *par)
 	    info->maximum_rate > FUZZY_MAX_RATE ||
 	    info->minimum_rate >= info->maximum_rate) {
 		printk(KERN_INFO KBUILD_MODNAME ": bad values, please check.\n");
-		return false;
+		return -EDOM;
 	}
 
-	return true;
+	return 0;
 }
 
 static struct xt_match fuzzy_mt_reg[] __read_mostly = {
@@ -146,7 +146,7 @@ static struct xt_match fuzzy_mt_reg[] __read_mostly = {
 		.family     = NFPROTO_IPV4,
 		.match      = fuzzy_mt,
 		.checkentry = fuzzy_mt_check,
-		.matchsize  = XT_ALIGN(sizeof(struct xt_fuzzy_mtinfo)),
+		.matchsize  = sizeof(struct xt_fuzzy_mtinfo),
 		.me         = THIS_MODULE,
 	},
 	{
@@ -155,7 +155,7 @@ static struct xt_match fuzzy_mt_reg[] __read_mostly = {
 		.family     = NFPROTO_IPV6,
 		.match      = fuzzy_mt,
 		.checkentry = fuzzy_mt_check,
-		.matchsize  = XT_ALIGN(sizeof(struct xt_fuzzy_mtinfo)),
+		.matchsize  = sizeof(struct xt_fuzzy_mtinfo),
 		.me         = THIS_MODULE,
 	},
 };
