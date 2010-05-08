@@ -1,6 +1,6 @@
 /*
  *	"SYSRQ" target extension for Netfilter
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2008 - 2010
  *
  *	Based upon the ipt_SYSRQ idea by Marek Zalem <marek [at] terminus sk>
  *
@@ -23,6 +23,10 @@
 #include <net/ip.h>
 #include "compat_xtables.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19) && \
+    (defined(CONFIG_CRYPTO) || defined(CONFIG_CRYPTO_MODULE))
+#	define WITH_CRYPTO 1
+#endif
 #if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
 #	define WITH_IPV6 1
 #endif
@@ -42,7 +46,7 @@ MODULE_PARM_DESC(hash, "hash algorithm, default sha1");
 MODULE_PARM_DESC(seqno, "sequence number for remote sysrq");
 MODULE_PARM_DESC(debug, "debugging: 0=off, 1=on");
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
+#ifdef WITH_CRYPTO
 static struct crypto_hash *sysrq_tfm;
 static int sysrq_digest_size;
 static unsigned char *sysrq_digest_password;
@@ -204,8 +208,8 @@ sysrq_tg4(struct sk_buff **pskb, const struct xt_target_param *par)
 		return NF_DROP;
 
 	iph = ip_hdr(skb);
-	if (iph->protocol != IPPROTO_UDP)
-		return NF_ACCEPT; /* sink it */
+	if (iph->protocol != IPPROTO_UDP && iph->protocol != IPPROTO_UDPLITE)
+		return NF_DROP;
 
 	udph = (const void *)iph + ip_hdrlen(skb);
 	len  = ntohs(udph->len) - sizeof(struct udphdr);
@@ -235,7 +239,7 @@ sysrq_tg6(struct sk_buff **pskb, const struct xt_target_param *par)
 	iph = ipv6_hdr(skb);
 	if (ipv6_find_hdr(skb, &th_off, IPPROTO_UDP, &frag_off) < 0 ||
 	    frag_off > 0)
-		return NF_ACCEPT; /* sink it */
+		return NF_DROP;
 
 	udph = (const void *)iph + th_off;
 	len  = ntohs(udph->len) - sizeof(struct udphdr);
@@ -249,9 +253,8 @@ sysrq_tg6(struct sk_buff **pskb, const struct xt_target_param *par)
 }
 #endif
 
-static bool sysrq_tg_check(const struct xt_tgchk_param *par)
+static int sysrq_tg_check(const struct xt_tgchk_param *par)
 {
-
 	if (par->target->family == NFPROTO_IPV4) {
 		const struct ipt_entry *entry = par->entryinfo;
 
@@ -268,11 +271,11 @@ static bool sysrq_tg_check(const struct xt_tgchk_param *par)
 			goto out;
 	}
 
-	return true;
+	return 0;
 
  out:
 	printk(KERN_ERR KBUILD_MODNAME ": only available for UDP and UDP-Lite");
-	return false;
+	return -EINVAL;
 }
 
 static struct xt_target sysrq_tg_reg[] __read_mostly = {
@@ -296,43 +299,9 @@ static struct xt_target sysrq_tg_reg[] __read_mostly = {
 #endif
 };
 
-static int __init sysrq_tg_init(void)
+static void sysrq_crypto_exit(void)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
-	struct timeval now;
-
-	sysrq_tfm = crypto_alloc_hash(sysrq_hash, 0, CRYPTO_ALG_ASYNC);
-	if (IS_ERR(sysrq_tfm)) {
-		printk(KERN_WARNING KBUILD_MODNAME
-			": Error: Could not find or load %s hash\n",
-			sysrq_hash);
-		sysrq_tfm = NULL;
-		goto fail;
-	}
-	sysrq_digest_size = crypto_hash_digestsize(sysrq_tfm);
-	sysrq_digest = kmalloc(sysrq_digest_size, GFP_KERNEL);
-	if (sysrq_digest == NULL) {
-		printk(KERN_WARNING KBUILD_MODNAME
-			": Cannot allocate digest\n");
-		goto fail;
-	}
-	sysrq_hexdigest = kmalloc(2 * sysrq_digest_size + 1, GFP_KERNEL);
-	if (sysrq_hexdigest == NULL) {
-		printk(KERN_WARNING KBUILD_MODNAME
-			": Cannot allocate hexdigest\n");
-		goto fail;
-	}
-	sysrq_digest_password = kmalloc(sizeof(sysrq_password), GFP_KERNEL);
-	if (sysrq_digest_password == NULL) {
-		printk(KERN_WARNING KBUILD_MODNAME
-			": Cannot allocate password digest space\n");
-		goto fail;
-	}
-	do_gettimeofday(&now);
-	sysrq_seqno = now.tv_sec;
-	return xt_register_targets(sysrq_tg_reg, ARRAY_SIZE(sysrq_tg_reg));
-
- fail:
+#ifdef WITH_CRYPTO
 	if (sysrq_tfm)
 		crypto_free_hash(sysrq_tfm);
 	if (sysrq_digest)
@@ -341,22 +310,62 @@ static int __init sysrq_tg_init(void)
 		kfree(sysrq_hexdigest);
 	if (sysrq_digest_password)
 		kfree(sysrq_digest_password);
-	return -EINVAL;
-#else
-	printk(KERN_WARNING "xt_SYSRQ does not provide crypto for <= 2.6.18\n");
-	return xt_register_targets(sysrq_tg_reg, ARRAY_SIZE(sysrq_tg_reg));
 #endif
+}
+
+static int __init sysrq_crypto_init(void)
+{
+#if defined(WITH_CRYPTO)
+	struct timeval now;
+	int ret;
+
+	sysrq_tfm = crypto_alloc_hash(sysrq_hash, 0, CRYPTO_ALG_ASYNC);
+	if (IS_ERR(sysrq_tfm)) {
+		printk(KERN_WARNING KBUILD_MODNAME
+			": Error: Could not find or load %s hash\n",
+			sysrq_hash);
+		sysrq_tfm = NULL;
+		ret = PTR_ERR(sysrq_tfm);
+		goto fail;
+	}
+	sysrq_digest_size = crypto_hash_digestsize(sysrq_tfm);
+	sysrq_digest = kmalloc(sysrq_digest_size, GFP_KERNEL);
+	ret = -ENOMEM;
+	if (sysrq_digest == NULL)
+		goto fail;
+	sysrq_hexdigest = kmalloc(2 * sysrq_digest_size + 1, GFP_KERNEL);
+	if (sysrq_hexdigest == NULL)
+		goto fail;
+	sysrq_digest_password = kmalloc(sizeof(sysrq_password), GFP_KERNEL);
+	if (sysrq_digest_password == NULL)
+		goto fail;
+	do_gettimeofday(&now);
+	sysrq_seqno = now.tv_sec;
+	ret = xt_register_targets(sysrq_tg_reg, ARRAY_SIZE(sysrq_tg_reg));
+	if (ret < 0)
+		goto fail;
+	return ret;
+
+ fail:
+	sysrq_crypto_exit();
+	return ret;
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 19)
+	printk(KERN_WARNING "xt_SYSRQ does not provide crypto for < 2.6.19\n");
+#endif
+	return -EINVAL;
+}
+
+static int __init sysrq_tg_init(void)
+{
+	if (sysrq_crypto_init() < 0)
+		printk(KERN_WARNING "xt_SYSRQ starting without crypto\n");
+	return xt_register_targets(sysrq_tg_reg, ARRAY_SIZE(sysrq_tg_reg));
 }
 
 static void __exit sysrq_tg_exit(void)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
-	crypto_free_hash(sysrq_tfm);
-	kfree(sysrq_digest);
-	kfree(sysrq_hexdigest);
-	kfree(sysrq_digest_password);
-#endif
-	return xt_unregister_targets(sysrq_tg_reg, ARRAY_SIZE(sysrq_tg_reg));
+	sysrq_crypto_exit();
+	xt_unregister_targets(sysrq_tg_reg, ARRAY_SIZE(sysrq_tg_reg));
 }
 
 module_init(sysrq_tg_init);
