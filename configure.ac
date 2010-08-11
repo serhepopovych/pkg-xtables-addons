@@ -1,5 +1,5 @@
 
-AC_INIT([xtables-addons], [1.26])
+AC_INIT([xtables-addons], [1.28])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
@@ -62,7 +62,7 @@ else
 	fi;
 fi;
 echo "Found kernel version $kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-if test "$kmajor" -gt 2 -o "$kminor" -gt 6 -o "$kmicro" -gt 34; then
+if test "$kmajor" -gt 2 -o "$kminor" -gt 6 -o "$kmicro" -gt 35; then
 	echo "WARNING: You are trying a newer kernel. Results may vary. :-)";
 elif test \( "$kmajor" -lt 2 -o "$kminor" -lt 6 -o "$kmicro" -lt 17 \) -o \
     \( "$kmajor" -eq 2 -a "$kminor" -eq 6 -a "$kmicro" -eq 18 -a \
@@ -74,7 +74,7 @@ fi;
 AC_SUBST([regular_CFLAGS])
 AC_SUBST([kbuilddir])
 AC_SUBST([xtlibdir])
-AC_CONFIG_FILES([Makefile Makefile.iptrules Makefile.mans
+AC_CONFIG_FILES([Makefile Makefile.iptrules Makefile.mans geoip/Makefile
 	extensions/Makefile extensions/ACCOUNT/Makefile
 	extensions/ipset/Makefile extensions/pknock/Makefile])
 AC_OUTPUT

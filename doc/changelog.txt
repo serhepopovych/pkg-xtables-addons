@@ -3,6 +3,20 @@ HEAD
 ====
 
 
+Xtables-addons 1.28 (July 24 2010)
+==================================
+- RAWNAT: IPv6 variants erroneously rejected masks /33-/128
+- new target xt_CHECKSUM
+- xt_length2: add support for IPv6 jumbograms
+- xt_geoip: fix possible out-of-bounds access
+- import xt_geoip database scripts
+
+
+Xtables-addons 1.27 (May 16 2010)
+=================================
+- further updates for the upcoming 2.6.35 changes
+
+
 Xtables-addons 1.26 (April 30 2010)
 ===================================
 - compat_xtables: fix 2.6.34 compile error due to a typo
