@@ -1,6 +1,7 @@
 xtables-addons (1.26-2) unstable; urgency=low
 
   * Do not build the TEE target (Closes: #592237)
+  * Fix build not to use kernel headers when building source (Closes: #581779)
   * Bump standards version to 3.9.1
 
  -- Pierre Chifflier <pollux@debian.org>  Wed, 11 Aug 2010 16:41:05 +0200

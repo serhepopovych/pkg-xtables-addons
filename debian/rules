@@ -168,7 +168,7 @@ install: build
 	install -m 0644 extensions/ipset/ipset.8 $(CURDIR)/debian/$(cname)/usr/share/man/man8
 	#$(MAKE) install DESTDIR=$(CURDIR)/debian/$(cname)
 
-	$(MAKE) -C extensions clean
+	$(MAKE) -C extensions user-clean-local
 
 	# Create the directories to install the source into
 	dh_installdirs -p$(psource)  usr/src/modules/$(sname)/debian
