@@ -83,6 +83,8 @@ configure-stamp: configure
 	# Add here commands to configure the package.
 	cp -f /usr/share/misc/config.sub config.sub
 	cp -f /usr/share/misc/config.guess config.guess
+	# do not build TEE (see #592237)
+	sed -i 's/build_TEE=m/build_TEE=n/' mconfig
 	./configure $(CROSS) --prefix=/usr \
 		--mandir=\$${prefix}/share/man \
 		--infodir=\$${prefix}/share/info \
@@ -150,6 +152,7 @@ clean:
 	rm -f config.sub config.guess
 	rm -f config.log config.status
 	rm -f build-arch-stamp build-indep-stamp configure-stamp
+	sed -i 's/build_TEE=.*/build_TEE=m/' mconfig
 	dh_clean
 
 install: DH_OPTIONS=
