@@ -152,7 +152,9 @@ clean:
 	rm -f config.sub config.guess
 	rm -f config.log config.status
 	rm -f build-arch-stamp build-indep-stamp configure-stamp
-	sed -i 's/build_TEE=.*/build_TEE=m/' mconfig
+	rm -f extensions/ACCOUNT/Makefile extensions/ipset-4/Makefile extensions/ipset-5/Makefile extensions/pknock/Makefile
+	rm -f matches.man targets.man .manpages.lst
+	sed -i 's/build_TEE=.*/build_TEE=/' mconfig
 	dh_clean
 
 install: DH_OPTIONS=
@@ -165,7 +167,6 @@ install: build
 	# Install the libraries
 	$(MAKE) -C extensions user-install-local DESTDIR=$(CURDIR)/debian/$(cname)
 	$(MAKE) install-man DESTDIR=$(CURDIR)/debian/$(cname)
-	install -m 0644 extensions/ipset/ipset.8 $(CURDIR)/debian/$(cname)/usr/share/man/man8
 	#$(MAKE) install DESTDIR=$(CURDIR)/debian/$(cname)
 
 	$(MAKE) -C extensions user-clean-local
