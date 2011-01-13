@@ -85,10 +85,14 @@ configure-stamp: configure
 	cp -f /usr/share/misc/config.guess config.guess
 	# do not build TEE (see #592237)
 	sed -i 's/build_TEE=m/build_TEE=n/' mconfig
+	# Fix the kbuild detection, to avoid failing while we
+	# do *not* want kbuild
+	sed -i '/^k.*+0))/d' ./configure
 	./configure $(CROSS) --prefix=/usr \
 		--mandir=\$${prefix}/share/man \
 		--infodir=\$${prefix}/share/info \
-		--libexecdir=/lib
+		--libexecdir=/lib \
+		--without-kbuild
 ##CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
 	touch configure-stamp
 
