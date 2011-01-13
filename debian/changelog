@@ -1,3 +1,12 @@
+xtables-addons (1.32-1) unstable; urgency=low
+
+  * Imported Upstream version 1.32 (Closes: #593521)
+    - Build on recent kernels (Closes: #590140)
+  * Add temporary hack to fix configure with --without-kbuild flag
+  * Fix clean target
+
+ -- Pierre Chifflier <pollux@debian.org>  Thu, 13 Jan 2011 14:21:34 +0100
+
 xtables-addons (1.26-2) unstable; urgency=low
 
   * Do not build the TEE target (Closes: #592237)
