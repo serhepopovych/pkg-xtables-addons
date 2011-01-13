@@ -2,6 +2,7 @@
 #
 build_ACCOUNT=m
 build_CHAOS=m
+build_CHECKSUM=
 build_DELUDE=m
 build_DHCPMAC=m
 build_ECHO=
@@ -11,13 +12,15 @@ build_RAWNAT=m
 build_STEAL=m
 build_SYSRQ=m
 build_TARPIT=m
-build_TEE=m
+build_TEE=
 build_condition=m
 build_fuzzy=m
 build_geoip=m
+build_gradm=m
 build_iface=m
 build_ipp2p=m
-build_ipset=m
+build_ipset4=m
+build_ipset5=
 build_ipv4options=m
 build_length2=m
 build_lscan=m

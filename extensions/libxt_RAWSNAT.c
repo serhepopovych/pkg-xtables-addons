@@ -15,6 +15,7 @@
 #include <xtables.h>
 #include <linux/netfilter.h>
 #include "xt_RAWNAT.h"
+#include "compat_user.h"
 
 enum {
 	FLAGS_TO = 1 << 0,
@@ -79,7 +80,7 @@ rawsnat_tg6_parse(int c, char **argv, int invert, unsigned int *flags,
 		end = strchr(optarg, '/');
 		if (end != NULL) {
 			*end++ = '\0';
-			if (!xtables_strtoui(end, NULL, &mask, 0, 32))
+			if (!xtables_strtoui(end, NULL, &mask, 0, 128))
 				xtables_param_act(XTF_BAD_VALUE, "RAWSNAT",
 					"--to-source", optarg);
 			info->mask = mask;

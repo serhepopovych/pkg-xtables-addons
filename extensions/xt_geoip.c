@@ -126,13 +126,13 @@ static bool geoip_bsearch(const struct geoip_subnet *range,
 {
 	int mid;
 
-	if (hi < lo)
+	if (hi <= lo)
 		return false;
 	mid = (lo + hi) / 2;
 	if (range[mid].begin <= addr && addr <= range[mid].end)
 		return true;
 	if (range[mid].begin > addr)
-		return geoip_bsearch(range, addr, lo, mid - 1);
+		return geoip_bsearch(range, addr, lo, mid);
 	else if (range[mid].end < addr)
 		return geoip_bsearch(range, addr, mid + 1, hi);
 
@@ -141,7 +141,7 @@ static bool geoip_bsearch(const struct geoip_subnet *range,
 }
 
 static bool
-xt_geoip_mt(const struct sk_buff *skb, const struct xt_match_param *par)
+xt_geoip_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_geoip_match_info *info = par->matchinfo;
 	const struct geoip_country_kernel *node;

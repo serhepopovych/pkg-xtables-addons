@@ -135,13 +135,13 @@ static unsigned int sysrq_tg(const void *pdata, uint16_t len)
 			"0123456789abcdef"[sysrq_digest[i] & 0xf];
 	}
 	sysrq_hexdigest[2*sysrq_digest_size] = '\0';
-	if (len - n < sysrq_digest_size) {
+	if (len - n < sysrq_digest_size * 2) {
 		if (sysrq_debug)
 			printk(KERN_INFO KBUILD_MODNAME ": Short digest,"
 			       " expected %s\n", sysrq_hexdigest);
 		return NF_DROP;
 	}
-	if (strncmp(data + n, sysrq_hexdigest, sysrq_digest_size) != 0) {
+	if (strncmp(data + n, sysrq_hexdigest, sysrq_digest_size * 2) != 0) {
 		if (sysrq_debug)
 			printk(KERN_INFO KBUILD_MODNAME ": Bad digest,"
 			       " expected %s\n", sysrq_hexdigest);
@@ -152,7 +152,9 @@ static unsigned int sysrq_tg(const void *pdata, uint16_t len)
 	sysrq_seqno = new_seqno;
 	for (i = 0; i < len && data[i] != ','; ++i) {
 		printk(KERN_INFO KBUILD_MODNAME ": SysRq %c\n", data[i]);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
+		handle_sysrq(data[i]);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
 		handle_sysrq(data[i], NULL);
 #else
 		handle_sysrq(data[i], NULL, NULL);
@@ -187,7 +189,9 @@ static unsigned int sysrq_tg(const void *pdata, uint16_t len)
 		return NF_DROP;
 	}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
+	handle_sysrq(c);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
 	handle_sysrq(c, NULL);
 #else
 	handle_sysrq(c, NULL, NULL);
@@ -197,7 +201,7 @@ static unsigned int sysrq_tg(const void *pdata, uint16_t len)
 #endif
 
 static unsigned int
-sysrq_tg4(struct sk_buff **pskb, const struct xt_target_param *par)
+sysrq_tg4(struct sk_buff **pskb, const struct xt_action_param *par)
 {
 	struct sk_buff *skb = *pskb;
 	const struct iphdr *iph;
@@ -224,7 +228,7 @@ sysrq_tg4(struct sk_buff **pskb, const struct xt_target_param *par)
 
 #ifdef WITH_IPV6
 static unsigned int
-sysrq_tg6(struct sk_buff **pskb, const struct xt_target_param *par)
+sysrq_tg6(struct sk_buff **pskb, const struct xt_action_param *par)
 {
 	struct sk_buff *skb = *pskb;
 	const struct ipv6hdr *iph;
@@ -324,8 +328,8 @@ static int __init sysrq_crypto_init(void)
 		printk(KERN_WARNING KBUILD_MODNAME
 			": Error: Could not find or load %s hash\n",
 			sysrq_hash);
-		sysrq_tfm = NULL;
 		ret = PTR_ERR(sysrq_tfm);
+		sysrq_tfm = NULL;
 		goto fail;
 	}
 	sysrq_digest_size = crypto_hash_digestsize(sysrq_tfm);

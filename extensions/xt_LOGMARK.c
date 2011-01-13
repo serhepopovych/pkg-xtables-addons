@@ -2,7 +2,7 @@
  *	"LOGMARK" target extension to Xtables
  *	useful for debugging
  *
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2008-2010
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License; either
@@ -30,7 +30,7 @@ static const char *const dir_names[] = {
 };
 
 static unsigned int
-logmark_tg(struct sk_buff **pskb, const struct xt_target_param *par)
+logmark_tg(struct sk_buff **pskb, const struct xt_action_param *par)
 {
 	const struct sk_buff *skb = *pskb;
 	const struct xt_logmark_tginfo *info = par->targinfo;
@@ -75,6 +75,8 @@ logmark_tg(struct sk_buff **pskb, const struct xt_target_param *par)
 			printk("%s""ASSURED", prev++ ? "," : "");
 		if (ct->status & IPS_CONFIRMED)
 			printk("%s""CONFIRMED", prev++ ? "," : "");
+		printk(" lifetime=%lus",
+		       (jiffies - ct->timeout.expires) / HZ);
 	}
 
 	printk("\n");

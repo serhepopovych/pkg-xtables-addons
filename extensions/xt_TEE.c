@@ -51,8 +51,8 @@ tee_tg_route4(struct sk_buff *skb, const struct xt_tee_tginfo *info)
 		return false;
 
 	dst_release(skb_dst(skb));
-	skb_dst_set(skb, &rt->u.dst);
-	skb->dev      = rt->u.dst.dev;
+	skb_dst_set(skb, rt_dst(rt));
+	skb->dev      = rt_dst(rt)->dev;
 	skb->protocol = htons(ETH_P_IP);
 	return true;
 }
@@ -103,7 +103,7 @@ static void tee_tg_send(struct sk_buff *skb)
 }
 
 static unsigned int
-tee_tg4(struct sk_buff **pskb, const struct xt_target_param *par)
+tee_tg4(struct sk_buff **pskb, const struct xt_action_param *par)
 {
 	const struct xt_tee_tginfo *info = par->targinfo;
 	struct sk_buff *skb = *pskb;
@@ -205,7 +205,7 @@ tee_tg_route6(struct sk_buff *skb, const struct xt_tee_tginfo *info)
 }
 
 static unsigned int
-tee_tg6(struct sk_buff **pskb, const struct xt_target_param *par)
+tee_tg6(struct sk_buff **pskb, const struct xt_action_param *par)
 {
 	const struct xt_tee_tginfo *info = par->targinfo;
 	struct sk_buff *skb = *pskb;
