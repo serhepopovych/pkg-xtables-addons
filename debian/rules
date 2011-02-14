@@ -168,6 +168,7 @@ clean:
 	rm -f extensions/ACCOUNT/Makefile extensions/ipset-4/Makefile extensions/ipset-5/Makefile extensions/pknock/Makefile
 	rm -f matches.man targets.man .manpages.lst
 	sed -i 's/build_TEE=.*/build_TEE=/' mconfig
+	find . -name ".*.oo.d" -delete
 	dh_clean
 
 install: DH_OPTIONS=

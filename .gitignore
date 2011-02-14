@@ -2,6 +2,7 @@
 *.lo
 *.loT
 *.o
+*.oo.d
 .deps
 .dirstamp
 .libs
