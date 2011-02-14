@@ -5,6 +5,7 @@
 .deps
 .dirstamp
 .libs
+.pc
 Makefile
 Makefile.in
 
