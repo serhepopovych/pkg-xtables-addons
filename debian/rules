@@ -28,7 +28,7 @@ endif
 # some default definitions, important!
 #
 # Package version
-pver := 1.32-1
+pver := 1.32
 
 # The short upstream name, used for the module source directory
 dkmssname := xtables-addons-$(pver)
@@ -216,6 +216,7 @@ install: build
 
 	# Copy only the driver source to the proper location
 	cp -r extensions/* debian/$(dkmssource)/usr/src/$(dkmssname)/
+	find debian/$(dkmssource)/usr/src -name ".gitignore" -delete
 	cp mconfig Makefile.extra Makefile.iptrules \
          debian/$(dkmssource)/usr/src/$(dkmssname)/
 
