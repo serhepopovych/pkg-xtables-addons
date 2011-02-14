@@ -30,10 +30,26 @@ Description: Extensions targets and matches for iptables [modules sources]
  The xtables-addons package is also required in order to make use of these
  modules. Kernel source or headers are required to compile these modules.
 
+Package: xtables-addons-dkms
+Architecture: all
+Depends: make,
+         dkms,
+         linux-headers-generic | linux-headers,
+         ${misc:Depends}
+Recommends: xtables-addons-common
+Description: Extensions targets and matches for iptables
+ Xtables-addons provides extra modules for iptables not present in the
+ kernel, and is the successor of patch-o-matic.
+ Extensions includes new targets like TEE, TARPIT, CHAOS, or modules like
+ geoip, ipset, and account.
+ .
+ The dkms package will automatically compile the driver for your current
+ kernel version.
+
 Package: xtables-addons-common
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: xtables-addons-modules
+Recommends: xtables-addons-dkms
 Provides: xtables-addons-common-${source:Upstream-Version}
 Conflicts: ipset
 Replaces: ipset
