@@ -3,6 +3,26 @@ HEAD
 ====
 
 
+v1.33 (2011-02-02)
+==================
+Fixes:
+- build: restore functionality of `configure --without-kbuild`
+- build: fix objdir builds for ipset-5 (xt-a specific)
+- build: fix missing inclusion of dependency rules
+- xt_LOGMARK: fix detection of untracked connection for Linux >= 2.6.36
+Enhancements:
+- IPv6 support for xt_geoip
+- Update to ipset 5.3
+  * make IPv4 and IPv6 address handling similar
+  * show correct line numbers in restore output for parser errors
+- Update to ipset 5.4
+  * fixed ICMP and ICMPv6 handling
+  * fixed trailing whitespaces and pr_* messages
+  * fixed module loading at create/header commands
+- build: support for Linux up to 2.6.38
+- build: preliminary support for iptables 1.4.11
+
+
 v1.32 (2011-01-04)
 ==================
 Fixes:
