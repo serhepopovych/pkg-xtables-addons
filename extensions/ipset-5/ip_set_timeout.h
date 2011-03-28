@@ -1,7 +1,7 @@
 #ifndef _IP_SET_TIMEOUT_H
 #define _IP_SET_TIMEOUT_H
 
-/* Copyright (C) 2003-2010 Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
+/* Copyright (C) 2003-2011 Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -43,17 +43,17 @@ ip_set_timeout_uget(struct nlattr *tb)
 static inline bool
 ip_set_timeout_test(unsigned long timeout)
 {
-	return timeout != IPSET_ELEM_UNSET
-		&& (timeout == IPSET_ELEM_PERMANENT
-		    || time_after(timeout, jiffies));
+	return timeout != IPSET_ELEM_UNSET &&
+	       (timeout == IPSET_ELEM_PERMANENT ||
+		time_after(timeout, jiffies));
 }
 
 static inline bool
 ip_set_timeout_expired(unsigned long timeout)
 {
-	return timeout != IPSET_ELEM_UNSET
-	       && timeout != IPSET_ELEM_PERMANENT
-	       && time_before(timeout, jiffies);
+	return timeout != IPSET_ELEM_UNSET &&
+	       timeout != IPSET_ELEM_PERMANENT &&
+	       time_before(timeout, jiffies);
 }
 
 static inline unsigned long
@@ -88,15 +88,15 @@ ip_set_timeout_get(unsigned long timeout)
 static inline bool
 ip_set_timeout_test(unsigned long timeout)
 {
-	return timeout == IPSET_ELEM_PERMANENT
-	       || time_after(timeout, jiffies);
+	return timeout == IPSET_ELEM_PERMANENT ||
+	       time_after(timeout, jiffies);
 }
 
 static inline bool
 ip_set_timeout_expired(unsigned long timeout)
 {
-	return timeout != IPSET_ELEM_PERMANENT
-	       && time_before(timeout, jiffies);
+	return timeout != IPSET_ELEM_PERMANENT &&
+	       time_before(timeout, jiffies);
 }
 
 static inline unsigned long

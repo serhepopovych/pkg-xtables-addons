@@ -1,6 +1,6 @@
 /* Copyright (C) 2000-2002 Joakim Axelsson <gozem@linux.nu>
  *                         Patrick Schaaf <bof@bof.de>
- * Copyright (C) 2003-2010 Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
+ * Copyright (C) 2003-2011 Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -9,7 +9,6 @@
 
 /* Kernel module for IP set management */
 
-#include "ip_set_kernel.h"
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -26,309 +25,21 @@
 #include <net/genetlink.h>
 #define GENLMSG_DEFAULT_SIZE (NLMSG_DEFAULT_SIZE - GENL_HDRLEN)
 
-static struct list_head ip_set_type_list;	/* all registered set types */
+static LIST_HEAD(ip_set_type_list);		/* all registered set types */
 static DEFINE_MUTEX(ip_set_type_mutex);		/* protects ip_set_type_list */
 
 static struct ip_set **ip_set_list;		/* all individual sets */
-static ip_set_id_t ip_set_max = 256; /* max number of sets */
+static ip_set_id_t ip_set_max = LCONFIG_IP_SET_MAX; /* max number of sets */
 
 #define STREQ(a, b)	(strncmp(a, b, IPSET_MAXNAMELEN) == 0)
 
-static int max_sets;
+static unsigned int max_sets;
 
 module_param(max_sets, int, 0600);
 MODULE_PARM_DESC(max_sets, "maximal number of sets");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>");
 MODULE_DESCRIPTION("core IP set support");
-
-/*
- * Prefixlen maps for fast conversions
- */
-
-#define E(a, b, c, d) \
-	{.ip6 = { \
-		__constant_htonl(a), __constant_htonl(b), \
-		__constant_htonl(c), __constant_htonl(d), \
-	} }
-
-/*
- * This table works for both IPv4 and IPv6;
- * just use prefixlen_netmask_map[prefixlength].ip.
- */
-const union nf_inet_addr prefixlen_netmask_map[] = {
-	E(0x00000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0x80000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xC0000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xE0000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xF0000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xF8000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFC000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFE000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFF000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFF800000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFC00000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFE00000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFF00000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFF80000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFC0000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFE0000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFF0000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFF8000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFC000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFE000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFF000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFF800, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFC00, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFE00, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFF00, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFF80, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFC0, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFE0, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFF0, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFF8, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFC, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFE, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0x80000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xC0000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xE0000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xF0000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xF8000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFC000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFE000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFF800000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFC00000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFE00000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFF00000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFF80000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFC0000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFE0000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFF0000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFF8000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFC000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFE000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFF000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFF800, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFC00, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFE00, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFF00, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFF80, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFC0, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFE0, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFF0, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFF8, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFC, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFE, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0x80000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xC0000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xE0000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xF0000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xF8000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFC000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFE000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFF800000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFC00000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFE00000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFF00000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFF80000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFC0000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFE0000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF0000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF8000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFC000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFE000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFF000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFF800, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFC00, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFE00, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF00, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF80, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFC0, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFE0, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFF0, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFF8, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFC, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFE, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xC0000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xE0000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xF0000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xF8000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFC000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFE000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF800000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFC00000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFE00000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFF00000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFF80000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFC0000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFE0000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF0000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF8000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFC000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFE000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFF000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFF800),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFC00),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFE00),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF00),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF80),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFC0),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFE0),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFF0),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFF8),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFC),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFE),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF),
-};
-EXPORT_SYMBOL_GPL(prefixlen_netmask_map);
-
-#undef  E
-#define E(a, b, c, d) \
-	{.ip6 = { a, b, c, d } }
-
-/*
- * This table works for both IPv4 and IPv6;
- * just use prefixlen_hostmask_map[prefixlength].ip.
- */
-const union nf_inet_addr prefixlen_hostmask_map[] = {
-	E(0x00000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0x80000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xC0000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xE0000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xF0000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xF8000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFC000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFE000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFF000000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFF800000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFC00000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFE00000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFF00000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFF80000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFC0000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFE0000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFF0000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFF8000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFC000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFE000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFF000, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFF800, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFC00, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFE00, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFF00, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFF80, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFC0, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFE0, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFF0, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFF8, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFC, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFE, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0x80000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xC0000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xE0000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xF0000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xF8000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFC000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFE000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFF000000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFF800000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFC00000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFE00000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFF00000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFF80000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFC0000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFE0000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFF0000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFF8000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFC000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFE000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFF000, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFF800, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFC00, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFE00, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFF00, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFF80, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFC0, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFE0, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFF0, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFF8, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFC, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFE, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0x80000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xC0000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xE0000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xF0000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xF8000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFC000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFE000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFF800000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFC00000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFE00000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFF00000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFF80000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFC0000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFE0000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF0000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF8000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFC000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFE000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFF000, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFF800, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFC00, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFE00, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF00, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF80, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFC0, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFE0, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFF0, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFF8, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFC, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFE, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xC0000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xE0000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xF0000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xF8000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFC000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFE000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF800000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFC00000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFE00000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFF00000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFF80000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFC0000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFE0000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF0000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF8000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFC000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFE000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFF000),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFF800),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFC00),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFE00),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF00),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF80),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFC0),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFE0),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFF0),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFF8),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFC),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFE),
-	E(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF),
-};
-EXPORT_SYMBOL_GPL(prefixlen_hostmask_map);
 
 static struct genl_family ip_set_netlink_subsys;
 
@@ -352,61 +63,77 @@ ip_set_type_unlock(void)
 
 /* Register and deregister settype */
 
-static inline struct ip_set_type *
+static struct ip_set_type *
 find_set_type(const char *name, u8 family, u8 revision)
 {
 	struct ip_set_type *type;
 
 	list_for_each_entry_rcu(type, &ip_set_type_list, list)
-		if (STREQ(type->name, name)
-		    && (type->family == family || type->family == AF_UNSPEC)
-		    && type->revision == revision)
+		if (STREQ(type->name, name) &&
+		    (type->family == family || type->family == AF_UNSPEC) &&
+		    type->revision == revision)
 			return type;
 	return NULL;
 }
 
-/* Find a set type so that rcu_read_lock() is called by the function.
- * If we succeeded, the RCU lock is NOT released and the caller
- * must release it later.
- */
-static struct ip_set_type *
-find_set_type_rcu(const char *name, u8 family, u8 revision)
+/* Unlock, try to load a set type module and lock again */
+static int
+try_to_load_type(const char *name)
 {
-	struct ip_set_type *type;
+	nfnl_unlock();
+	pr_debug("try to load ip_set_%s\n", name);
+	if (request_module("ip_set_%s", name) < 0) {
+		pr_warning("Can't find ip_set type %s\n", name);
+		nfnl_lock();
+		return -IPSET_ERR_FIND_TYPE;
+	}
+	nfnl_lock();
+	return -EAGAIN;
+}
 
+/* Find a set type and reference it */
+static int
+find_set_type_get(const char *name, u8 family, u8 revision,
+		  struct ip_set_type **found)
+{
 	rcu_read_lock();
-	type = find_set_type(name, family, revision);
-	if (type == NULL)
+	*found = find_set_type(name, family, revision);
+	if (*found) {
+		int err = !try_module_get((*found)->me);
 		rcu_read_unlock();
+		return err ? -EFAULT : 0;
+	}
+	rcu_read_unlock();
 
-	return type;
+	return try_to_load_type(name);
 }
 
 /* Find a given set type by name and family.
  * If we succeeded, the supported minimal and maximum revisions are
  * filled out.
  */
-static bool
-find_set_type_minmax(const char *name, u8 family,
-		     u8 *min, u8 *max)
+static int
+find_set_type_minmax(const char *name, u8 family, u8 *min, u8 *max)
 {
 	struct ip_set_type *type;
-	bool ret = false;
+	bool found = false;
 
 	*min = *max = 0;
 	rcu_read_lock();
 	list_for_each_entry_rcu(type, &ip_set_type_list, list)
-		if (STREQ(type->name, name)
-		    && (type->family == family || type->family == AF_UNSPEC)) {
-			ret = true;
+		if (STREQ(type->name, name) &&
+		    (type->family == family || type->family == AF_UNSPEC)) {
+			found = true;
 			if (type->revision < *min)
 				*min = type->revision;
 			else if (type->revision > *max)
 				*max = type->revision;
 		}
 	rcu_read_unlock();
+	if (found)
+		return 0;
 
-	return ret;
+	return try_to_load_type(name);
 }
 
 #define family_name(f)	((f) == AF_INET ? "inet" : \
@@ -438,7 +165,7 @@ ip_set_type_register(struct ip_set_type *type)
 		goto unlock;
 	}
 	list_add_rcu(&type->list, &ip_set_type_list);
-	pr_debug("type %s, family %s, revision %u registered.",
+	pr_debug("type %s, family %s, revision %u registered.\n",
 		 type->name, family_name(type->family), type->revision);
 unlock:
 	ip_set_type_unlock();
@@ -458,7 +185,7 @@ ip_set_type_unregister(struct ip_set_type *type)
 		goto unlock;
 	}
 	list_del_rcu(&type->list);
-	pr_debug("type %s, family %s, revision %u unregistered.",
+	pr_debug("type %s, family %s, revision %u unregistered.\n",
 		 type->name, family_name(type->family), type->revision);
 unlock:
 	ip_set_type_unlock();
@@ -466,6 +193,92 @@ unlock:
 	synchronize_rcu();
 }
 EXPORT_SYMBOL_GPL(ip_set_type_unregister);
+
+/* Utility functions */
+void *
+ip_set_alloc(size_t size, gfp_t gfp_mask)
+{
+	void *members = NULL;
+
+	if (size < KMALLOC_MAX_SIZE)
+		members = kzalloc(size, gfp_mask | __GFP_NOWARN);
+
+	if (members) {
+		pr_debug("%p: allocated with kmalloc\n", members);
+		return members;
+	}
+
+	members = __vmalloc(size, gfp_mask | __GFP_ZERO | __GFP_HIGHMEM,
+			    PAGE_KERNEL);
+	if (!members)
+		return NULL;
+	pr_debug("%p: allocated with vmalloc\n", members);
+
+	return members;
+}
+EXPORT_SYMBOL_GPL(ip_set_alloc);
+
+void
+ip_set_free(void *members)
+{
+	pr_debug("%p: free with %s\n", members,
+		 is_vmalloc_addr(members) ? "vfree" : "kfree");
+	if (is_vmalloc_addr(members))
+		vfree(members);
+	else
+		kfree(members);
+}
+EXPORT_SYMBOL_GPL(ip_set_free);
+
+static inline bool
+flag_nested(const struct nlattr *nla)
+{
+	return nla->nla_type & NLA_F_NESTED;
+}
+
+static const struct nla_policy ipaddr_policy[IPSET_ATTR_IPADDR_MAX + 1] = {
+	[IPSET_ATTR_IPADDR_IPV4]	= { .type = NLA_U32 },
+	[IPSET_ATTR_IPADDR_IPV6]	= { .type = NLA_BINARY,
+					    .len = sizeof(struct in6_addr) },
+};
+
+int
+ip_set_get_ipaddr4(struct nlattr *nla,  __be32 *ipaddr)
+{
+	struct nlattr *tb[IPSET_ATTR_IPADDR_MAX+1];
+
+	if (unlikely(!flag_nested(nla)))
+		return -IPSET_ERR_PROTOCOL;
+	if (nla_parse(tb, IPSET_ATTR_IPADDR_MAX, nla_data(nla), nla_len(nla),
+		      ipaddr_policy))
+		return -IPSET_ERR_PROTOCOL;
+	if (unlikely(!ip_set_attr_netorder(tb, IPSET_ATTR_IPADDR_IPV4)))
+		return -IPSET_ERR_PROTOCOL;
+
+	*ipaddr = nla_get_be32(tb[IPSET_ATTR_IPADDR_IPV4]);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(ip_set_get_ipaddr4);
+
+int
+ip_set_get_ipaddr6(struct nlattr *nla, union nf_inet_addr *ipaddr)
+{
+	struct nlattr *tb[IPSET_ATTR_IPADDR_MAX+1];
+
+	if (unlikely(!flag_nested(nla)))
+		return -IPSET_ERR_PROTOCOL;
+
+	if (nla_parse(tb, IPSET_ATTR_IPADDR_MAX, nla_data(nla), nla_len(nla),
+		      ipaddr_policy))
+		return -IPSET_ERR_PROTOCOL;
+	if (unlikely(!ip_set_attr_netorder(tb, IPSET_ATTR_IPADDR_IPV6)))
+		return -IPSET_ERR_PROTOCOL;
+
+	memcpy(ipaddr, nla_data(tb[IPSET_ATTR_IPADDR_IPV6]),
+		sizeof(struct in6_addr));
+	return 0;
+}
+EXPORT_SYMBOL_GPL(ip_set_get_ipaddr6);
 
 /*
  * Creating/destroying/renaming/swapping affect the existence and
@@ -505,10 +318,10 @@ ip_set_test(ip_set_id_t index, const struct sk_buff *skb,
 	int ret = 0;
 
 	BUG_ON(set == NULL || atomic_read(&set->ref) == 0);
-	pr_debug("set %s, index %u", set->name, index);
+	pr_debug("set %s, index %u\n", set->name, index);
 
-	if (dim < set->type->dimension
-	    || !(family == set->family || set->family == AF_UNSPEC))
+	if (dim < set->type->dimension ||
+	    !(family == set->family || set->family == AF_UNSPEC))
 		return 0;
 
 	read_lock_bh(&set->lock);
@@ -517,7 +330,7 @@ ip_set_test(ip_set_id_t index, const struct sk_buff *skb,
 
 	if (ret == -EAGAIN) {
 		/* Type requests element to be completed */
-		pr_debug("element must be competed, ADD is triggered");
+		pr_debug("element must be competed, ADD is triggered\n");
 		write_lock_bh(&set->lock);
 		set->variant->kadt(set, skb, IPSET_ADD, family, dim, flags);
 		write_unlock_bh(&set->lock);
@@ -537,10 +350,10 @@ ip_set_add(ip_set_id_t index, const struct sk_buff *skb,
 	int ret;
 
 	BUG_ON(set == NULL || atomic_read(&set->ref) == 0);
-	pr_debug("set %s, index %u", set->name, index);
+	pr_debug("set %s, index %u\n", set->name, index);
 
-	if (dim < set->type->dimension
-	    || !(family == set->family || set->family == AF_UNSPEC))
+	if (dim < set->type->dimension ||
+	    !(family == set->family || set->family == AF_UNSPEC))
 		return 0;
 
 	write_lock_bh(&set->lock);
@@ -559,10 +372,10 @@ ip_set_del(ip_set_id_t index, const struct sk_buff *skb,
 	int ret = 0;
 
 	BUG_ON(set == NULL || atomic_read(&set->ref) == 0);
-	pr_debug("set %s, index %u", set->name, index);
+	pr_debug("set %s, index %u\n", set->name, index);
 
-	if (dim < set->type->dimension
-	    || !(family == set->family || set->family == AF_UNSPEC))
+	if (dim < set->type->dimension ||
+	    !(family == set->family || set->family == AF_UNSPEC))
 		return 0;
 
 	write_lock_bh(&set->lock);
@@ -712,8 +525,8 @@ EXPORT_SYMBOL_GPL(ip_set_nfnl_put);
 static inline bool
 protocol_failed(struct nlattr *const *tb)
 {
-	return !tb[IPSET_ATTR_PROTOCOL]
-	       || nla_get_u8(tb[IPSET_ATTR_PROTOCOL]) != IPSET_PROTOCOL;
+	return !tb[IPSET_ATTR_PROTOCOL] ||
+	       nla_get_u8(tb[IPSET_ATTR_PROTOCOL]) != IPSET_PROTOCOL;
 }
 
 static inline u32
@@ -722,13 +535,7 @@ flag_exist(const struct genlmsghdr *ghdr)
 	return ghdr->reserved & NLM_F_EXCL ? 0 : IPSET_FLAG_EXIST;
 }
 
-static inline bool
-flag_nested(const struct nlattr *nla)
-{
-	return nla->nla_type & NLA_F_NESTED;
-}
-
-static void *
+static struct nlmsghdr *
 start_msg(struct sk_buff *skb, u32 pid, u32 seq, unsigned int flags,
 	  enum ipset_cmd cmd)
 {
@@ -797,13 +604,6 @@ find_free_id(const char *name, ip_set_id_t *index, struct ip_set **set)
 	return 0;
 }
 
-static inline void
-load_type_module(const char *typename)
-{
-	pr_debug("try to load ip_set_%s", typename);
-	request_module("ip_set_%s", typename);
-}
-
 static int
 ip_set_create(struct sk_buff *skb, struct genl_info *info)
 {
@@ -816,20 +616,20 @@ ip_set_create(struct sk_buff *skb, struct genl_info *info)
 	u32 flags = flag_exist(info->genlhdr);
 	int ret = 0, len;
 
-	if (unlikely(protocol_failed(attr)
-		     || attr[IPSET_ATTR_SETNAME] == NULL
-		     || attr[IPSET_ATTR_TYPENAME] == NULL
-		     || attr[IPSET_ATTR_REVISION] == NULL
-		     || attr[IPSET_ATTR_FAMILY] == NULL
-		     || (attr[IPSET_ATTR_DATA] != NULL
-			 && !flag_nested(attr[IPSET_ATTR_DATA]))))
+	if (unlikely(protocol_failed(attr) ||
+		     attr[IPSET_ATTR_SETNAME] == NULL ||
+		     attr[IPSET_ATTR_TYPENAME] == NULL ||
+		     attr[IPSET_ATTR_REVISION] == NULL ||
+		     attr[IPSET_ATTR_FAMILY] == NULL ||
+		     (attr[IPSET_ATTR_DATA] != NULL &&
+		      !flag_nested(attr[IPSET_ATTR_DATA]))))
 		return -IPSET_ERR_PROTOCOL;
 
 	name = nla_data(attr[IPSET_ATTR_SETNAME]);
 	typename = nla_data(attr[IPSET_ATTR_TYPENAME]);
 	family = nla_get_u8(attr[IPSET_ATTR_FAMILY]);
 	revision = nla_get_u8(attr[IPSET_ATTR_REVISION]);
-	pr_debug("setname: %s, typename: %s, family: %s, revision: %u",
+	pr_debug("setname: %s, typename: %s, family: %s, revision: %u\n",
 		 name, typename, family_name(family), revision);
 
 	/*
@@ -840,7 +640,7 @@ ip_set_create(struct sk_buff *skb, struct genl_info *info)
 	if (!set)
 		return -ENOMEM;
 	rwlock_init(&set->lock);
-	strncpy(set->name, name, IPSET_MAXNAMELEN);
+	strlcpy(set->name, name, IPSET_MAXNAMELEN);
 	atomic_set(&set->ref, 0);
 	set->family = family;
 
@@ -852,32 +652,15 @@ ip_set_create(struct sk_buff *skb, struct genl_info *info)
 	 * After referencing the type, we try to create the type
 	 * specific part of the set without holding any locks.
 	 */
-	set->type = find_set_type_rcu(typename, family, revision);
-	if (set->type == NULL) {
-		/* Try loading the module */
-		load_type_module(typename);
-		set->type = find_set_type_rcu(typename, family, revision);
-		if (set->type == NULL) {
-			pr_warning("Can't find ip_set type %s, family %s, "
-				   "revision %u: set '%s' not created",
-				   typename, family_name(family), revision,
-				   name);
-			ret = -IPSET_ERR_FIND_TYPE;
-			goto out;
-		}
-	}
-	if (!try_module_get(set->type->me)) {
-		rcu_read_unlock();
-		ret = -EFAULT;
+	ret = find_set_type_get(typename, family, revision, &(set->type));
+	if (ret)
 		goto out;
-	}
-	rcu_read_unlock();
 
 	/*
 	 * Without holding any locks, create private part.
 	 */
 	len = attr[IPSET_ATTR_DATA] ? nla_len(attr[IPSET_ATTR_DATA]) : 0;
-	pr_debug("data len: %u", len);
+	pr_debug("data len: %u\n", len);
 	ret = set->type->create(set, attr[IPSET_ATTR_DATA] ?
 				nla_data(attr[IPSET_ATTR_DATA]) : NULL, len,
 				flags);
@@ -893,12 +676,12 @@ ip_set_create(struct sk_buff *skb, struct genl_info *info)
 	 */
 	if ((ret = find_free_id(set->name, &index, &clash)) != 0) {
 		/* If this is the same set and requested, ignore error */
-		if (ret == -EEXIST
-		    && (flags & IPSET_FLAG_EXIST)
-		    && STREQ(set->type->name, clash->type->name)
-		    && set->type->family == clash->type->family
-		    && set->type->revision == clash->type->revision
-		    && set->variant->same_set(set, clash))
+		if (ret == -EEXIST &&
+		    (flags & IPSET_FLAG_EXIST) &&
+		    STREQ(set->type->name, clash->type->name) &&
+		    set->type->family == clash->type->family &&
+		    set->type->revision == clash->type->revision &&
+		    set->variant->same_set(set, clash))
 			ret = 0;
 		goto cleanup;
 	}
@@ -906,7 +689,7 @@ ip_set_create(struct sk_buff *skb, struct genl_info *info)
 	/*
 	 * Finally! Add our shiny new set to the list, and be done.
 	 */
-	pr_debug("create: '%s' created with index %u!", set->name, index);
+	pr_debug("create: '%s' created with index %u!\n", set->name, index);
 	ip_set_list[index] = set;
 
 	return ret;
@@ -929,12 +712,12 @@ ip_set_setname_policy[IPSET_ATTR_CMD_MAX + 1] = {
 				    .len = IPSET_MAXNAMELEN - 1 },
 };
 
-static inline void
+static void
 ip_set_destroy_set(ip_set_id_t index)
 {
 	struct ip_set *set = ip_set_list[index];
 
-	pr_debug("set: %s",  set->name);
+	pr_debug("set: %s\n",  set->name);
 	ip_set_list[index] = NULL;
 
 	/* Must call it without holding any lock */
@@ -955,8 +738,8 @@ ip_set_destroy(struct sk_buff *skb, struct genl_info *info)
 	/* References are protected by the nfnl mutex */
 	if (!attr[IPSET_ATTR_SETNAME]) {
 		for (i = 0; i < ip_set_max; i++) {
-			if (ip_set_list[i] != NULL
-			    && (atomic_read(&ip_set_list[i]->ref)))
+			if (ip_set_list[i] != NULL &&
+			    (atomic_read(&ip_set_list[i]->ref)))
 				return -IPSET_ERR_BUSY;
 		}
 		for (i = 0; i < ip_set_max; i++) {
@@ -977,10 +760,10 @@ ip_set_destroy(struct sk_buff *skb, struct genl_info *info)
 
 /* Flush sets */
 
-static inline void
+static void
 ip_set_flush_set(struct ip_set *set)
 {
-	pr_debug("set: %s",  set->name);
+	pr_debug("set: %s\n",  set->name);
 
 	write_lock_bh(&set->lock);
 	set->variant->flush(set);
@@ -1030,9 +813,9 @@ ip_set_rename(struct sk_buff *skb, struct genl_info *info)
 	const char *name2;
 	ip_set_id_t i;
 
-	if (unlikely(protocol_failed(attr)
-		     || attr[IPSET_ATTR_SETNAME] == NULL
-		     || attr[IPSET_ATTR_SETNAME2] == NULL))
+	if (unlikely(protocol_failed(attr) ||
+		     attr[IPSET_ATTR_SETNAME] == NULL ||
+		     attr[IPSET_ATTR_SETNAME2] == NULL))
 		return -IPSET_ERR_PROTOCOL;
 
 	set = find_set(nla_data(attr[IPSET_ATTR_SETNAME]));
@@ -1043,8 +826,8 @@ ip_set_rename(struct sk_buff *skb, struct genl_info *info)
 
 	name2 = nla_data(attr[IPSET_ATTR_SETNAME2]);
 	for (i = 0; i < ip_set_max; i++) {
-		if (ip_set_list[i] != NULL
-		    && STREQ(ip_set_list[i]->name, name2))
+		if (ip_set_list[i] != NULL &&
+		    STREQ(ip_set_list[i]->name, name2))
 			return -IPSET_ERR_EXIST_SETNAME2;
 	}
 	strncpy(set->name, name2, IPSET_MAXNAMELEN);
@@ -1070,9 +853,9 @@ ip_set_swap(struct sk_buff *skb, struct genl_info *info)
 	char from_name[IPSET_MAXNAMELEN];
 	u32 from_ref;
 
-	if (unlikely(protocol_failed(attr)
-		     || attr[IPSET_ATTR_SETNAME] == NULL
-		     || attr[IPSET_ATTR_SETNAME2] == NULL))
+	if (unlikely(protocol_failed(attr) ||
+		     attr[IPSET_ATTR_SETNAME] == NULL ||
+		     attr[IPSET_ATTR_SETNAME2] == NULL))
 		return -IPSET_ERR_PROTOCOL;
 
 	from_id = find_set_id(nla_data(attr[IPSET_ATTR_SETNAME]));
@@ -1089,8 +872,8 @@ ip_set_swap(struct sk_buff *skb, struct genl_info *info)
 	/* Features must not change.
 	 * Not an artifical restriction anymore, as we must prevent
 	 * possible loops created by swapping in setlist type of sets. */
-	if (!(from->type->features == to->type->features
-	      && from->type->family == to->type->family))
+	if (!(from->type->features == to->type->features &&
+	      from->type->family == to->type->family))
 		return -IPSET_ERR_TYPE_MISMATCH;
 
 	/* No magic here: ref munging protected by the nfnl_lock */
@@ -1104,10 +887,6 @@ ip_set_swap(struct sk_buff *skb, struct genl_info *info)
 
 	ip_set_list[from_id] = to;
 	ip_set_list[to_id] = from;
-
-	/* Avoid possible race between ongoing slow add/del in kernel space
-	 * and next destroy command. */
-	synchronize_net();
 
 	return 0;
 }
@@ -1123,7 +902,7 @@ static int
 ip_set_dump_done(struct netlink_callback *cb)
 {
 	if (cb->args[2]) {
-		pr_debug("release set %s", ip_set_list[cb->args[1]]->name);
+		pr_debug("release set %s\n", ip_set_list[cb->args[1]]->name);
 		__ip_set_put((ip_set_id_t) cb->args[1]);
 	}
 	return 0;
@@ -1136,14 +915,13 @@ dump_attrs(void *phdr)
 	const struct nlmsghdr *nlh = phdr - GENL_HDRLEN - NLMSG_HDRLEN;
 	int rem;
 
-	pr_debug("nlmsg_len: %u", nlh->nlmsg_len);
-	pr_debug("dump nlmsg");
+	pr_debug("dump nlmsg\n");
 	nlmsg_for_each_attr(attr, nlh, sizeof(struct genlmsghdr), rem) {
-		pr_debug("type: %u, len %u", nla_type(attr), attr->nla_len);
+		pr_debug("type: %u, len %u\n", nla_type(attr), attr->nla_len);
 	}
 }
 
-static inline int
+static int
 dump_init(struct netlink_callback *cb)
 {
 	struct nlmsghdr *nlh = nlmsg_hdr(cb->skb);
@@ -1212,14 +990,14 @@ ip_set_dump_start(struct sk_buff *skb, struct netlink_callback *cb)
 		/* When dumping all sets, we must dump "sorted"
 		 * so that lists (unions of sets) are dumped last.
 		 */
-		if (cb->args[0] != DUMP_ONE
-		    && !((cb->args[0] == DUMP_ALL)
-			 ^ (set->type->features & IPSET_DUMP_LAST)))
+		if (cb->args[0] != DUMP_ONE &&
+		    !((cb->args[0] == DUMP_ALL) ^
+		      (set->type->features & IPSET_DUMP_LAST)))
 			continue;
-		pr_debug("List set: %s", set->name);
+		pr_debug("List set: %s\n", set->name);
 		if (!cb->args[2]) {
 			/* Start listing: make sure set won't be destroyed */
-			pr_debug("reference set");
+			pr_debug("reference set\n");
 			__ip_set_get(index);
 		}
 		nlh = start_msg(skb, NETLINK_CB(cb->skb).pid,
@@ -1265,7 +1043,7 @@ nla_put_failure:
 release_refcount:
 	/* If there was an error or set is done, release set */
 	if (ret || !cb->args[2]) {
-		pr_debug("release set %s", ip_set_list[index]->name);
+		pr_debug("release set %s\n", ip_set_list[index]->name);
 		__ip_set_put(index);
 	}
 
@@ -1276,6 +1054,7 @@ release_refcount:
 out:
 	if (nlh) {
 		genlmsg_end(skb, nlh);
+		pr_debug("nlmsg_len: %u\n", skb->len);
 		dump_attrs(nlh);
 	}
 
@@ -1327,9 +1106,9 @@ call_ad(struct sk_buff *skb, struct nlattr *const attr[],
 		ret = set->variant->uadt(set, head, len, adt,
 					 &lineno, flags);
 		write_unlock_bh(&set->lock);
-	} while (ret == -EAGAIN
-		 && set->variant->resize
-		 && (ret = set->variant->resize(set, retried++)) == 0);
+	} while (ret == -EAGAIN &&
+		 set->variant->resize &&
+		 (ret = set->variant->resize(set, retried++)) == 0);
 
 	if (!ret || (ret == -IPSET_ERR_EXIST && eexist))
 		return 0;
@@ -1353,15 +1132,15 @@ ip_set_uadd(struct sk_buff *skb, struct genl_info *info)
 	u32 flags = flag_exist(info->genlhdr);
 	int ret = 0;
 
-	if (unlikely(protocol_failed(attr)
-		     || attr[IPSET_ATTR_SETNAME] == NULL
-		     || !((attr[IPSET_ATTR_DATA] != NULL)
-			  ^ (attr[IPSET_ATTR_ADT] != NULL))
-		     || (attr[IPSET_ATTR_DATA] != NULL
-			 && !flag_nested(attr[IPSET_ATTR_DATA]))
-		     || (attr[IPSET_ATTR_ADT] != NULL
-			 && (!flag_nested(attr[IPSET_ATTR_ADT])
-			     || attr[IPSET_ATTR_LINENO] == NULL))))
+	if (unlikely(protocol_failed(attr) ||
+		     attr[IPSET_ATTR_SETNAME] == NULL ||
+		     !((attr[IPSET_ATTR_DATA] != NULL) ^
+		       (attr[IPSET_ATTR_ADT] != NULL)) ||
+		     (attr[IPSET_ATTR_DATA] != NULL &&
+		      !flag_nested(attr[IPSET_ATTR_DATA])) ||
+		     (attr[IPSET_ATTR_ADT] != NULL &&
+		      (!flag_nested(attr[IPSET_ATTR_ADT]) ||
+		       attr[IPSET_ATTR_LINENO] == NULL))))
 		return -IPSET_ERR_PROTOCOL;
 
 	set = find_set(nla_data(attr[IPSET_ATTR_SETNAME]));
@@ -1375,8 +1154,8 @@ ip_set_uadd(struct sk_buff *skb, struct genl_info *info)
 		int nla_rem;
 
 		nla_for_each_nested(nla, attr[IPSET_ATTR_ADT], nla_rem) {
-			if (nla_type(nla) != IPSET_ATTR_DATA
-			    || !flag_nested(nla))
+			if (nla_type(nla) != IPSET_ATTR_DATA ||
+			    !flag_nested(nla))
 				return -IPSET_ERR_PROTOCOL;
 			ret = call_ad(skb, attr,
 				       set, nla, IPSET_ADD, flags);
@@ -1397,15 +1176,15 @@ ip_set_udel(struct sk_buff *skb, struct genl_info *info)
 	u32 flags = flag_exist(info->genlhdr);
 	int ret = 0;
 
-	if (unlikely(protocol_failed(attr)
-		     || attr[IPSET_ATTR_SETNAME] == NULL
-		     || !((attr[IPSET_ATTR_DATA] != NULL)
-			  ^ (attr[IPSET_ATTR_ADT] != NULL))
-		     || (attr[IPSET_ATTR_DATA] != NULL
-			 && !flag_nested(attr[IPSET_ATTR_DATA]))
-		     || (attr[IPSET_ATTR_ADT] != NULL
-			 && (!flag_nested(attr[IPSET_ATTR_ADT])
-			    || attr[IPSET_ATTR_LINENO] == NULL))))
+	if (unlikely(protocol_failed(attr) ||
+		     attr[IPSET_ATTR_SETNAME] == NULL ||
+		     !((attr[IPSET_ATTR_DATA] != NULL) ^
+		       (attr[IPSET_ATTR_ADT] != NULL)) ||
+		     (attr[IPSET_ATTR_DATA] != NULL &&
+		      !flag_nested(attr[IPSET_ATTR_DATA])) ||
+		     (attr[IPSET_ATTR_ADT] != NULL &&
+		      (!flag_nested(attr[IPSET_ATTR_ADT]) ||
+		       attr[IPSET_ATTR_LINENO] == NULL))))
 		return -IPSET_ERR_PROTOCOL;
 
 	set = find_set(nla_data(attr[IPSET_ATTR_SETNAME]));
@@ -1419,8 +1198,8 @@ ip_set_udel(struct sk_buff *skb, struct genl_info *info)
 		int nla_rem;
 
 		nla_for_each_nested(nla, attr[IPSET_ATTR_ADT], nla_rem) {
-			if (nla_type(nla) != IPSET_ATTR_DATA
-			    || !flag_nested(nla))
+			if (nla_type(nla) != IPSET_ATTR_DATA ||
+			    !flag_nested(nla))
 				return -IPSET_ERR_PROTOCOL;
 			ret = call_ad(skb, attr,
 				       set, nla, IPSET_DEL, flags);
@@ -1439,10 +1218,10 @@ ip_set_utest(struct sk_buff *skb, struct genl_info *info)
 	struct ip_set *set;
 	int ret = 0;
 
-	if (unlikely(protocol_failed(attr)
-		     || attr[IPSET_ATTR_SETNAME] == NULL
-		     || attr[IPSET_ATTR_DATA] == NULL
-		     || !flag_nested(attr[IPSET_ATTR_DATA])))
+	if (unlikely(protocol_failed(attr) ||
+		     attr[IPSET_ATTR_SETNAME] == NULL ||
+		     attr[IPSET_ATTR_DATA] == NULL ||
+		     !flag_nested(attr[IPSET_ATTR_DATA])))
 		return -IPSET_ERR_PROTOCOL;
 
 	set = find_set(nla_data(attr[IPSET_ATTR_SETNAME]));
@@ -1475,8 +1254,8 @@ ip_set_header(struct sk_buff *skb, struct genl_info *info)
 	ip_set_id_t index;
 	int ret = 0;
 
-	if (unlikely(protocol_failed(attr)
-		     || attr[IPSET_ATTR_SETNAME] == NULL))
+	if (unlikely(protocol_failed(attr) ||
+		     attr[IPSET_ATTR_SETNAME] == NULL))
 		return -IPSET_ERR_PROTOCOL;
 
 	index = find_set_id(nla_data(attr[IPSET_ATTR_SETNAME]));
@@ -1533,22 +1312,16 @@ ip_set_type(struct sk_buff *skb, struct genl_info *info)
 	const char *typename;
 	int ret = 0;
 
-	if (unlikely(protocol_failed(attr)
-		     || attr[IPSET_ATTR_TYPENAME] == NULL
-		     || attr[IPSET_ATTR_FAMILY] == NULL))
+	if (unlikely(protocol_failed(attr) ||
+		     attr[IPSET_ATTR_TYPENAME] == NULL ||
+		     attr[IPSET_ATTR_FAMILY] == NULL))
 		return -IPSET_ERR_PROTOCOL;
 
 	family = nla_get_u8(attr[IPSET_ATTR_FAMILY]);
 	typename = nla_data(attr[IPSET_ATTR_TYPENAME]);
-	if (!find_set_type_minmax(typename, family, &min, &max)) {
-		/* Try to load in the type module */
-		load_type_module(typename);
-		if (!find_set_type_minmax(typename, family, &min, &max)) {
-			pr_debug("can't find: %s, family: %u",
-				 typename, family);
-			return -EEXIST;
-		}
-	}
+	ret = find_set_type_minmax(typename, family, &min, &max);
+	if (ret)
+		return ret;
 
 	skb2 = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (skb2 == NULL)
@@ -1565,6 +1338,7 @@ ip_set_type(struct sk_buff *skb, struct genl_info *info)
 	NLA_PUT_U8(skb2, IPSET_ATTR_REVISION_MIN, min);
 	genlmsg_end(skb2, nlh2);
 
+	pr_debug("Send TYPE, nlmsg_len: %u\n", skb2->len);
 	ret = genlmsg_unicast(genl_info_net(info), skb2, NETLINK_CB(skb).pid);
 	if (ret < 0)
 		return -EFAULT;
@@ -1714,7 +1488,7 @@ static struct genl_family ip_set_netlink_subsys __read_mostly = {
 /* Interface to iptables/ip6tables */
 
 static int
-ip_set_sockfn_get(struct sock *sk, int optval, void *user, int *len)
+ip_set_sockfn_get(struct sock *sk, int optval, void __user *user, int *len)
 {
 	unsigned *op;
 	void *data;
@@ -1775,8 +1549,8 @@ ip_set_sockfn_get(struct sock *sk, int optval, void *user, int *len)
 	case IP_SET_OP_GET_BYINDEX: {
 		struct ip_set_req_get_set *req_get = data;
 
-		if (*len != sizeof(struct ip_set_req_get_set)
-		    || req_get->set.index >= ip_set_max) {
+		if (*len != sizeof(struct ip_set_req_get_set) ||
+		    req_get->set.index >= ip_set_max) {
 			ret = -EINVAL;
 			goto done;
 		}
@@ -1824,11 +1598,9 @@ ip_set_init(void)
 	ip_set_list = kzalloc(sizeof(struct ip_set *) * ip_set_max,
 			      GFP_KERNEL);
 	if (!ip_set_list) {
-		pr_err("ip_set: Unable to create ip_set_list");
+		pr_err("ip_set: Unable to create ip_set_list\n");
 		return -ENOMEM;
 	}
-
-	INIT_LIST_HEAD(&ip_set_type_list);
 
 	ret = genl_register_family_with_ops(&ip_set_netlink_subsys,
 	      ip_set_netlink_subsys_cb, ARRAY_SIZE(ip_set_netlink_subsys_cb));
@@ -1839,13 +1611,13 @@ ip_set_init(void)
 	}
 	ret = nf_register_sockopt(&so_set);
 	if (ret != 0) {
-		pr_err("SO_SET registry failed: %d", ret);
+		pr_err("SO_SET registry failed: %d\n", ret);
 		genl_unregister_family(&ip_set_netlink_subsys);
 		kfree(ip_set_list);
 		return ret;
 	}
 
-	pr_notice("ip_set: protocol %u", IPSET_PROTOCOL);
+	pr_notice("ip_set: protocol %u\n", IPSET_PROTOCOL);
 	return 0;
 }
 
@@ -1856,7 +1628,7 @@ ip_set_fini(void)
 	nf_unregister_sockopt(&so_set);
 	genl_unregister_family(&ip_set_netlink_subsys);
 	kfree(ip_set_list);
-	pr_debug("these are the famous last words");
+	pr_debug("these are the famous last words\n");
 }
 
 module_init(ip_set_init);
