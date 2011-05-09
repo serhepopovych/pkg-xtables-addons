@@ -1,3 +1,11 @@
+xtables-addons (1.35-1) unstable; urgency=low
+
+  * Imported Upstream version 1.35
+  * Update version numbers for DKMS package (Closes: #620662)
+  * Bump Standards Version to 3.9.2
+
+ -- Pierre Chifflier <pollux@debian.org>  Mon, 09 May 2011 21:42:42 +0200
+
 xtables-addons (1.33-1) unstable; urgency=low
 
   * Imported Upstream version 1.33
