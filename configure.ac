@@ -1,5 +1,5 @@
 
-AC_INIT([xtables-addons], [1.33])
+AC_INIT([xtables-addons], [1.35])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
@@ -40,15 +40,6 @@ regular_CFLAGS="-Wall -Waggregate-return -Wmissing-declarations \
 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes \
 	-Winline -pipe";
 
-#
-# check kernel version
-#
-if grep -q "CentOS release 5\." /etc/redhat-release 2>/dev/null ||
-    grep -q "Red Hat Enterprise Linux Server release 5" /etc/redhat-release 2>/dev/null; then
-	# しまった!
-	# Well, just a warning. Maybe the admin updated the kernel.
-	echo "WARNING: This distribution's shipped kernel is not supported.";
-fi;
 if test -n "$kbuilddir"; then
 	AC_MSG_CHECKING([kernel version that we will build against])
 	krel="$(make -sC "$kbuilddir" M=. kernelrelease)";
@@ -72,13 +63,17 @@ if test -n "$kbuilddir"; then
 		echo "$kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
 		if test "$kmajor" -gt 2 -o "$kminor" -gt 6 -o "$kmicro" -gt 38; then
 			echo "WARNING: You are trying a newer kernel. Results may vary. :-)";
+		elif test "$kmajor" -eq 2 -a "$kminor" -eq 6 -a "$kmicro" -ge 29; then
+			:; # everything ok
 		elif test \( "$kmajor" -lt 2 -o \
 		    \( "$kmajor" -eq 2 -a "$kminor" -lt 6 \) -o \
 		    \( "$kmajor" -eq 2 -a "$kminor" -eq 0 -a "$kmicro" -lt 17 \) -o \
 		    \( "$kmajor" -eq 2 -a "$kminor" -eq 6 -a "$kmicro" -eq 18 -a \
 		    "$kstable" -lt 5 \) \); then
-			echo "ERROR: That kernel version is not supported. Please see INSTALL for minimum configuration.";
+			echo "ERROR: That kernel version is not supported at all. Please see INSTALL for minimum configuration.";
 			exit 1;
+		else
+			echo "WARNING: That kernel version has been recently deprecated for use with Xtables-addons). Compilation may fail.";
 		fi;
 	fi;
 fi;
@@ -89,6 +84,6 @@ AC_SUBST([kbuilddir])
 AC_SUBST([xtlibdir])
 AC_CONFIG_FILES([Makefile Makefile.iptrules Makefile.mans geoip/Makefile
 	extensions/Makefile extensions/ACCOUNT/Makefile
-	extensions/ipset-4/Makefile extensions/ipset-5/Makefile
+	extensions/ipset-4/Makefile extensions/ipset-6/Makefile
 	extensions/pknock/Makefile])
 AC_OUTPUT

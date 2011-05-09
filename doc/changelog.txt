@@ -3,6 +3,33 @@ HEAD
 ====
 
 
+v1.35 (2011-04-11)
+==================
+Enhancements:
+- update to ipset 6.3
+  * allow "new" as a commad alias to "create"
+  * resolving IP addresses did not work at listing/saving sets, fixed
+  * check ICMP and ICMPv6 with the set match and target in the testsuite
+  * avoid possible syntax clashing at saving hostnames
+  * fix linking with CONFIG_IPV6=n
+  * sctp, udplite support for the hash:*port* types
+- ipset-genl: handle EAGAIN return value emitted from autoloader
+- ipset-genl: resolve nfgenmsg remains and fix spurious protocol abort
+
+
+v1.34 (2011-04-07)
+==================
+Fixes:
+- xt_pknock: avoid crash when hash TFM could not be allocated
+- xt_pknock: avoid inversion of rule lookup that led to warnings
+- xt_DNETMAP: add missing module alias
+- xt_DNETMAP: support for kernels below 2.6.34
+Changes:
+- Linux kernel versions below 2.6.29 are no longer officially
+  supported, and will not be part of compilation testing.
+  Expect that compat code will be removed shortly.
+
+
 v1.33 (2011-02-02)
 ==================
 Fixes:
