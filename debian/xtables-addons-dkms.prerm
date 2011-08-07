@@ -4,7 +4,7 @@ set -e
 
 NAME=xtables-addons
 PACKAGE_NAME=$NAME-dkms
-VERSION=1.35
+VERSION=1.37
 
 case "$1" in
     remove|upgrade|deconfigure)

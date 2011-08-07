@@ -28,7 +28,7 @@ endif
 # some default definitions, important!
 #
 # Package version
-pver := 1.35
+pver := 1.37
 
 # The short upstream name, used for the module source directory
 dkmssname := xtables-addons-$(pver)

@@ -1,3 +1,11 @@
+xtables-addons (1.37-1) unstable; urgency=low
+
+  * Imported Upstream version 1.37
+    This will trigger a rebuild and fix version on iptables libs
+    (Closes: #636905)
+
+ -- Pierre Chifflier <pollux@debian.org>  Sun, 07 Aug 2011 20:48:13 +0200
+
 xtables-addons (1.35-1) unstable; urgency=low
 
   * Imported Upstream version 1.35
