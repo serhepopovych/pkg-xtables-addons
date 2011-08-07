@@ -100,8 +100,8 @@ am_ipset_OBJECTS = src/ipset.$(OBJEXT) src/errcode.$(OBJEXT) \
 	src/ipset_hash_ipport.$(OBJEXT) \
 	src/ipset_hash_ipportip.$(OBJEXT) \
 	src/ipset_hash_ipportnet.$(OBJEXT) \
-	src/ipset_hash_net.$(OBJEXT) src/ipset_hash_netport.$(OBJEXT) \
-	src/ipset_list_set.$(OBJEXT)
+	src/ipset_hash_net.$(OBJEXT) src/ipset_hash_netiface.$(OBJEXT) \
+	src/ipset_hash_netport.$(OBJEXT) src/ipset_list_set.$(OBJEXT)
 ipset_OBJECTS = $(am_ipset_OBJECTS)
 ipset_DEPENDENCIES = libipset.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -278,11 +278,12 @@ ipset_SOURCES = src/ipset.c src/errcode.c src/ui.c src/ipset_bitmap_ip.c \
                 src/ipset_bitmap_ipmac.c src/ipset_bitmap_port.c \
                 src/ipset_hash_ip.c src/ipset_hash_ipport.c \
                 src/ipset_hash_ipportip.c src/ipset_hash_ipportnet.c \
-                src/ipset_hash_net.c src/ipset_hash_netport.c \
+                src/ipset_hash_net.c src/ipset_hash_netiface.c \
+                src/ipset_hash_netport.c \
                 src/ipset_list_set.c
 
 ipset_LDADD = libipset.la
-man_MANS = ipset.8
+man_MANS = src/ipset.8
 all: all-am
 
 .SUFFIXES:
@@ -441,6 +442,8 @@ src/ipset_hash_ipportnet.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/ipset_hash_net.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/ipset_hash_netiface.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/ipset_hash_netport.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/ipset_list_set.$(OBJEXT): src/$(am__dirstamp) \
@@ -477,6 +480,7 @@ mostlyclean-compile:
 	-rm -f src/ipset_hash_ipportip.$(OBJEXT)
 	-rm -f src/ipset_hash_ipportnet.$(OBJEXT)
 	-rm -f src/ipset_hash_net.$(OBJEXT)
+	-rm -f src/ipset_hash_netiface.$(OBJEXT)
 	-rm -f src/ipset_hash_netport.$(OBJEXT)
 	-rm -f src/ipset_list_set.$(OBJEXT)
 	-rm -f src/ui.$(OBJEXT)
@@ -502,6 +506,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset_hash_ipportip.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset_hash_ipportnet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset_hash_net.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset_hash_netiface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset_hash_netport.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset_list_set.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ui.Po@am__quote@
