@@ -3,6 +3,24 @@ HEAD
 ====
 
 
+v1.37 (2011-06-25)
+==================
+Fixes:
+- xt_SYSRQ: make IPv6 trigger work again
+- xt_SYSRQ: improve security: include host address in digest
+- xt_TARPIT: fix a kernel oops in --reset mode
+
+
+v1.36 (2011-06-03)
+==================
+Changes:
+- xt_geoip: avoid recursive function calls
+- xt_TARPIT: unlock for use in all tables
+- xt_TARPIT: honeypot and reset modes
+- update to ipset 6.7
+- support for Linux 3.0
+
+
 v1.35 (2011-04-11)
 ==================
 Enhancements:

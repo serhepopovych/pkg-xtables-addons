@@ -1,7 +1,7 @@
 /* Copyright 2007-2010 Jozsef Kadlecsik (kadlec@blackhole.kfki.hu)
  *
- * This program is free software; you can redistribute it and/or modify   
- * it under the terms of the GNU General Public License version 2 as 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
 #include <assert.h>				/* assert */
@@ -70,7 +70,7 @@ static const struct ipset_errcode_table core_errcode_table[] = {
 	  "An IPv4 address is expected, but not received" },
 	{ IPSET_ERR_IPADDR_IPV6, 0,
 	  "An IPv6 address is expected, but not received" },
-	  
+
 	/* ADD specific error codes */
 	{ IPSET_ERR_EXIST, IPSET_CMD_ADD,
 	  "Element cannot be added to the set: it's already added" },
@@ -113,6 +113,10 @@ static const struct ipset_errcode_table hash_errcode_table[] = {
 	  "Invalid protocol specified" },
 	{ IPSET_ERR_MISSING_PROTO, 0,
 	  "Protocol missing, but must be specified" },
+	{ IPSET_ERR_HASH_RANGE_UNSUPPORTED, 0,
+	  "Range is not supported in the \"net\" component of the element" },
+	{ IPSET_ERR_HASH_RANGE, 0,
+	  "Invalid range, covers the whole address space" },
 	{ },
 };
 
@@ -153,10 +157,10 @@ ipset_errcode(struct ipset_session *session, enum ipset_cmd cmd, int errcode)
 {
 	const struct ipset_errcode_table *table = core_errcode_table;
 	int i, generic;
-	
+
 	if (errcode >= IPSET_ERR_TYPE_SPECIFIC) {
 		const struct ipset_type *type;
-		
+
 		type = ipset_saved_type(session);
 		if (type) {
 			if (MATCH_TYPENAME(type->name, "bitmap:"))
@@ -170,11 +174,11 @@ ipset_errcode(struct ipset_session *session, enum ipset_cmd cmd, int errcode)
 
 retry:
 	for (i = 0, generic = -1; table[i].errcode; i++) {
-		if (table[i].errcode == errcode
-		    && (table[i].cmd == cmd || table[i].cmd == 0)) {
-		    	if (table[i].cmd == 0) {
-		    		generic = i;
-		    		continue;
+		if (table[i].errcode == errcode &&
+		    (table[i].cmd == cmd || table[i].cmd == 0)) {
+			if (table[i].cmd == 0) {
+				generic = i;
+				continue;
 			}
 			return ipset_err(session, table[i].message);
 		}

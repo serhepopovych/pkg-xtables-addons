@@ -1,7 +1,7 @@
 /* Copyright 2007-2010 Jozsef Kadlecsik (kadlec@blackhole.kfki.hu)
  *
- * This program is free software; you can redistribute it and/or modify   
- * it under the terms of the GNU General Public License version 2 as 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
 #include <libipset/data.h>			/* IPSET_OPT_* */
@@ -60,7 +60,7 @@ static const struct ipset_arg hash_ipport_create_args[] = {
 	  .parse = ipset_parse_ignored,
 	},
 	{ },
-}; 
+};
 
 static const struct ipset_arg hash_ipport_add_args[] = {
 	{ .name = { "timeout", NULL },
@@ -68,9 +68,9 @@ static const struct ipset_arg hash_ipport_add_args[] = {
 	  .parse = ipset_parse_uint32,		.print = ipset_print_number,
 	},
 	{ },
-}; 
+};
 
-static const char hash_ipport_usage[] =
+static const char hash_ipport1_usage[] =
 "create SETNAME hash:ip,port\n"
 "		[family inet|inet6]\n"
 "               [hashsize VALUE] [maxelem VALUE]\n"
@@ -85,19 +85,19 @@ static const char hash_ipport_usage[] =
 "      Adding/deleting multiple elements with TCP/SCTP/UDP/UDPLITE\n"
 "      port range is supported both for IPv4 and IPv6.\n";
 
-struct ipset_type ipset_hash_ipport0 = {
+struct ipset_type ipset_hash_ipport1 = {
 	.name = "hash:ip,port",
 	.alias = { "ipporthash", NULL },
 	.revision = 1,
 	.family = AF_INET46,
 	.dimension = IPSET_DIM_TWO,
-	.elem = { 
-		[IPSET_DIM_ONE] = { 
+	.elem = {
+		[IPSET_DIM_ONE] = {
 			.parse = ipset_parse_ip4_single6,
 			.print = ipset_print_ip,
 			.opt = IPSET_OPT_IP
 		},
-		[IPSET_DIM_TWO] = { 
+		[IPSET_DIM_TWO] = {
 			.parse = ipset_parse_proto_port,
 			.print = ipset_print_proto_port,
 			.opt = IPSET_OPT_PORT
@@ -139,6 +139,6 @@ struct ipset_type ipset_hash_ipport0 = {
 			| IPSET_FLAG(IPSET_OPT_PROTO),
 	},
 
-	.usage = hash_ipport_usage,
+	.usage = hash_ipport1_usage,
 	.usagefn = ipset_port_usage,
 };
