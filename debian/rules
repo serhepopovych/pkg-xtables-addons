@@ -301,3 +301,7 @@ update-dkms-conf:
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install  binary-modules kdist kdist_configure kdist_image kdist_clean update-dkms-conf
+
+
+get-orig-source:
+	uscan --noconf --force-download --repack --rename --download-current-version --destdir=.
