@@ -10,7 +10,7 @@ MAKEARGS=" -C $kernel_source_dir M=${PSRC} XA_ABSTOPSRCDIR=${PSRC} XA_TOPSRCDIR=
 CLEAN="make ${MAKEARGS} clean"
 MAKE="make ${MAKEARGS} modules ; find ${PSRC} -name '*.ko' -exec mv {} ${PDEST} \;"
 
-AUTOINSTALL=yes
+AUTOINSTALL="yes"
 
 # Automatically generated rules below
 ####
