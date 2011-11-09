@@ -1,3 +1,52 @@
+xtables-addons (1.39-1) unstable; urgency=low
+
+  [Dmitry Smirnov] <onlyjob@member.fsf.org>
+  * Major repackaging (Closes: #638061)
+    * Obsolete ipset_v4 replaced with new ipset_v6 (Closes: #648083)
+    * debian/copyright updated for DEP5 compatibility
+    * debian/control updated
+      - Standards version update
+      - Depends update
+    * debian/watch fixed
+    * debian/rules rewrite
+      - get-orig-source target added
+      - build-time cleanup (make clean) is fixed
+      - second build do not fail
+      - offload most tasks to debhelper (with minimum overrides)
+      - standalone debian/rules for xtables-addons-source
+      - using CFLAGS/Hardening if provided by DPKG
+      - dynamically prepare DKMS config during build
+      - configure for Kbuild if headers available
+    * lintianization
+      - override for package-name-doesnt-match-sonames
+    * DKMS package cleanup
+      - broken post-init script removed
+      - only clean source is packaged
+      - improved configuration
+    * source package cleanup
+      - module-assiatant rules use debhelper more
+      - using CFLAGS if provided by DPKG
+
+  [Dmitry Smirnov] <onlyjob@member.fsf.org>
+  * Imported Upstream version 1.39 (2011-09-21)
+    - libxt_ACCOUNT: fix compilation after missing libxtables_CFLAGS
+    - build: fix compilation after missing libxtables_CFLAGS in submodules
+    - build: add missing linux/version.h includes where needed
+    - Remove unsupported ipset 4.x from the Xtables-addons distribution
+    - ipset: move ipset_errcode from src to library to avoid undefined reference
+    - update to ipset 6.9.1
+    - xt_CHECKSUM: abort build when the feature is already provided by mainline
+    - xt_SYSRQ: fix UDPLITE header lookup in IPv6
+    - xt_TARPIT: fix kernel warning about RTAX_HOPLIMIT being used
+    - xt_TEE: abort build when the feature is already provided by mainline
+    - xt_ipp2p: support UDPLITE
+    - xt_pknock: support UDPLITE
+    - xt_psd: restore functionality with UDP
+    - xt_psd: support UDPLITE
+    - support for Linux 3.1
+
+ -- Pierre Chifflier <pollux@debian.org>  Sat, 9 Nov 2011 15:57:07 +1100
+
 xtables-addons (1.37-1) unstable; urgency=low
 
   * Imported Upstream version 1.37
