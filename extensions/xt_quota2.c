@@ -4,17 +4,18 @@
  * by Jan Engelhardt <jengelh@medozas.de>, 2008
  *
  * Originally based on xt_quota.c:
- * 	netfilter module to enforce network quotas
+ * 	Xtables module to enforce network quotas
  * 	Sam Johnston <samj@samj.net>
  *
  *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License; either
- *	version 2 of the License, as published by the Free Software Foundation.
+ *	it under the terms of the GNU General Public License
+ *	version 2, as published by the Free Software Foundation.
  */
 #include <linux/list.h>
 #include <linux/proc_fs.h>
 #include <linux/skbuff.h>
 #include <linux/spinlock.h>
+#include <linux/version.h>
 #include <asm/atomic.h>
 
 #include <linux/netfilter/x_tables.h>
