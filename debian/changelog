@@ -1,4 +1,18 @@
-xtables-addons (1.39-1) unstable; urgency=low
+xtables-addons (1.40-1) unstable; urgency=low
+
+  [ Pierre Chifflier ]
+  * Add VCS links
+
+  [ Pierre Chifflier ]
+  * Change license for packaging files to GPL-2+ (with agreement of all
+    authors).
+
+  [ Pierre Chifflier ]
+  * Imported Upstream version 1.40
+
+  [Pierre Chifflier] <pollux@debian.org>
+  * Add Dmitry Smirnov as co-maintainer
+    * Merge all changes
 
   [Dmitry Smirnov] <onlyjob@member.fsf.org>
   * Major repackaging (Closes: #638061)
@@ -16,7 +30,7 @@ xtables-addons (1.39-1) unstable; urgency=low
       - standalone debian/rules for xtables-addons-source
       - using CFLAGS/Hardening if provided by DPKG
       - dynamically prepare DKMS config during build
-      - configure for Kbuild if headers available
+      - configure for Kbuild only if headers available
     * lintianization
       - override for package-name-doesnt-match-sonames
     * DKMS package cleanup
@@ -24,7 +38,7 @@ xtables-addons (1.39-1) unstable; urgency=low
       - only clean source is packaged
       - improved configuration
     * source package cleanup
-      - module-assiatant rules use debhelper more
+      - module-assistant rules use debhelper more
       - using CFLAGS if provided by DPKG
 
   [Dmitry Smirnov] <onlyjob@member.fsf.org>
@@ -45,7 +59,11 @@ xtables-addons (1.39-1) unstable; urgency=low
     - xt_psd: support UDPLITE
     - support for Linux 3.1
 
- -- Pierre Chifflier <pollux@debian.org>  Sat, 9 Nov 2011 15:57:07 +1100
+  [ Dmitry Smirnov ]
+  * lintian override
+  * DKMS config sanitation (all argument in double quotes)
+
+ -- Pierre Chifflier <pollux@debian.org>  Sat, 03 Dec 2011 17:28:10 +0100
 
 xtables-addons (1.37-1) unstable; urgency=low
 
