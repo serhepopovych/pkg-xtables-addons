@@ -8,6 +8,8 @@ Build-Depends: debhelper (>= 8), dh-autoreconf,
     iptables-dev (>= 1.4.3)
 Standards-Version: 3.9.2
 Homepage: http://xtables-addons.sourceforge.net/
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/xtables-addons.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/xtables-addons.git
 
 Package: xtables-addons-common
 Architecture: any
