@@ -41,6 +41,7 @@
 #include <linux/ip.h>
 #include <linux/module.h>
 #include <linux/skbuff.h>
+#include <linux/version.h>
 #include <linux/netfilter/x_tables.h>
 #ifdef CONFIG_BRIDGE_NETFILTER
 #	include <linux/netfilter_bridge.h>
@@ -232,7 +233,11 @@ static void tarpit_tcp(struct sk_buff *oldskb, unsigned int hook,
 	if (mode == XTTARPIT_HONEYPOT)
 		niph->ttl = 128;
 	else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 38)
+		niph->ttl = ip4_dst_hoplimit(skb_dst(nskb));
+#else
 		niph->ttl = dst_metric(skb_dst(nskb), RTAX_HOPLIMIT);
+#endif
 
 	/* Adjust IP checksum */
 	niph->check = 0;

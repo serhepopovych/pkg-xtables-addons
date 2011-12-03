@@ -11,6 +11,14 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
+#include <linux/version.h>
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
+#	error ----------------------------------------------------------
+#	error This module has been merged into, and is available in the
+#	error mainline since Linux kernel v2.6.36. Please use that.
+#	error ----------------------------------------------------------
+#endif
 
 #include <linux/netfilter/x_tables.h>
 #include "xt_CHECKSUM.h"

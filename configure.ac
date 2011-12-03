@@ -1,4 +1,4 @@
-AC_INIT([xtables-addons], [1.37])
+AC_INIT([xtables-addons], [1.40])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
@@ -22,7 +22,7 @@ fi
 
 AC_CHECK_HEADERS([linux/netfilter/x_tables.h], [],
 	[AC_MSG_ERROR([You need to have linux/netfilter/x_tables.h, see INSTALL file for details])])
-PKG_CHECK_MODULES([libxtables], [xtables >= 1.4.3])
+PKG_CHECK_MODULES([libxtables], [xtables >= 1.4.5])
 xtlibdir="$(pkg-config --variable=xtlibdir xtables)"
 PKG_CHECK_MODULES([libmnl], [libmnl >= 1], [:], [:])
 
@@ -64,10 +64,10 @@ if test -n "$kbuilddir"; then
 			echo "WARNING: You are trying a newer kernel. Results may vary. :-)";
 		elif test "$kmajor" -eq 3; then
 			:;
-		elif test "$kmajor" -eq 2 -a "$kminor" -eq 6 -a "$kmicro" -ge 29; then
+		elif test "$kmajor" -eq 2 -a "$kminor" -eq 6 -a "$kmicro" -ge 32; then
 			:;
 		else
-			echo "WARNING: That kernel version is not supported.";
+			echo "WARNING: That kernel version is not officially supported.";
 		fi;
 	fi;
 fi;
@@ -78,6 +78,6 @@ AC_SUBST([kbuilddir])
 AC_SUBST([xtlibdir])
 AC_CONFIG_FILES([Makefile Makefile.iptrules Makefile.mans geoip/Makefile
 	extensions/Makefile extensions/ACCOUNT/Makefile
-	extensions/ipset-4/Makefile extensions/ipset-6/Makefile
+	extensions/ipset-6/Makefile
 	extensions/pknock/Makefile])
 AC_OUTPUT

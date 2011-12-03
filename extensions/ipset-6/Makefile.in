@@ -84,7 +84,8 @@ libipset_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libipset_la_OBJECTS = libipset/data.lo libipset/icmp.lo \
 	libipset/icmpv6.lo libipset/mnl.lo libipset/parse.lo \
-	libipset/print.lo libipset/session.lo libipset/types.lo
+	libipset/print.lo libipset/session.lo libipset/types.lo \
+	libipset/errcode.lo
 libipset_la_OBJECTS = $(am_libipset_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -93,9 +94,8 @@ libipset_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libipset_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(sbin_PROGRAMS)
-am_ipset_OBJECTS = src/ipset.$(OBJEXT) src/errcode.$(OBJEXT) \
-	src/ui.$(OBJEXT) src/ipset_bitmap_ip.$(OBJEXT) \
-	src/ipset_bitmap_ipmac.$(OBJEXT) \
+am_ipset_OBJECTS = src/ipset.$(OBJEXT) src/ui.$(OBJEXT) \
+	src/ipset_bitmap_ip.$(OBJEXT) src/ipset_bitmap_ipmac.$(OBJEXT) \
 	src/ipset_bitmap_port.$(OBJEXT) src/ipset_hash_ip.$(OBJEXT) \
 	src/ipset_hash_ipport.$(OBJEXT) \
 	src/ipset_hash_ipportip.$(OBJEXT) \
@@ -270,11 +270,11 @@ _mcall = -f ${top_builddir}/Makefile.iptrules
 lib_LTLIBRARIES = libipset.la
 libipset_la_SOURCES = libipset/data.c libipset/icmp.c libipset/icmpv6.c \
                       libipset/mnl.c libipset/parse.c libipset/print.c \
-                      libipset/session.c libipset/types.c
+                      libipset/session.c libipset/types.c libipset/errcode.c
 
 libipset_la_LIBADD = ${libmnl_LIBS}
 libipset_la_LDFLAGS = -version-info 1:0:0
-ipset_SOURCES = src/ipset.c src/errcode.c src/ui.c src/ipset_bitmap_ip.c \
+ipset_SOURCES = src/ipset.c src/ui.c src/ipset_bitmap_ip.c \
                 src/ipset_bitmap_ipmac.c src/ipset_bitmap_port.c \
                 src/ipset_hash_ip.c src/ipset_hash_ipport.c \
                 src/ipset_hash_ipportip.c src/ipset_hash_ipportnet.c \
@@ -371,6 +371,8 @@ libipset/session.lo: libipset/$(am__dirstamp) \
 	libipset/$(DEPDIR)/$(am__dirstamp)
 libipset/types.lo: libipset/$(am__dirstamp) \
 	libipset/$(DEPDIR)/$(am__dirstamp)
+libipset/errcode.lo: libipset/$(am__dirstamp) \
+	libipset/$(DEPDIR)/$(am__dirstamp)
 libipset.la: $(libipset_la_OBJECTS) $(libipset_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(libipset_la_LINK) -rpath $(libdir) $(libipset_la_OBJECTS) $(libipset_la_LIBADD) $(LIBS)
 install-sbinPROGRAMS: $(sbin_PROGRAMS)
@@ -423,8 +425,6 @@ src/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
 src/ipset.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
-src/errcode.$(OBJEXT): src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
 src/ui.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/ipset_bitmap_ip.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
@@ -456,6 +456,8 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f libipset/data.$(OBJEXT)
 	-rm -f libipset/data.lo
+	-rm -f libipset/errcode.$(OBJEXT)
+	-rm -f libipset/errcode.lo
 	-rm -f libipset/icmp.$(OBJEXT)
 	-rm -f libipset/icmp.lo
 	-rm -f libipset/icmpv6.$(OBJEXT)
@@ -470,7 +472,6 @@ mostlyclean-compile:
 	-rm -f libipset/session.lo
 	-rm -f libipset/types.$(OBJEXT)
 	-rm -f libipset/types.lo
-	-rm -f src/errcode.$(OBJEXT)
 	-rm -f src/ipset.$(OBJEXT)
 	-rm -f src/ipset_bitmap_ip.$(OBJEXT)
 	-rm -f src/ipset_bitmap_ipmac.$(OBJEXT)
@@ -489,6 +490,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@libipset/$(DEPDIR)/data.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@libipset/$(DEPDIR)/errcode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@libipset/$(DEPDIR)/icmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@libipset/$(DEPDIR)/icmpv6.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@libipset/$(DEPDIR)/mnl.Plo@am__quote@
@@ -496,7 +498,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@libipset/$(DEPDIR)/print.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@libipset/$(DEPDIR)/session.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@libipset/$(DEPDIR)/types.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/errcode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset_bitmap_ip.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ipset_bitmap_ipmac.Po@am__quote@

@@ -3,6 +3,48 @@ HEAD
 ====
 
 
+v1.40 (2011-11-30)
+==================
+Fixes:
+- build: the code actually requires at least iptables 1.4.5 (would yield a
+  compile error otherwise), make sure configure checks for it; update INSTALL
+- xt_ECHO: fix kernel warning about RTAX_HOPLIMIT being used
+- xt_ipv4options: fix an infinite loop
+Changes:
+- xt_ECHO: now calculates UDP checksum
+- Linux kernel versions below 2.6.32 are no longer officially
+  supported, and will not be part of compilation testing.
+- update to ipset 6.10
+Enhancements:
+- xt_ECHO: IPv6 support
+
+
+v1.39 (2011-09-21)
+==================
+Fixes:
+- libxt_ACCOUNT: fix compilation after missing libxtables_CFLAGS
+- build: fix compilation after missing libxtables_CFLAGS in submodules
+- build: add missing linux/version.h includes where needed
+Changes:
+- Remove unsupported ipset 4.x from the Xtables-addons distribution
+- ipset: move ipset_errcode from src to library to avoid undefined reference
+- update to ipset 6.9.1
+
+
+v1.38 (2011-08-20)
+==================
+- xt_CHECKSUM: abort build when the feature is already provided by mainline
+- xt_SYSRQ: fix UDPLITE header lookup in IPv6
+- xt_TARPIT: fix kernel warning about RTAX_HOPLIMIT being used
+- xt_TEE: abort build when the feature is already provided by mainline
+- xt_ipp2p: support UDPLITE
+- xt_pknock: support UDPLITE
+- xt_psd: restore functionality with UDP
+- xt_psd: support UDPLITE
+- update to ipset 6.8
+- support for Linux 3.1
+
+
 v1.37 (2011-06-25)
 ==================
 Fixes:
@@ -45,7 +87,6 @@ Fixes:
 Changes:
 - Linux kernel versions below 2.6.29 are no longer officially
   supported, and will not be part of compilation testing.
-  Expect that compat code will be removed shortly.
 
 
 v1.33 (2011-02-02)

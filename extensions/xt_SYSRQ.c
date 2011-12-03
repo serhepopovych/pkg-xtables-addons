@@ -1,5 +1,5 @@
 /*
- *	"SYSRQ" target extension for Netfilter
+ *	"SYSRQ" target extension for Xtables
  *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2008 - 2010
  *
  *	Based upon the ipt_SYSRQ idea by Marek Zalem <marek [at] terminus sk>
@@ -17,6 +17,7 @@
 #include <linux/skbuff.h>
 #include <linux/sysrq.h>
 #include <linux/udp.h>
+#include <linux/version.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
 #include <linux/netfilter/x_tables.h>
@@ -244,7 +245,8 @@ sysrq_tg6(struct sk_buff **pskb, const struct xt_action_param *par)
 		return NF_DROP;
 
 	iph = ipv6_hdr(skb);
-	if (ipv6_find_hdr(skb, &th_off, IPPROTO_UDP, &frag_off) < 0 ||
+	if ((ipv6_find_hdr(skb, &th_off, IPPROTO_UDP, &frag_off) < 0 &&
+	    ipv6_find_hdr(skb, &th_off, IPPROTO_UDPLITE, &frag_off) < 0) ||
 	    frag_off > 0)
 		return NF_DROP;
 
