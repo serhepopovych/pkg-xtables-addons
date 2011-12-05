@@ -63,7 +63,10 @@ xtables-addons (1.40-1) unstable; urgency=low
   * lintian override
   * DKMS config sanitation (all argument in double quotes)
 
- -- Pierre Chifflier <pollux@debian.org>  Sat, 03 Dec 2011 17:28:10 +0100
+  [ Pierre Chifflier ]
+  * Remove extra files installed by module-assistant
+
+ -- Pierre Chifflier <pollux@debian.org>  Mon, 05 Dec 2011 22:10:25 +0100
 
 xtables-addons (1.37-1) unstable; urgency=low
 
