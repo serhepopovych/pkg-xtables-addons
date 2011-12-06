@@ -8,6 +8,7 @@ MAKEARGS= -C $(KSRC) M=$(CURDIR) XA_ABSTOPSRCDIR=$(CURDIR) XA_TOPSRCDIR=$(CURDIR
 
 # see http://lists.debian.org/debian-devel-announce/2011/09/msg00001.html
 # Also it does [Hardening](http://wiki.debian.org/Hardening) by default.
+DPKG_EXPORT_BUILDFLAGS = 1
 -include /usr/share/dpkg/default.mk
 
 ####################
