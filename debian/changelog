@@ -64,7 +64,7 @@ xtables-addons (1.40-1) unstable; urgency=low
   * DKMS config sanitation (all argument in double quotes)
 
   [ Pierre Chifflier ]
-  * Remove extra files installed by module-assistant
+  * Add patch to avoid calling depmod during build
 
  -- Pierre Chifflier <pollux@debian.org>  Mon, 05 Dec 2011 22:10:25 +0100
 

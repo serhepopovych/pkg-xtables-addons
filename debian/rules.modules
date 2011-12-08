@@ -4,7 +4,7 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-MAKEARGS= -C $(KSRC) M=$(CURDIR) XA_ABSTOPSRCDIR=$(CURDIR) XA_TOPSRCDIR=$(CURDIR)
+MAKEARGS= -C $(KSRC) M=$(CURDIR) XA_ABSTOPSRCDIR=$(CURDIR) XA_TOPSRCDIR=$(CURDIR) DEPMOD=/bin/true
 
 # see http://lists.debian.org/debian-devel-announce/2011/09/msg00001.html
 # Also it does [Hardening](http://wiki.debian.org/Hardening) by default.
@@ -58,8 +58,7 @@ override_dh_auto_build:
 override_dh_auto_install:
 	$(MAKE) INSTALL_MOD_PATH=$(CURDIR)/debian/$(PKGNAME) \
 			INSTALL_MOD_DIR=extra/xtables-addons \
-			$(MAKEARGS) modules_install \
-	&& find $(CURDIR)/debian/$(PKGNAME) -type f -name "modules.*" -delete
+			$(MAKEARGS) modules_install
 
 override_dh_auto_clean:
 	$(MAKE) $(MAKEARGS) clean
