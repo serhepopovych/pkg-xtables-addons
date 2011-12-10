@@ -5,7 +5,7 @@ Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@member.fsf.org>
 Build-Depends: debhelper (>= 8), dh-autoreconf,
     dkms, bzip2, pkg-config, libmnl-dev,
-    iptables-dev (>= 1.4.3)
+    iptables-dev (>= 1.4.5)
 Standards-Version: 3.9.2
 Homepage: http://xtables-addons.sourceforge.net/
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/xtables-addons.git

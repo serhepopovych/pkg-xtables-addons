@@ -1,18 +1,26 @@
 xtables-addons (1.40-1) unstable; urgency=low
 
   [ Pierre Chifflier ]
+  * Add patch to avoid calling depmod during build
   * Add VCS links
-
-  [ Pierre Chifflier ]
   * Change license for packaging files to GPL-2+ (with agreement of all
     authors).
-
-  [ Pierre Chifflier ]
-  * Imported Upstream version 1.40
-
-  [Pierre Chifflier] <pollux@debian.org>
   * Add Dmitry Smirnov as co-maintainer
-    * Merge all changes
+    - Merge all changes
+  * Imported Upstream version 1.40 (2011-11-30)
+    Fixes:
+    - build: the code actually requires at least iptables 1.4.5
+      (would yield a compile error otherwise), make sure configure
+      checks for it; update INSTALL
+    - xt_ECHO: fix kernel warning about RTAX_HOPLIMIT being used
+    - xt_ipv4options: fix an infinite loop
+    Changes:
+    - xt_ECHO: now calculates UDP checksum
+    - Linux kernel versions below 2.6.32 are no longer officially
+      supported, and will not be part of compilation testing.
+    - update to ipset 6.10
+    Enhancements:
+    - xt_ECHO: IPv6 support
 
   [Dmitry Smirnov] <onlyjob@member.fsf.org>
   * Major repackaging (Closes: #638061)
@@ -21,6 +29,7 @@ xtables-addons (1.40-1) unstable; urgency=low
     * debian/control updated
       - Standards version update
       - Depends update
+      - Build-depends tightening
     * debian/watch fixed
     * debian/rules rewrite
       - get-orig-source target added
@@ -40,8 +49,9 @@ xtables-addons (1.40-1) unstable; urgency=low
     * source package cleanup
       - module-assistant rules use debhelper more
       - using CFLAGS if provided by DPKG
-
-  [Dmitry Smirnov] <onlyjob@member.fsf.org>
+    * lintian override
+    * DKMS config sanitation (all argument in double quotes)
+    * patch to avoid build-time depmod invocation
   * Imported Upstream version 1.39 (2011-09-21)
     - libxt_ACCOUNT: fix compilation after missing libxtables_CFLAGS
     - build: fix compilation after missing libxtables_CFLAGS in submodules
@@ -58,13 +68,6 @@ xtables-addons (1.40-1) unstable; urgency=low
     - xt_psd: restore functionality with UDP
     - xt_psd: support UDPLITE
     - support for Linux 3.1
-
-  [ Dmitry Smirnov ]
-  * lintian override
-  * DKMS config sanitation (all argument in double quotes)
-
-  [ Pierre Chifflier ]
-  * Add patch to avoid calling depmod during build
 
  -- Pierre Chifflier <pollux@debian.org>  Mon, 05 Dec 2011 22:10:25 +0100
 

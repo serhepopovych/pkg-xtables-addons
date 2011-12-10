@@ -3,7 +3,7 @@ Section: kernel
 Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Build-Depends: debhelper (>= 8),
-    iptables-dev (>= 1.4.3),
+    iptables-dev (>= 1.4.5),
     libmnl-dev,
     pkg-config,
     kbuild
