@@ -1,4 +1,5 @@
-AC_INIT([xtables-addons], [1.40])
+AC_INIT([xtables-addons], [1.41])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
@@ -10,7 +11,9 @@ AC_PROG_LIBTOOL
 
 AC_ARG_WITH([kbuild],
 	AS_HELP_STRING([--with-kbuild=PATH],
-	[Path to kernel build directory [[/lib/modules/CURRENT/build]]]),
+	[Path to kernel build directory [[/lib/modules/CURRENT/build]]])
+AS_HELP_STRING([--without-kbuild],
+	[Build only userspace tools]),
 	[kbuilddir="$withval"],
 	[kbuilddir="/lib/modules/$(uname -r)/build"])
 #
@@ -60,7 +63,7 @@ if test -n "$kbuilddir"; then
 		echo "WARNING: Version detection did not succeed. Continue at own luck.";
 	else
 		echo "$kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 1; then
+		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 2; then
 			echo "WARNING: You are trying a newer kernel. Results may vary. :-)";
 		elif test "$kmajor" -eq 3; then
 			:;

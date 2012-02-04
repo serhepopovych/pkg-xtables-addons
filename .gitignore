@@ -2,11 +2,9 @@
 *.lo
 *.loT
 *.o
-*.oo.d
-.deps
+.deps/
 .dirstamp
-.libs
-.pc
+.libs/
 Makefile
 Makefile.in
 
@@ -19,14 +17,10 @@ Makefile.in
 /targets.man
 
 /aclocal.m4
-/autom4te*.cache
-/compile
+/autom4te.cache/
+/build-aux/
 /config.*
 /configure
-/depcomp
-/install-sh
 /libtool
-/ltmain.sh
-/missing
 /stamp-h1
 /xtables-addons.8
