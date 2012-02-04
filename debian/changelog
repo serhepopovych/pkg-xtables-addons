@@ -1,3 +1,15 @@
+xtables-addons (1.41-1) unstable; urgency=low
+
+  * No longer provide ipset (ipset is separated into 'ipset' package)
+  * New Upstream Release
+    (Closes: #656510 "fails to compile with Linux 3.2")
+    (Closes: #653022 "Upgrading 1.37 => 1.40 breaks accounting")
+    (Closes: #626018 "Module pknock not working, bug in source")
+  * debhelper and compat to version 9
+  * added patch to fix FTBFS with automake 1.11.2
+
+ -- Dmitry Smirnov <onlyjob@member.fsf.org>  Sat, 04 Feb 2012 14:46:01 +1100
+
 xtables-addons (1.40-1) unstable; urgency=low
 
   [ Pierre Chifflier ]
