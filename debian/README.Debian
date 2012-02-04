@@ -1,3 +1,8 @@
+Starting from version 1.41 ipset is provided by package 'ipset'
+
+ -- Dmitry Smirnov <onlyjob@member.fsf.org>  Sat, 04 Feb 2012 14:46:01 +1100
+
+
 Conflicts with previous versions
 --------------------------------
 

@@ -1,4 +1,4 @@
 geoip/*.1
 *.8
 extensions/ACCOUNT/*.8
-extensions/ipset-6/src/*.8
+#extensions/ipset-6/src/*.8

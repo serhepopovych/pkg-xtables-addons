@@ -17,13 +17,12 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: xtables-addons-dkms
 Suggests: libtext-csv-xs-perl
 Provides: xtables-addons-common-${source:Upstream-Version}
-Conflicts: ipset
-Replaces: ipset
+Breaks: ipset (<< 6.11~)
 Description: Extensions targets and matches for iptables [tools, libs]
  Xtables-addons provides extra modules for iptables not present in the
  kernel, and is the successor of patch-o-matic.
  Extensions includes new targets like TEE, TARPIT, CHAOS, or modules like
- geoip, ipset, and account.
+ geoip and account.
  .
  This package provides the userspace libraries for iptables to use extensions
  in the xtables-addons-modules package.
@@ -44,7 +43,7 @@ Description: Extensions targets and matches for iptables
  Xtables-addons provides extra modules for iptables not present in the
  kernel, and is the successor of patch-o-matic.
  Extensions includes new targets like TEE, TARPIT, CHAOS, or modules like
- geoip, ipset, and account.
+ geoip and account.
  .
  The dkms package will automatically compile the driver for your current
  kernel version.
@@ -62,7 +61,7 @@ Description: Extensions targets and matches for iptables [modules sources]
  Xtables-addons provides extra modules for iptables not present in the
  kernel, and is the successor of patch-o-matic.
  Extensions includes new targets like TEE, TARPIT, CHAOS, or modules like
- geoip, ipset, and account.
+ geoip and account.
  .
  This package provides the source code for the xtables-addons kernel modules.
  The xtables-addons package is also required in order to make use of these

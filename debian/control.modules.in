@@ -13,15 +13,14 @@ Standards-Version: 3.9.2
 Package: xtables-addons-modules-_KVERS_
 Architecture: any
 Provides: xtables-addons-modules
-Conflicts: ipset
-Replaces: ipset
+Breaks: ipset (<< 6.11~)
 Depends: xtables-addons-common-${source:Upstream-Version}
 Description: xtables-addons modules for Linux (kernel _KVERS_).
  This package contains the set of loadable kernel modules for the
  xtables-addons project.
  .
  It contains new targets for iptables, such as TARPIT, CHAOS, TEE, geoip,
- ipset, IPMARK, DELUDE, condition, etc.
+ IPMARK, DELUDE, condition, etc.
  .
  This package contains the compiled kernel modules for _KVERS_
  .
