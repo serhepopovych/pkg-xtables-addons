@@ -2,7 +2,8 @@ Source: xtables-addons
 Section: kernel
 Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
-Build-Depends: debhelper (>= 8),
+Uploaders: Dmitry Smirnov <onlyjob@member.fsf.org>
+Build-Depends: debhelper (>= 9),
     iptables-dev (>= 1.4.5),
     libmnl-dev,
     pkg-config,
