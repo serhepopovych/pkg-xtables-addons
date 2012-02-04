@@ -1,4 +1,4 @@
-Format: http://anonscm.debian.org/viewvc/dep/web/deps/dep5.mdwn?view=markup&pathrev=174
+Format: http://dep.debian.net/deps/dep5
 Upstream-Name: xtables-addons
 Upstream-Contact: Jan Engelhardt <jengelh@medozas.de>
 Source: http://xtables-addons.sourceforge.net/
