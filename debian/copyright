@@ -5,28 +5,95 @@ Source: http://xtables-addons.sourceforge.net/
 Comment:
  This package was downloaded from http://jengelh.medozas.de/projects/xtables/
  and debianized by Pierre Chifflier <pollux@debian.org> on 19 Oct 2008 16:11:52.
+ .
+ The information below provides incomplete copyright coverage
+ for upstream files.
 
 
 Files: debian/*
 Copyright: © 2008-2012 Pierre Chifflier <pollux@debian.org>
            © 2012 Dmitry Smirnov <onlyjob@member.fsf.org>
 License: GPL-2+
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 2 of the License, or
- (at your option) any later version.
- .
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- .
- On Debian systems, the complete text of the GNU General
- Public License 2 can be found in "/usr/share/common-licenses/GPL-2".
 
 
 Files: *
-Copyright: © 2006-2008 Jan Engelhardt jengelh@medozas.de
+Copyright: © 2006-2010 Jan Engelhardt jengelh@medozas.de
+License: GPL-2
+
+
+Files: extensions/libxt_CHECKSUM.c
+Copyright: © 2002 by Harald Welte <laforge@gnumonks.org>
+           © 2010 by Red Hat, Inc
+License: GPL-2
+Comment: Author: Michael S. Tsirkin <mst@redhat.com>
+
+
+Files: extensions/libxt_condition.c
+Copyright: © 2002 Stephane Ouellette <ouellettes [at] videotron ca>
+           © 2006 Massimiliano Hofer <max [at] nucleus it>
+           © 2008 Jan Engelhardt <jengelh [at] medozas de>
+License: GPL-2 or GPL-3
+
+
+Files: extensions/libxt_DNETMAP.c
+Copyright: © 2010 Marek Kierdelewicz <marek@koba.pl>
+License: GPL-2
+
+
+Files: extensions/libxt_DNETMAP.c
+Copyright: © 2000,2001 astaro AG
+License: GPL-2
+
+
+Files: extensions/libxt_fuzzy.c
+Copyright: © 2002-2003 Hime Aguiar e Oliveira Jr. <hime@engineer.com>
+License: GPL-2+
+
+
+Files: extensions/libxt_IPMARK.c
+Copyright: © 2003 Grzegorz Janoszka <Grzegorz.Janoszka@pro.onet.pl>
+           © 2008 Jan Engelhardt <jengelh [at] medozas de>
+License: GPL-2+
+
+
+Files: extensions/libxt_TEE.c
+Copyright: © 2007      Sebastian Claßen <sebastian.classen [at] freenet.ag>
+             2007-2009 Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2009
+License: GPL-2+
+
+
+Files: extensions/libxt_ipp2p.c
+Copyright: © 2005-2006 Eicke Friedrich/Klaus Degner <ipp2p@ipp2p.org>
+           © 2008-2009 Jan Engelhardt <jengelh [at] medozas de>
+License: GPL-2+
+
+
+Files: extensions/libxt_gradm.c
+Copyright: © 2010 Zbigniew Krzystolik <zbyniu@destrukcja.pl>
+License: GPL-2+
+
+
+Files: extensions/libxt_iface.c
+Copyright: © 2008 Gáspár Lajos <gaspar.lajos@glsys.eu>
+License: GPL-2
+
+
+Files: extensions/xt_geoip.c extensions/xt_geoip.c
+Copyright: © 2004-2008 Samuel Jean & Nicolas Bouliane
+License: GPL-2+
+
+
+Files: extensions/xt_TARPIT.c
+Copyright: © 2002 Aaron Hopkins <tools@die.net>
+License: GPL-2+
+
+
+Files: extensions/xt_CHECKSUM.c extensions/xt_CHECKSUM.h
+Copyright: © 2002 by Harald Welte <laforge@netfilter.org>
+           © 2010 Red Hat, Inc.
+License: GPL-2
+
+
 License: GPL-2
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License version 2
@@ -40,3 +107,17 @@ License: GPL-2
  On Debian systems, the complete text of the GNU General
  Public License 2 can be found in "/usr/share/common-licenses/GPL-2".
 
+
+License: GPL-2+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License 2 can be found in "/usr/share/common-licenses/GPL-2".
