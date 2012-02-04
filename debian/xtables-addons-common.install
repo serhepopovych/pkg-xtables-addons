@@ -1,7 +1,7 @@
 extensions/libxt_*.so                   /lib/xtables
 extensions/ACCOUNT/.libs/iptaccount     /sbin
 extensions/ACCOUNT/.libs/lib*.so.*      /usr/lib
-extensions/ipset-6/.libs/ipset          /sbin
-extensions/ipset-6/.libs/lib*.so.*      /usr/lib
+#extensions/ipset-6/.libs/ipset          /sbin
+#extensions/ipset-6/.libs/lib*.so.*      /usr/lib
 geoip/xt_geoip_build                    /usr/lib/xtables-addons
 geoip/xt_geoip_dl                       /usr/lib/xtables-addons
