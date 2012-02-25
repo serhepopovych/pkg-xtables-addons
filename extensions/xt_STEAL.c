@@ -3,7 +3,6 @@
  *	written by Jan Engelhardt <jengelh [at] medozas de>, 2008 - 2009
  *	placed in the Public Domain
  */
-#include <linux/module.h>
 #include <linux/netfilter.h>
 #include <linux/skbuff.h>
 #include "compat_xtables.h"
