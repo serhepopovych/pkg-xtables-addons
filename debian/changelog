@@ -1,3 +1,12 @@
+xtables-addons (1.41-2) unstable; urgency=low
+
+  * standards to current 3.9.3
+  * install library to triplet location
+  * correct installation of all modules, including ACCOUNT
+    (really Closes: #653022 "Upgrading 1.37 => 1.40 breaks accounting")
+
+ -- Dmitry Smirnov <onlyjob@member.fsf.org>  Mon, 27 Feb 2012 02:12:13 +1100
+
 xtables-addons (1.41-1) unstable; urgency=low
 
   * No longer provide ipset (ipset is separated into 'ipset' package)
