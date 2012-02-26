@@ -1,4 +1,4 @@
-extensions/libxt_*.so                   /lib/xtables
+lib/xtables
 extensions/ACCOUNT/.libs/iptaccount     /sbin
 extensions/ACCOUNT/.libs/lib*.so.*      /usr/lib
 #extensions/ipset-6/.libs/ipset          /sbin
