@@ -13,6 +13,7 @@ Vcs-Git: git://anonscm.debian.org/collab-maint/xtables-addons.git
 
 Package: xtables-addons-common
 Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: xtables-addons-dkms
 Suggests: libtext-csv-xs-perl
