@@ -1,4 +1,4 @@
-AC_INIT([xtables-addons], [1.41])
+AC_INIT([xtables-addons], [1.42])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -27,7 +27,6 @@ AC_CHECK_HEADERS([linux/netfilter/x_tables.h], [],
 	[AC_MSG_ERROR([You need to have linux/netfilter/x_tables.h, see INSTALL file for details])])
 PKG_CHECK_MODULES([libxtables], [xtables >= 1.4.5])
 xtlibdir="$(pkg-config --variable=xtlibdir xtables)"
-PKG_CHECK_MODULES([libmnl], [libmnl >= 1], [:], [:])
 
 AC_ARG_WITH([xtlibdir],
 	AS_HELP_STRING([--with-xtlibdir=PATH],
@@ -63,7 +62,7 @@ if test -n "$kbuilddir"; then
 		echo "WARNING: Version detection did not succeed. Continue at own luck.";
 	else
 		echo "$kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 2; then
+		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 4; then
 			echo "WARNING: You are trying a newer kernel. Results may vary. :-)";
 		elif test "$kmajor" -eq 3; then
 			:;
@@ -81,6 +80,5 @@ AC_SUBST([kbuilddir])
 AC_SUBST([xtlibdir])
 AC_CONFIG_FILES([Makefile Makefile.iptrules Makefile.mans geoip/Makefile
 	extensions/Makefile extensions/ACCOUNT/Makefile
-	extensions/ipset-6/Makefile
 	extensions/pknock/Makefile])
 AC_OUTPUT
