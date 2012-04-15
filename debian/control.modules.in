@@ -5,7 +5,6 @@ Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@member.fsf.org>
 Build-Depends: debhelper (>= 9),
     iptables-dev (>= 1.4.5),
-    libmnl-dev,
     pkg-config,
     kbuild
 Standards-Version: 3.9.2
