@@ -1,3 +1,10 @@
+xtables-addons (1.42-1) unstable; urgency=low
+
+  * New upstream release
+  * removed dependency on libmnl-dev (no longer needed)
+
+ -- Dmitry Smirnov <onlyjob@member.fsf.org>  Tue, 10 Apr 2012 20:14:41 +1000
+
 xtables-addons (1.41-2) unstable; urgency=low
 
   * standards to current 3.9.3
