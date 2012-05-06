@@ -1,3 +1,11 @@
+xtables-addons (1.42-2) unstable; urgency=low
+
+  * fix 'clean' target for second kernel-headerless build
+    (Closes: #671564 I:"Fails to build twice in a row").
+  * sort kernel modules in DKMS config.
+
+ -- Dmitry Smirnov <onlyjob@member.fsf.org>  Sun, 06 May 2012 11:43:41 +1000
+
 xtables-addons (1.42-1) unstable; urgency=low
 
   * New upstream release
