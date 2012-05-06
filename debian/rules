@@ -15,13 +15,13 @@ TMPSRC := debian/temp.src
 	dh $@ --with dkms --with autoreconf
 
 
+override_dh_clean:
+	dh_clean *.8 *.man .manpages.lst extensions/*/Makefile $(DCFG) $(TMPSRC) \
+          extensions/.*.oo.d extensions/ACCOUNT/.*.oo.d extensions/pknock/.*.oo.d
+
 override_dh_auto_configure:
 	[ -d /lib/modules/`uname -r`/build ]  &&  dh_auto_configure \
 	|| dh_auto_configure -- --without-kbuild
-
-override_dh_auto_clean:
-	dh_auto_clean
-	dh_clean  *.8  *.man  .manpages.lst  extensions/*/Makefile  $(DCFG)  $(TMPSRC)
 
 override_dh_auto_build:
 	## prepare sources for DKMS and source packages
