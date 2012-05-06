@@ -71,4 +71,4 @@ override_dh_shlibdeps:
 	LD_LIBRARY_PATH="debian/xtables-addons-common/usr/lib/xtables-addons:$(LD_LIBRARY_PATH)" dh_shlibdeps
 
 get-orig-source:
-	uscan --noconf --force-download --repack --rename --download-current-version --destdir=.
+	uscan --noconf --force-download --rename --download-current-version --destdir=.
