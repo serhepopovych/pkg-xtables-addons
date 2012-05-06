@@ -52,7 +52,7 @@ override_dh_auto_install: $(DCFG)
 	dh_auto_install
 
 
-DKMS_MODS=$(shell find . -name "*.ko" -print | sed 's|.*/\([^/]*\)\.ko|\1|')
+DKMS_MODS=$(shell find . -name "*.ko" -print | sort | sed 's|.*/\([^/]*\)\.ko|\1|')
 
 $(DCFG):
 	sed -e 's/__VERSION__/$(pver)/g' $(DCFG).in > $(DCFG)
