@@ -30,7 +30,7 @@
     (defined(CONFIG_CRYPTO) || defined(CONFIG_CRYPTO_MODULE))
 #	define WITH_CRYPTO 1
 #endif
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+#if defined(CONFIG_IP6_NF_IPTABLES) || defined(CONFIG_IP6_NF_IPTABLES_MODULE)
 #	define WITH_IPV6 1
 #endif
 
@@ -240,15 +240,16 @@ sysrq_tg6(struct sk_buff **pskb, const struct xt_action_param *par)
 	const struct ipv6hdr *iph;
 	const struct udphdr *udph;
 	unsigned short frag_off;
-	unsigned int th_off;
+	unsigned int th_off = 0;
 	uint16_t len;
 
 	if (skb_linearize(skb) < 0)
 		return NF_DROP;
 
 	iph = ipv6_hdr(skb);
-	if ((ipv6_find_hdr(skb, &th_off, IPPROTO_UDP, &frag_off) < 0 &&
-	    ipv6_find_hdr(skb, &th_off, IPPROTO_UDPLITE, &frag_off) < 0) ||
+	/* Should probably be using %IP6T_FH_F_AUTH */
+	if ((ipv6_find_hdr(skb, &th_off, IPPROTO_UDP, &frag_off, NULL) < 0 &&
+	    ipv6_find_hdr(skb, &th_off, IPPROTO_UDPLITE, &frag_off, NULL) < 0) ||
 	    frag_off > 0)
 		return NF_DROP;
 
@@ -358,10 +359,7 @@ static int __init sysrq_crypto_init(void)
 		goto fail;
 	do_gettimeofday(&now);
 	sysrq_seqno = now.tv_sec;
-	ret = xt_register_targets(sysrq_tg_reg, ARRAY_SIZE(sysrq_tg_reg));
-	if (ret < 0)
-		goto fail;
-	return ret;
+	return 0;
 
  fail:
 	sysrq_crypto_exit();

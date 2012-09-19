@@ -3,6 +3,49 @@ HEAD
 ====
 
 
+v1.46 (2012-08-23)
+==================
+Fixes:
+- length2, SYSRQ, RAWNAT: preinitialize values for ipv6_find_hdr
+- TARPIT: fix memory leak when tarpit_generic() fails
+- build: remove extraneous closing bracket in configure.ac
+- doc: update xt_SYSRQ.man to reflect that the full IPv6 address is needed
+Enhancements:
+- Support for Linux 3.6
+
+
+v1.45 (2012-07-16)
+==================
+Fixes:
+- build: export missing functions
+  (fixes: "WARNING 'xtnu_ipv6_find_hdr' [xt_TARPIT.ko] not found")
+- build: avoid use of unexported functions
+  (fixes: "WARNING 'ipv6_find_hdr' [xt_TARPIT.ko] not found"
+  in <= linux-2.6.37)
+
+
+v1.44 (2012-07-15)
+==================
+Fixes:
+- SYSRQ: fix double target initialization at module load
+- build: do not attempt to build IPv6 parts if CONFIG_IP6_NF_IPTABLES=n
+Enhancements:
+- TARPIT gained IPv6 support
+
+
+v1.43 (2012-06-30)
+==================
+Fixes:
+- xt_psd: avoid crash due to curr->next corruption
+Changes:
+- xt_psd: reject invalid match options
+Enhancements:
+- Support for Linux 3.5
+- DNETMAP: new type: static binding
+- DNETMAP: new persistent flag option for prefix
+- DNETMAP: add write support to procfs interface
+
+
 v1.42 (2012-04-05)
 ==================
 Fixes:
