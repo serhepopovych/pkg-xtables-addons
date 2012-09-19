@@ -4,8 +4,9 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+DPATH := $(abspath $(dir $(MAKEFILE_LIST)))
 # Package version
-pver := $(shell dpkg-parsechangelog | sed -ne 's,^Version: *\([0-9.]*\).*,\1,p')
+pver := $(shell dpkg-parsechangelog -l$(DPATH)/changelog | sed -ne 's,^Version: *\([0-9.]*\).*,\1,p')
 
 DCFG := debian/xtables-addons-dkms.dkms
 TMPSRC := debian/temp.src
@@ -71,4 +72,4 @@ override_dh_shlibdeps:
 	LD_LIBRARY_PATH="debian/xtables-addons-common/usr/lib/xtables-addons:$(LD_LIBRARY_PATH)" dh_shlibdeps
 
 get-orig-source:
-	uscan --noconf --force-download --rename --download-current-version --destdir=.
+	uscan --noconf --rename --check-dirname-level=0 --force-download --download-current-version --destdir=$(CURDIR) $(DPATH)
