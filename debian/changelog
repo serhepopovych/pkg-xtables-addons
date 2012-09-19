@@ -1,3 +1,12 @@
+xtables-addons (1.46-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Improved get-orig-source which can function disregarding of current
+    working directory.
+  * Debian source compression to xz.
+
+ -- Dmitry Smirnov <onlyjob@member.fsf.org>  Wed, 19 Sep 2012 19:11:47 +1000
+
 xtables-addons (1.42-2) unstable; urgency=low
 
   * fix 'clean' target for second kernel-headerless build
