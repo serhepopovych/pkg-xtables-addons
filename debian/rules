@@ -21,7 +21,8 @@ override_dh_clean:
           extensions/.*.oo.d extensions/ACCOUNT/.*.oo.d extensions/pknock/.*.oo.d
 
 override_dh_auto_configure:
-	[ -d /lib/modules/`uname -r`/build ]  &&  dh_auto_configure \
+	[ -d /lib/modules/`uname -r`/build ] \
+	&& dh_auto_configure \
 	|| dh_auto_configure -- --without-kbuild
 
 override_dh_auto_build:
