@@ -1,10 +1,10 @@
-xtables-addons (1.46-1) UNRELEASED; urgency=low
+xtables-addons (1.46-1) unstable; urgency=low
 
   * New upstream release
-  * Improved get-orig-source which can function disregarding of current
+  * Improved get-orig-source so it can function disregarding of current
     working directory.
   * Debian source compression to xz.
-  * copyright audit & update.
+  * Copyright audit & update.
 
  -- Dmitry Smirnov <onlyjob@member.fsf.org>  Wed, 19 Sep 2012 19:11:47 +1000
 
