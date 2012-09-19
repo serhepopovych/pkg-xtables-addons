@@ -9,90 +9,96 @@ Comment:
  The information below provides incomplete copyright coverage
  for upstream files.
 
-
 Files: debian/*
 Copyright: 2008-2012 Pierre Chifflier <pollux@debian.org>
            2012 Dmitry Smirnov <onlyjob@member.fsf.org>
 License: GPL-2+
 
-
 Files: *
 Copyright: 2006-2010 Jan Engelhardt jengelh@medozas.de
+           2000,2001 astaro AG
+           2008      Gáspár Lajos <gaspar.lajos@glsys.eu>
+           2002      Harald Welte <laforge@gnumonks.org>
+           2004-2011 Intra2net AG
+           2006-2009 J. Federico Hernandez <fede.hernandez@gmail.com>
+           2006      Luis Floreani <luis.floreani@gmail.com>
+           2010-2012 Marek Kierdelewicz <marek@koba.pl>
+           2002-2004 Netfilter Core Team <coreteam@netfilter.org>
+           1999-2001 Paul `Rusty' Russell
+           2010      Red Hat, Inc
+           2007      Sebastian Claßen <sebastian.classen@freenet.de>
 License: GPL-2
 
-
-Files: extensions/libxt_CHECKSUM.c
-Copyright: 2002 by Harald Welte <laforge@gnumonks.org>
-           2010 by Red Hat, Inc
-License: GPL-2
-Comment: Author: Michael S. Tsirkin <mst@redhat.com>
-
+Files: extensions/libxt_CHAOS.c
+       extensions/libxt_DELUDE.c
+       extensions/libxt_dhcpmac.c
+       extensions/libxt_DHCPMAC.c
+       extensions/libxt_ECHO.c
+       extensions/libxt_fuzzy.c
+       extensions/libxt_geoip.c
+       extensions/libxt_gradm.c
+       extensions/libxt_IPMARK.c
+       extensions/libxt_ipp2p.c
+       extensions/libxt_ipv4options.c
+       extensions/libxt_LOGMARK.c
+       extensions/libxt_lscan.c
+       extensions/libxt_quota2c.c
+       extensions/libxt_RAWDNAT.c
+       extensions/libxt_RAWSNAT.c
+       extensions/libxt_TARPIT.c
+       extensions/libxt_TEE.c
+       extensions/xt_CHAOS.c
+       extensions/xt_DHCPMAC.c
+       extensions/xt_ECHO.c
+       extensions/xt_geoip.c
+       extensions/xt_IPMARK.c
+       extensions/xt_ipv4options.c
+       extensions/xt_length2.c
+       extensions/xt_LOGMARK.c
+       extensions/xt_RAWNAT.c
+       extensions/xt_TARPIT.c
+Copyright: 2006-2011 Jan Engelhardt <jengelh@medozas.de>
+           2002      Aaron Hopkins <tools@die.net>
+           2005-2006 Eicke Friedrich/Klaus Degner <ipp2p@ipp2p.org>
+           2003      Grzegorz Janoszka <Grzegorz.Janoszka@pro.onet.pl>
+           2002-2003 Hime Aguiar e Oliveira Jr. <hime@engineer.com>
+           2004-2008 Nicolas Bouliane <acidfu@people.netfilter.org>
+           2004-2008 Samuel Jean <peejix@people.netfilter.org>
+           2007      Sebastian Claßen <sebastian.classen@freenet.ag>
+           2010      Zbigniew Krzystolik <zbyniu@destrukcja.pl>
+License: GPL-2+
 
 Files: extensions/libxt_condition.c
-Copyright: 2002 Stephane Ouellette <ouellettes [at] videotron ca>
-           2006 Massimiliano Hofer <max [at] nucleus it>
-           2008 Jan Engelhardt <jengelh [at] medozas de>
+       extensions/xt_condition.c
+       extensions/xt_lscan.c
+       extensions/xt_SYSRQ.c
+Copyright: 2006-2010 Jan Engelhardt <jengelh@medozas.de>
+           2006      Massimiliano Hofer <max@nucleus.it>
+           2002      Stephane Ouellette <ouellettes@videotron.ca>
 License: GPL-2 or GPL-3
 
+Files: extensions/*table_rawpost.*
+       extensions/libxt_SYSRQ.c
+       extensions/xt_STEAL.c
+Copyright: not-applicable
+License: public-domain
+ placed in the Public Domain
 
-Files: extensions/libxt_DNETMAP.c
-Copyright: 2010 Marek Kierdelewicz <marek@koba.pl>
-License: GPL-2
-
-
-Files: extensions/libxt_DNETMAP.c
-Copyright: 2000,2001 astaro AG
-License: GPL-2
-
-
-Files: extensions/libxt_fuzzy.c
-Copyright: 2002-2003 Hime Aguiar e Oliveira Jr. <hime@engineer.com>
-License: GPL-2+
-
-
-Files: extensions/libxt_IPMARK.c
-Copyright: 2003 Grzegorz Janoszka <Grzegorz.Janoszka@pro.onet.pl>
-           2008 Jan Engelhardt <jengelh [at] medozas de>
-License: GPL-2+
-
-
-Files: extensions/libxt_TEE.c
-Copyright: 2007      Sebastian Claßen <sebastian.classen [at] freenet.ag>
-             2007-2009 Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2009
-License: GPL-2+
-
-
-Files: extensions/libxt_ipp2p.c
-Copyright: 2005-2006 Eicke Friedrich/Klaus Degner <ipp2p@ipp2p.org>
-           2008-2009 Jan Engelhardt <jengelh [at] medozas de>
-License: GPL-2+
-
-
-Files: extensions/libxt_gradm.c
-Copyright: 2010 Zbigniew Krzystolik <zbyniu@destrukcja.pl>
-License: GPL-2+
-
-
-Files: extensions/libxt_iface.c
-Copyright: 2008 Gáspár Lajos <gaspar.lajos@glsys.eu>
-License: GPL-2
-
-
-Files: extensions/xt_geoip.c extensions/xt_geoip.c
-Copyright: 2004-2008 Samuel Jean & Nicolas Bouliane
-License: GPL-2+
-
-
-Files: extensions/xt_TARPIT.c
-Copyright: 2002 Aaron Hopkins <tools@die.net>
-License: GPL-2+
-
-
-Files: extensions/xt_CHECKSUM.c extensions/xt_CHECKSUM.h
-Copyright: 2002 by Harald Welte <laforge@netfilter.org>
-           2010 Red Hat, Inc.
-License: GPL-2
-
+Files: extensions/ACCOUNT/iptaccount.c
+       extensions/ACCOUNT/libxt_ACCOUNT_cl.*
+Copyright: 2004-2006 Intra2net AG
+License: LGPL-2.1
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of version 2.1 of the GNU Lesser General Public
+ License as published by the Free Software Foundation.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ The complete text of the GNU Lesser General Public License version 2.1
+ can be found in '/usr/share/common-licenses/LGPL-2.1'.
 
 License: GPL-2
  This program is free software; you can redistribute it and/or modify
@@ -107,7 +113,6 @@ License: GPL-2
  On Debian systems, the complete text of the GNU General
  Public License 2 can be found in "/usr/share/common-licenses/GPL-2".
 
-
 License: GPL-2+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -121,7 +126,6 @@ License: GPL-2+
  .
  On Debian systems, the complete text of the GNU General
  Public License 2 can be found in "/usr/share/common-licenses/GPL-2".
-
 
 License: GPL-3
  This program is free software: you can redistribute it and/or modify
