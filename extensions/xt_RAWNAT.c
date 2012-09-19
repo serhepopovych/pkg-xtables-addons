@@ -22,8 +22,7 @@
 #include <net/ipv6.h>
 #include "compat_xtables.h"
 #include "xt_RAWNAT.h"
-
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+#if defined(CONFIG_IP6_NF_IPTABLES) || defined(CONFIG_IP6_NF_IPTABLES_MODULE)
 #	define WITH_IPV6 1
 #endif
 
@@ -181,7 +180,7 @@ static bool rawnat6_prepare_l4(struct sk_buff **pskb, unsigned int *l4offset,
 	*l4proto = NEXTHDR_MAX;
 
 	for (i = 0; i < ARRAY_SIZE(types); ++i) {
-		err = ipv6_find_hdr(*pskb, l4offset, types[i], NULL);
+		err = ipv6_find_hdr(*pskb, l4offset, types[i], NULL, NULL);
 		if (err >= 0) {
 			*l4proto = types[i];
 			break;
@@ -245,7 +244,7 @@ static unsigned int
 rawsnat_tg6(struct sk_buff **pskb, const struct xt_action_param *par)
 {
 	const struct xt_rawnat_tginfo *info = par->targinfo;
-	unsigned int l4offset, l4proto;
+	unsigned int l4offset = 0, l4proto;
 	struct ipv6hdr *iph;
 	struct in6_addr new_addr;
 
@@ -266,7 +265,7 @@ static unsigned int
 rawdnat_tg6(struct sk_buff **pskb, const struct xt_action_param *par)
 {
 	const struct xt_rawnat_tginfo *info = par->targinfo;
-	unsigned int l4offset, l4proto;
+	unsigned int l4offset = 0, l4proto;
 	struct ipv6hdr *iph;
 	struct in6_addr new_addr;
 

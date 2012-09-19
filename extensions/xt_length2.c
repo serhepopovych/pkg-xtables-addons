@@ -185,7 +185,7 @@ llayer4_proto(const struct sk_buff *skb, unsigned int *offset, bool *hotdrop)
 	int err;
 
 	for (i = 0; i < ARRAY_SIZE(types); ++i) {
-		err = ipv6_find_hdr(skb, offset, types[i], NULL);
+		err = ipv6_find_hdr(skb, offset, types[i], NULL, NULL);
 		if (err >= 0)
 			return types[i];
 		if (err != -ENOENT) {
@@ -203,7 +203,8 @@ length2_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 	const struct xt_length_mtinfo2 *info = par->matchinfo;
 	const struct ipv6hdr *iph = ipv6_hdr(skb);
 	unsigned int len = 0, l4proto;
-	unsigned int thoff = par->thoff;
+	/* par->thoff would only set if ip6tables -p was used; so just use 0 */
+	unsigned int thoff = 0;
 	bool hit = true;
 
 	if (info->flags & XT_LENGTH_LAYER3) {

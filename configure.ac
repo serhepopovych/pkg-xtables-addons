@@ -1,4 +1,4 @@
-AC_INIT([xtables-addons], [1.42])
+AC_INIT([xtables-addons], [1.46])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -6,6 +6,7 @@ AC_PROG_INSTALL
 AM_INIT_AUTOMAKE([1.10b -Wall foreign subdir-objects])
 AC_PROG_CC
 AM_PROG_CC_C_O
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
@@ -30,7 +31,7 @@ xtlibdir="$(pkg-config --variable=xtlibdir xtables)"
 
 AC_ARG_WITH([xtlibdir],
 	AS_HELP_STRING([--with-xtlibdir=PATH],
-	[Path where to install Xtables extensions [[autodetect]]]]),
+	[Path where to install Xtables extensions [[autodetect]]]),
 	[xtlibdir="$withval"])
 AC_MSG_CHECKING([Xtables module directory])
 AC_MSG_RESULT([$xtlibdir])
@@ -62,7 +63,7 @@ if test -n "$kbuilddir"; then
 		echo "WARNING: Version detection did not succeed. Continue at own luck.";
 	else
 		echo "$kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 4; then
+		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 6; then
 			echo "WARNING: You are trying a newer kernel. Results may vary. :-)";
 		elif test "$kmajor" -eq 3; then
 			:;
