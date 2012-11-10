@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <xtables.h>
-#include <net/netfilter/nf_nat.h>
+#include <linux/netfilter/nf_nat.h>
 #include "xt_DNETMAP.h"
 
 #define MODULENAME "DNETMAP"
@@ -20,6 +20,8 @@ static const struct option DNETMAP_opts[] = {
 	{"prefix", 1, NULL, 'p'},
 	{"reuse", 0, NULL, 'r'},
 	{"ttl", 1, NULL, 't'},
+	{"static", 0, NULL, 's'},
+	{"persistent", 0, NULL, 'e'},
 	{.name = NULL}
 };
 
@@ -33,9 +35,14 @@ static void DNETMAP_help(void)
 	       "  --%s seconds\n"
 	       "    Regenerate bindings ttl value to seconds. If negative value is specified,\n"
 	       "    bindings ttl is kept unchanged. If not specified then default ttl value (600s)\n"
-	       "    is used.\n\n",
-	       DNETMAP_opts[0].name, DNETMAP_opts[1].name,
-	       DNETMAP_opts[2].name);
+		"    is used\n"
+		"  --%s\n"
+		"    Match only static entries for this rule. Dynamic entries won't be created.\n"
+		"  --%s\n"
+		"    Set prefix persistent. It won't be removed after deleting last iptables rule.\n\n",
+		DNETMAP_opts[0].name, DNETMAP_opts[1].name,
+		DNETMAP_opts[2].name, DNETMAP_opts[3].name,
+		DNETMAP_opts[4].name);
 }
 
 static u_int32_t bits2netmask(int bits)
@@ -65,7 +72,7 @@ static int netmask2bits(u_int32_t netmask)
 static void DNETMAP_init(struct xt_entry_target *t)
 {
 	struct xt_DNETMAP_tginfo *tginfo = (void *)&t->data;
-	struct nf_nat_multi_range *mr = &tginfo->prefix;
+	struct nf_nat_ipv4_multi_range_compat *mr = &tginfo->prefix;
 
 	/* Actually, it's 0, but it's ignored at the moment. */
 	mr->rangesize = 1;
@@ -74,14 +81,14 @@ static void DNETMAP_init(struct xt_entry_target *t)
 }
 
 /* Parses network address */
-static void parse_prefix(char *arg, struct nf_nat_range *range)
+static void parse_prefix(char *arg, struct nf_nat_ipv4_range *range)
 {
 	char *slash;
 	const struct in_addr *ip;
 	u_int32_t netmask;
 	unsigned int bits;
 
-	range->flags |= IP_NAT_RANGE_MAP_IPS;
+	range->flags |= NF_NAT_RANGE_MAP_IPS;
 	slash = strchr(arg, '/');
 	if (slash)
 		*slash = '\0';
@@ -129,7 +136,7 @@ static int DNETMAP_parse(int c, char **argv, int invert, unsigned int *flags,
 			 const void *entry, struct xt_entry_target **target)
 {
 	struct xt_DNETMAP_tginfo *tginfo = (void *)(*target)->data;
-	struct nf_nat_multi_range *mr = &tginfo->prefix;
+	struct nf_nat_ipv4_multi_range_compat *mr = &tginfo->prefix;
 	char *end;
 
 	switch (c) {
@@ -151,6 +158,20 @@ static int DNETMAP_parse(int c, char **argv, int invert, unsigned int *flags,
 		*flags |= XT_DNETMAP_REUSE;
 		tginfo->flags |= XT_DNETMAP_REUSE;
 		return 1;
+	case 's':
+		xtables_param_act(XTF_ONLY_ONCE, MODULENAME, "--static",
+				  *flags & XT_DNETMAP_STATIC);
+		xtables_param_act(XTF_NO_INVERT, MODULENAME, "--static", invert);
+		*flags |= XT_DNETMAP_STATIC;
+		tginfo->flags |= XT_DNETMAP_STATIC;
+		return 1;
+	case 'e':
+		xtables_param_act(XTF_ONLY_ONCE, MODULENAME, "--persistent",
+				  *flags & XT_DNETMAP_PERSISTENT);
+		xtables_param_act(XTF_NO_INVERT, MODULENAME, "--persistent", invert);
+		*flags |= XT_DNETMAP_PERSISTENT;
+		tginfo->flags |= XT_DNETMAP_PERSISTENT;
+		return 1;
 	case 't':
 		xtables_param_act(XTF_ONLY_ONCE, MODULENAME, "--ttl",
 				  *flags & XT_DNETMAP_TTL);
@@ -171,8 +192,8 @@ static void DNETMAP_print_addr(const void *ip,
 			       int numeric)
 {
 	struct xt_DNETMAP_tginfo *tginfo = (void *)&target->data;
-	const struct nf_nat_multi_range *mr = &tginfo->prefix;
-	const struct nf_nat_range *r = &mr->range[0];
+	const struct nf_nat_ipv4_multi_range_compat *mr = &tginfo->prefix;
+	const struct nf_nat_ipv4_range *r = &mr->range[0];
 	struct in_addr a;
 	int bits;
 
@@ -198,7 +219,15 @@ static void DNETMAP_print(const void *ip, const struct xt_entry_target *target,
 	else
 		printf("any");
 
-	printf(" reuse %i", (*flags & XT_DNETMAP_REUSE) > 0);
+	if (*flags & XT_DNETMAP_REUSE)
+		printf(" reuse");
+
+	if (*flags & XT_DNETMAP_STATIC)
+		printf(" static");
+
+	if (*flags & XT_DNETMAP_PERSISTENT)
+		printf(" persistent");
+
 	if (*flags & XT_DNETMAP_TTL)
 		printf(" ttl %i", tginfo->ttl);
 	else
@@ -214,7 +243,15 @@ static void DNETMAP_save(const void *ip, const struct xt_entry_target *target)
 		printf(" --%s ", DNETMAP_opts[0].name);
 		DNETMAP_print_addr(ip, target, 0);
 	}
-	printf(" --reuse %i ", *flags & XT_DNETMAP_REUSE);
+
+	if (*flags & XT_DNETMAP_REUSE)
+		printf(" --reuse ");
+
+	if (*flags & XT_DNETMAP_STATIC)
+		printf(" --static ");
+
+	if (*flags & XT_DNETMAP_PERSISTENT)
+		printf(" --persistent ");
 
 	/* ommited because default value can change as kernel mod param */
 	if (*flags & XT_DNETMAP_TTL)

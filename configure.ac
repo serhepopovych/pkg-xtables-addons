@@ -1,4 +1,4 @@
-AC_INIT([xtables-addons], [1.41])
+AC_INIT([xtables-addons], [1.47.1])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -6,6 +6,7 @@ AC_PROG_INSTALL
 AM_INIT_AUTOMAKE([1.10b -Wall foreign subdir-objects])
 AC_PROG_CC
 AM_PROG_CC_C_O
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
@@ -27,11 +28,10 @@ AC_CHECK_HEADERS([linux/netfilter/x_tables.h], [],
 	[AC_MSG_ERROR([You need to have linux/netfilter/x_tables.h, see INSTALL file for details])])
 PKG_CHECK_MODULES([libxtables], [xtables >= 1.4.5])
 xtlibdir="$(pkg-config --variable=xtlibdir xtables)"
-PKG_CHECK_MODULES([libmnl], [libmnl >= 1], [:], [:])
 
 AC_ARG_WITH([xtlibdir],
 	AS_HELP_STRING([--with-xtlibdir=PATH],
-	[Path where to install Xtables extensions [[autodetect]]]]),
+	[Path where to install Xtables extensions [[autodetect]]]),
 	[xtlibdir="$withval"])
 AC_MSG_CHECKING([Xtables module directory])
 AC_MSG_RESULT([$xtlibdir])
@@ -63,8 +63,8 @@ if test -n "$kbuilddir"; then
 		echo "WARNING: Version detection did not succeed. Continue at own luck.";
 	else
 		echo "$kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 2; then
-			echo "WARNING: You are trying a newer kernel. Results may vary. :-)";
+		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 6; then
+			echo "WARNING: That kernel version is not officially supported.";
 		elif test "$kmajor" -eq 3; then
 			:;
 		elif test "$kmajor" -eq 2 -a "$kminor" -eq 6 -a "$kmicro" -ge 32; then
@@ -81,6 +81,5 @@ AC_SUBST([kbuilddir])
 AC_SUBST([xtlibdir])
 AC_CONFIG_FILES([Makefile Makefile.iptrules Makefile.mans geoip/Makefile
 	extensions/Makefile extensions/ACCOUNT/Makefile
-	extensions/ipset-6/Makefile
 	extensions/pknock/Makefile])
 AC_OUTPUT

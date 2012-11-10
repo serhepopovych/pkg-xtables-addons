@@ -18,6 +18,7 @@
 #	include <linux/netfilter_bridge.h>
 #endif
 #include <net/ip.h>
+#include <net/ip6_checksum.h>
 #include <net/ip6_route.h>
 #include <net/route.h>
 #include "compat_xtables.h"
@@ -92,8 +93,8 @@ echo_tg6(struct sk_buff **poldskb, const struct xt_action_param *par)
 
 	memset(&fl, 0, sizeof(fl));
 	fl.flowi6_proto = newip->nexthdr;
-	ipv6_addr_copy(&fl.saddr, &newip->saddr);
-	ipv6_addr_copy(&fl.daddr, &newip->daddr);
+	memcpy(&fl.saddr, &newip->saddr, sizeof(fl.saddr));
+	memcpy(&fl.daddr, &newip->daddr, sizeof(fl.daddr));
 	fl.fl6_sport = newudp->source;
 	fl.fl6_dport = newudp->dest;
 	security_skb_classify_flow((struct sk_buff *)oldskb, flowi6_to_flowi(&fl));

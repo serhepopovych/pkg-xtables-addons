@@ -14,19 +14,13 @@ Supported configurations for this release
 
 	* iptables >= 1.4.5
 
-	* kernel-source >= 2.6.29
+	* kernel-devel >= 2.6.32
 	  with prepared build/output directory
 	  - CONFIG_NF_CONNTRACK or CONFIG_IP_NF_CONNTRACK
 	  - CONFIG_NF_CONNTRACK_MARK or CONFIG_IP_NF_CONNTRACK_MARK
 	    enabled =y or as module (=m)
 	  - CONFIG_CONNECTOR y/m if you wish to receive userspace
 	    notifications from pknock through netlink/connector
-
-Compilation of ipset-genl-6.x is disabled by default. It has
-additional requirements.
-
-	* libmnl
-	* Linux kernel >= 2.6.35
 
 
 Selecting extensions

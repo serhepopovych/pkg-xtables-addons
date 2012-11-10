@@ -16,14 +16,19 @@
 #include <linux/version.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/netfilter/x_tables.h>
+#include <linux/netfilter_ipv6/ip6_tables.h>
 #include <linux/netfilter_arp.h>
 #include <net/ip.h>
+#include <net/ipv6.h>
 #include <net/route.h>
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0)
 #	include <linux/export.h>
 #endif
 #include "compat_skbuff.h"
 #include "compat_xtnu.h"
+#if defined(CONFIG_IP6_NF_IPTABLES) || defined(CONFIG_IP6_NF_IPTABLES_MODULE)
+#	define WITH_IPV6 1
+#endif
 
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 22)
 static int xtnu_match_run(const struct sk_buff *skb,
@@ -110,11 +115,7 @@ static bool xtnu_match_check(const char *table, const void *entry,
 		return false;
 	if (nm->checkentry == NULL)
 		return true;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 23)
-	return nm->checkentry(&local_par);
-#else
 	return nm->checkentry(&local_par) == 0;
-#endif
 }
 #endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28) && \
@@ -322,11 +323,7 @@ static bool xtnu_target_check(const char *table, const void *entry,
 	if (nt->checkentry == NULL)
 		/* this is valid, just like if there was no function */
 		return true;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 23)
-	return nt->checkentry(&local_par);
-#else
 	return nt->checkentry(&local_par) == 0;
-#endif
 }
 #endif
 
@@ -619,5 +616,23 @@ void *HX_memmem(const void *space, size_t spacesize,
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(HX_memmem);
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 3, 0) && defined(WITH_IPV6)
+int xtnu_ipv6_skip_exthdr(const struct sk_buff *skb, int start,
+    uint8_t *nexthdrp, __be16 *fragoffp)
+{
+	return ipv6_skip_exthdr(skb, start, nexthdrp);
+}
+EXPORT_SYMBOL_GPL(xtnu_ipv6_skip_exthdr);
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0) && defined(WITH_IPV6)
+int xtnu_ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset,
+    int target, unsigned short *fragoff, int *fragflg)
+{
+	return ipv6_find_hdr(skb, offset, target, fragoff);
+}
+EXPORT_SYMBOL_GPL(xtnu_ipv6_find_hdr);
+#endif
 
 MODULE_LICENSE("GPL");
