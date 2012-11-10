@@ -1,3 +1,11 @@
+xtables-addons (1.47.1-1) unstable; urgency=low
+
+  * Imported Upstream version 1.47.1
+  * Add patch to fixh bashism in xt_geoip_dl script (Closes: #690613)
+  * Rebuild with dependency on libxtables9 (Closes: #692347)
+
+ -- Pierre Chifflier <pollux@debian.org>  Sat, 10 Nov 2012 15:09:58 +0100
+
 xtables-addons (1.46-1) unstable; urgency=low
 
   * New upstream release
