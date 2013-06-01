@@ -11,7 +11,7 @@ Comment:
 
 Files: debian/*
 Copyright: 2008-2012 Pierre Chifflier <pollux@debian.org>
-           2012 Dmitry Smirnov <onlyjob@member.fsf.org>
+           2012-2013 Dmitry Smirnov <onlyjob@debian.org>
 License: GPL-2+
 
 Files: *
