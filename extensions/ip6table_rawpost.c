@@ -1,6 +1,6 @@
 /*
  *	rawpost table for ip6_tables
- *	written by Jan Engelhardt <jengelh [at] medozas de>, 2008 - 2009
+ *	written by Jan Engelhardt, 2008 - 2009
  *	placed in the Public Domain
  */
 #include <linux/module.h>
@@ -50,11 +50,7 @@ static unsigned int rawpost6_hook_fn(unsigned int hook, sk_buff_t *skb,
     const struct net_device *in, const struct net_device *out,
     int (*okfn)(struct sk_buff *))
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
 	return ip6t_do_table(skb, hook, in, out, rawpost6_ptable);
-#else
-	return ip6t_do_table(skb, hook, in, out, rawpost6_ptable, NULL);
-#endif
 }
 
 static struct nf_hook_ops rawpost6_hook_ops __read_mostly = {
@@ -69,20 +65,10 @@ static int __init rawpost6_table_init(void)
 {
 	int ret;
 
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 29)
-	rwlock_init(&rawpost6_itable.lock);
-#endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 25)
 	rawpost6_ptable = ip6t_register_table(&init_net, &rawpost6_itable,
 	                  &rawpost6_initial.repl);
 	if (IS_ERR(rawpost6_ptable))
 		return PTR_ERR(rawpost6_ptable);
-#else
-	ret = ip6t_register_table(&rawpost6_itable, &rawpost6_initial.repl);
-	if (ret < 0)
-		return ret;
-	rawpost6_ptable = &rawpost6_itable;
-#endif
 
 	ret = nf_register_hook(&rawpost6_hook_ops);
 	if (ret < 0)
@@ -103,5 +89,5 @@ static void __exit rawpost6_table_exit(void)
 
 module_init(rawpost6_table_init);
 module_exit(rawpost6_table_exit);
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_LICENSE("GPL");

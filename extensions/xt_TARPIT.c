@@ -208,13 +208,9 @@ static void tarpit_tcp4(struct sk_buff *oldskb, unsigned int hook,
 	nf_reset(nskb);
 	skb_nfmark(nskb) = 0;
 	skb_init_secmark(nskb);
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 18)
 	skb_shinfo(nskb)->gso_size = 0;
 	skb_shinfo(nskb)->gso_segs = 0;
 	skb_shinfo(nskb)->gso_type = 0;
-#endif
-
 	oldhdr = ip_hdr(oldskb);
 	tcph = (struct tcphdr *)(skb_network_header(nskb) + ip_hdrlen(nskb));
 
@@ -241,15 +237,9 @@ static void tarpit_tcp4(struct sk_buff *oldskb, unsigned int hook,
 
 	/* Adjust TCP checksum */
 	tcph->check = 0;
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 20)
-	tcph->check = tcp_v4_check(tcph, sizeof(struct tcphdr), niph->saddr,
-	              niph->daddr, csum_partial((char *)tcph,
-	              sizeof(struct tcphdr), 0));
-#else
 	tcph->check = tcp_v4_check(sizeof(struct tcphdr), niph->saddr,
 	              niph->daddr, csum_partial((char *)tcph,
 	              sizeof(struct tcphdr), 0));
-#endif
 
 	/* Set DF, id = 0 */
 	niph->frag_off = htons(IP_DF);
@@ -277,11 +267,7 @@ static void tarpit_tcp4(struct sk_buff *oldskb, unsigned int hook,
 	if (mode == XTTARPIT_HONEYPOT)
 		niph->ttl = 128;
 	else
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 38)
 		niph->ttl = ip4_dst_hoplimit(skb_dst(nskb));
-#else
-		niph->ttl = dst_metric(skb_dst(nskb), RTAX_HOPLIMIT);
-#endif
 
 	/* Adjust IP checksum */
 	niph->check = 0;
@@ -359,13 +345,9 @@ static void tarpit_tcp6(struct sk_buff *oldskb, unsigned int hook,
 	nf_reset(nskb);
 	skb_nfmark(nskb) = 0;
 	skb_init_secmark(nskb);
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 18)
 	skb_shinfo(nskb)->gso_size = 0;
 	skb_shinfo(nskb)->gso_segs = 0;
 	skb_shinfo(nskb)->gso_type = 0;
-#endif
-
 	skb_put(nskb, sizeof(struct ipv6hdr));
 	ip6h = ipv6_hdr(nskb);
 	*(__be32 *)ip6h =  htonl(0x60000000 | (tclass << 20));
@@ -377,11 +359,7 @@ static void tarpit_tcp6(struct sk_buff *oldskb, unsigned int hook,
 	if (mode == XTTARPIT_HONEYPOT) {
 		ip6h->hop_limit = 128;
 	} else {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 38)
 		ip6h->hop_limit = ip6_dst_hoplimit(skb_dst(nskb));
-#else
-		ip6h->hop_limit = dst_metric(skb_dst(nskb), RTAX_HOPLIMIT);
-#endif
 	}
 
 	tcph = (struct tcphdr *)(skb_network_header(nskb) +
@@ -543,7 +521,7 @@ static void __exit tarpit_tg_exit(void)
 module_init(tarpit_tg_init);
 module_exit(tarpit_tg_exit);
 MODULE_DESCRIPTION("Xtables: \"TARPIT\", capture and hold TCP connections");
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_TARPIT");
 MODULE_ALIAS("ip6t_TARPIT");

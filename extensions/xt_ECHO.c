@@ -1,7 +1,7 @@
 /*
  *	"ECHO" (RFC 862) target extension for Xtables
  *	Sample module for "Writing your own Netfilter Modules"
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2008-2011
+ *	Copyright © Jan Engelhardt, 2008-2011
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License; either
@@ -105,11 +105,7 @@ echo_tg6(struct sk_buff **poldskb, const struct xt_action_param *par)
 	}
 
 	skb_dst_set(newskb, dst);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 38)
 	newip->hop_limit = ip6_dst_hoplimit(skb_dst(newskb));
-#else
-	newip->hop_limit = dst_metric(skb_dst(newskb), RTAX_HOPLIMIT);
-#endif
 	newskb->ip_summed = CHECKSUM_NONE;
 
 	/* "Never happens" (?) */
@@ -199,11 +195,7 @@ echo_tg4(struct sk_buff **poldskb, const struct xt_action_param *par)
 	if (ip_route_me_harder(&newskb, RTN_UNSPEC) != 0)
 		goto free_nskb;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 38)
 	newip->ttl = ip4_dst_hoplimit(skb_dst(newskb));
-#else
-	newip->ttl = dst_metric(skb_dst(newskb), RTAX_HOPLIMIT);
-#endif
 	newskb->ip_summed = CHECKSUM_NONE;
 
 	/* "Never happens" (?) */
@@ -252,7 +244,7 @@ static void __exit echo_tg_exit(void)
 
 module_init(echo_tg_init);
 module_exit(echo_tg_exit);
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_DESCRIPTION("Xtables: ECHO diagnosis target");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ip6t_ECHO");

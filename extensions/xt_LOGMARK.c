@@ -2,7 +2,7 @@
  *	"LOGMARK" target extension to Xtables
  *	useful for debugging
  *
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2008-2010
+ *	Copyright © Jan Engelhardt, 2008-2010
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License; either
@@ -80,13 +80,8 @@ logmark_tg(struct sk_buff **pskb, const struct xt_action_param *par)
 	printk(" ctdir=%s", dir_names[ctinfo >= IP_CT_IS_REPLY]);
 	if (ct == NULL)
 		printk(" ct=NULL ctmark=NULL ctstate=INVALID ctstatus=NONE");
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
 	else if (nf_ct_is_untracked(ct))
 		printk(" ct=UNTRACKED ctmark=NULL ctstate=UNTRACKED ctstatus=NONE");
-#else
-	else if (ct == &nf_conntrack_untracked)
-		printk(" ct=UNTRACKED ctmark=NULL ctstate=UNTRACKED ctstatus=NONE");
-#endif
 	else
 		logmark_ct(ct, ctinfo);
 
@@ -141,7 +136,7 @@ static void __exit logmark_tg_exit(void)
 module_init(logmark_tg_init);
 module_exit(logmark_tg_exit);
 MODULE_DESCRIPTION("Xtables: netfilter mark logging to syslog");
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_LOGMARK");
 MODULE_ALIAS("ip6t_LOGMARK");

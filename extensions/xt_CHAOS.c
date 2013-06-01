@@ -1,6 +1,6 @@
 /*
  *	"CHAOS" target extension for Xtables
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
+ *	Copyright © Jan Engelhardt, 2006 - 2008
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License; either
@@ -54,29 +54,8 @@ xt_chaos_total(struct sk_buff *skb, const struct xt_action_param *par)
 	const int fragoff       = ntohs(iph->frag_off) & IP_OFFSET;
 	typeof(xt_tarpit) destiny;
 	bool ret;
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 22)
-	int hotdrop = false;
-#else
 	bool hotdrop = false;
-#endif
 
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 27)
-	ret = xm_tcp->match(skb, par->in, par->out, xm_tcp, &tcp_params,
-	                    fragoff, thoff, &hotdrop);
-#elif LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 34)
-	{
-		struct xt_match_param local_par = {
-			.in        = par->in,
-			.out       = par->out,
-			.match     = xm_tcp,
-			.matchinfo = &tcp_params,
-			.fragoff   = fragoff,
-			.thoff     = thoff,
-			.hotdrop   = &hotdrop,
-		};
-		ret = xm_tcp->match(skb, &local_par);
-	}
-#else
 	{
 		struct xt_action_param local_par;
 		local_par.in        = par->in,
@@ -89,30 +68,10 @@ xt_chaos_total(struct sk_buff *skb, const struct xt_action_param *par)
 		ret = xm_tcp->match(skb, &local_par);
 		hotdrop = local_par.hotdrop;
 	}
-#endif
 	if (!ret || hotdrop || (unsigned int)net_random() > delude_percentage)
 		return;
 
 	destiny = (info->variant == XTCHAOS_TARPIT) ? xt_tarpit : xt_delude;
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 18)
-	destiny->target(&skb, par->in, par->out, par->hooknum, destiny, NULL, NULL);
-#elif LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 23)
-	destiny->target(&skb, par->in, par->out, par->hooknum, destiny, NULL);
-#elif LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 27)
-	destiny->target(skb, par->in, par->out, par->hooknum, destiny, NULL);
-#elif LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 34)
-	{
-		struct xt_target_param local_par = {
-			.in       = par->in,
-			.out      = par->out,
-			.hooknum  = par->hooknum,
-			.target   = destiny,
-			.targinfo = par->targinfo,
-			.family   = par->family,
-		};
-		destiny->target(skb, &local_par);
-	}
-#else
 	{
 		struct xt_action_param local_par;
 		local_par.in       = par->in;
@@ -123,7 +82,6 @@ xt_chaos_total(struct sk_buff *skb, const struct xt_action_param *par)
 		local_par.family   = par->family;
 		destiny->target(skb, &local_par);
 	}
-#endif
 }
 
 static unsigned int
@@ -142,25 +100,6 @@ chaos_tg(struct sk_buff **pskb, const struct xt_action_param *par)
 	const struct iphdr *iph = ip_hdr(skb);
 
 	if ((unsigned int)net_random() <= reject_percentage) {
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 18)
-		return xt_reject->target(pskb, par->in, par->out, par->hooknum,
-		       xt_reject, &reject_params, NULL);
-#elif LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 23)
-		return xt_reject->target(pskb, par->in, par->out, par->hooknum,
-		       xt_reject, &reject_params);
-#elif LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 27)
-		return xt_reject->target(skb, par->in, par->out, par->hooknum,
-		       xt_reject, &reject_params);
-#elif LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 34)
-		struct xt_target_param local_par = {
-			.in       = par->in,
-			.out      = par->out,
-			.hooknum  = par->hooknum,
-			.target   = xt_reject,
-			.targinfo = &reject_params,
-		};
-		return xt_reject->target(skb, &local_par);
-#else
 		struct xt_action_param local_par;
 		local_par.in       = par->in;
 		local_par.out      = par->out;
@@ -168,7 +107,6 @@ chaos_tg(struct sk_buff **pskb, const struct xt_action_param *par)
 		local_par.target   = xt_reject;
 		local_par.targinfo = &reject_params;
 		return xt_reject->target(skb, &local_par);
-#endif
 	}
 
 	/* TARPIT/DELUDE may not be called from the OUTPUT chain */
@@ -274,6 +212,6 @@ static void __exit chaos_tg_exit(void)
 module_init(chaos_tg_init);
 module_exit(chaos_tg_exit);
 MODULE_DESCRIPTION("Xtables: Network scan slowdown with non-deterministic results");
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_CHAOS");

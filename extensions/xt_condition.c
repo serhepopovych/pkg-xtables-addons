@@ -35,7 +35,7 @@ static unsigned int condition_gid_perms = 0;
 
 MODULE_AUTHOR("Stephane Ouellette <ouellettes@videotron.ca>");
 MODULE_AUTHOR("Massimiliano Hofer <max@nucleus.it>");
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_DESCRIPTION("Allows rules to match against condition variables");
 MODULE_LICENSE("GPL");
 module_param(condition_list_perms, uint, S_IRUSR | S_IWUSR);
@@ -150,9 +150,6 @@ static int condition_mt_check(const struct xt_mtchk_param *par)
 
 	var->refcount = 1;
 	var->enabled  = false;
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 29)
-	var->status_proc->owner = THIS_MODULE;
-#endif
 	var->status_proc->data  = var;
 	wmb();
 	var->status_proc->read_proc  = condition_proc_read;
@@ -211,13 +208,13 @@ static int __init condition_mt_init(void)
 	int ret;
 
 	mutex_init(&proc_lock);
-	proc_net_condition = proc_mkdir(dir_name, init_net__proc_net);
+	proc_net_condition = proc_mkdir(dir_name, init_net.proc_net);
 	if (proc_net_condition == NULL)
 		return -EACCES;
 
 	ret = xt_register_matches(condition_mt_reg, ARRAY_SIZE(condition_mt_reg));
 	if (ret < 0) {
-		remove_proc_entry(dir_name, init_net__proc_net);
+		remove_proc_entry(dir_name, init_net.proc_net);
 		return ret;
 	}
 
@@ -227,7 +224,7 @@ static int __init condition_mt_init(void)
 static void __exit condition_mt_exit(void)
 {
 	xt_unregister_matches(condition_mt_reg, ARRAY_SIZE(condition_mt_reg));
-	remove_proc_entry(dir_name, init_net__proc_net);
+	remove_proc_entry(dir_name, init_net.proc_net);
 }
 
 module_init(condition_mt_init);

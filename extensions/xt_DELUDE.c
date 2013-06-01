@@ -1,6 +1,6 @@
 /*
  *	"DELUDE" target extension for Xtables
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
+ *	Copyright © Jan Engelhardt, 2007 - 2008
  *
  *	Based upon linux-2.6.18.5/net/ipv4/netfilter/ipt_REJECT.c:
  *	(C) 1999-2001 Paul `Rusty' Russell
@@ -100,15 +100,9 @@ static void delude_send_reset(struct sk_buff *oldskb, unsigned int hook)
 		}
 	}
 
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 20)
-	tcph->check = tcp_v4_check(tcph, sizeof(struct tcphdr), niph->saddr,
-	              niph->daddr, csum_partial((char *)tcph,
-	              sizeof(struct tcphdr), 0));
-#else
 	tcph->check = tcp_v4_check(sizeof(struct tcphdr), niph->saddr,
 	              niph->daddr, csum_partial((char *)tcph,
 	              sizeof(struct tcphdr), 0));
-#endif
 
 	addr_type = RTN_UNSPEC;
 #ifdef CONFIG_BRIDGE_NETFILTER
@@ -146,9 +140,11 @@ static void delude_send_reset(struct sk_buff *oldskb, unsigned int hook)
 static unsigned int
 delude_tg(struct sk_buff **pskb, const struct xt_action_param *par)
 {
-	/* WARNING: This code causes reentry within iptables.
-	   This means that the iptables jump stack is now crap.  We
-	   must return an absolute verdict. --RR */
+	/*
+	 * Sending the reset causes reentrancy within iptables - and should not pose
+	 * a problem, as that is supported since Linux 2.6.35. But since we do not
+	 * actually want to have a connection open, we are still going to drop it.
+	 */
 	delude_send_reset(*pskb, par->hooknum);
 	return NF_DROP;
 }
@@ -177,6 +173,6 @@ static void __exit delude_tg_exit(void)
 module_init(delude_tg_init);
 module_exit(delude_tg_exit);
 MODULE_DESCRIPTION("Xtables: Close TCP connections after handshake");
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_DELUDE");

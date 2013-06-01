@@ -1,4 +1,4 @@
-AC_INIT([xtables-addons], [1.47.1])
+AC_INIT([xtables-addons], [2.2])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -63,11 +63,9 @@ if test -n "$kbuilddir"; then
 		echo "WARNING: Version detection did not succeed. Continue at own luck.";
 	else
 		echo "$kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 6; then
-			echo "WARNING: That kernel version is not officially supported.";
-		elif test "$kmajor" -eq 3; then
-			:;
-		elif test "$kmajor" -eq 2 -a "$kminor" -eq 6 -a "$kmicro" -ge 32; then
+		if test "$kmajor" -gt 3 -o "$kmajor" -eq 3 -a "$kminor" -gt 9; then
+			echo "WARNING: That kernel version is not officially supported yet. Continue at own luck.";
+		elif test "$kmajor" -eq 3 -a "$kminor" -ge 7; then
 			:;
 		else
 			echo "WARNING: That kernel version is not officially supported.";
