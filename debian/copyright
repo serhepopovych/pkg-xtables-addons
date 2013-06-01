@@ -15,10 +15,9 @@ Copyright: 2008-2012 Pierre Chifflier <pollux@debian.org>
 License: GPL-2+
 
 Files: *
-Copyright: 2006-2010 Jan Engelhardt jengelh@medozas.de
+Copyright: 2006-2011 Jan Engelhardt <jengelh@medozas.de>
            2000,2001 astaro AG
            2008      Gáspár Lajos <gaspar.lajos@glsys.eu>
-           2002      Harald Welte <laforge@gnumonks.org>
            2004-2011 Intra2net AG
            2006-2009 J. Federico Hernandez <fede.hernandez@gmail.com>
            2006      Luis Floreani <luis.floreani@gmail.com>
@@ -26,7 +25,6 @@ Copyright: 2006-2010 Jan Engelhardt jengelh@medozas.de
            2002-2004 Netfilter Core Team <coreteam@netfilter.org>
            1999-2001 Paul `Rusty' Russell
            2010      Red Hat, Inc
-           2007      Sebastian Claßen <sebastian.classen@freenet.de>
 License: GPL-2
 
 Files: extensions/libxt_CHAOS.c
@@ -64,7 +62,6 @@ Copyright: 2006-2011 Jan Engelhardt <jengelh@medozas.de>
            2002-2003 Hime Aguiar e Oliveira Jr. <hime@engineer.com>
            2004-2008 Nicolas Bouliane <acidfu@people.netfilter.org>
            2004-2008 Samuel Jean <peejix@people.netfilter.org>
-           2007      Sebastian Claßen <sebastian.classen@freenet.ag>
            2010      Zbigniew Krzystolik <zbyniu@destrukcja.pl>
 License: GPL-2+
 
@@ -72,7 +69,7 @@ Files: extensions/libxt_condition.c
        extensions/xt_condition.c
        extensions/xt_lscan.c
        extensions/xt_SYSRQ.c
-Copyright: 2006-2010 Jan Engelhardt <jengelh@medozas.de>
+Copyright: 2006-2012 Jan Engelhardt <jengelh@medozas.de>
            2006      Massimiliano Hofer <max@nucleus.it>
            2002      Stephane Ouellette <ouellettes@videotron.ca>
 License: GPL-2 or GPL-3

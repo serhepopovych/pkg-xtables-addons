@@ -1,7 +1,21 @@
+xtables-addons (2.2-1) UNRELEASED; urgency=low
+
+  * New upstream version [March 2013].
+  * Standards to version 3.9.4.
+  * Dropped unknown package "linux-headers-generic" from Recommends.
+  * Removed unnecessary versioned (Build-)Depends.
+  * "bashism_xt_geoip_dl.patch" is renamed and refreshed; DEP-3 headers
+    added.
+  * New patch to fix invalid quota2 record on iptables-save
+    (Closes: #710379), thanks to Denis Ustimenko.
+  * Updated my email address; bumped copyright years.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sat, 01 Jun 2013 21:51:17 +1000
+
 xtables-addons (1.47.1-1) unstable; urgency=low
 
   * Imported Upstream version 1.47.1
-  * Add patch to fixh bashism in xt_geoip_dl script (Closes: #690613)
+  * Add patch to fix bashism in xt_geoip_dl script (Closes: #690613)
   * Rebuild with dependency on libxtables9 (Closes: #692347)
 
  -- Pierre Chifflier <pollux@debian.org>  Sat, 10 Nov 2012 15:09:58 +0100
