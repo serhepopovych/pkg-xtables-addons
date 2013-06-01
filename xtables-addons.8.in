@@ -1,4 +1,4 @@
-.TH xtables-addons 8 "v1.47.1 (2012-10-15)" "" "v1.47.1 (2012-10-15)"
+.TH xtables-addons 8 "Continuous Snow Edition" "" "v2.2 (2013-03-31)"
 .SH Name
 Xtables-addons \(em additional extensions for iptables, ip6tables, etc.
 .SH Targets
@@ -6,8 +6,9 @@ Xtables-addons \(em additional extensions for iptables, ip6tables, etc.
 .SH Matches
 .\" @MATCHES@
 .SH "See also"
-\fBiptables\fP(8), \fBip6tables\fP(8), \fBiptaccount\fP(8)
+\fBiptables\fP(8), \fBip6tables\fP(8), \fBiptables-extensions\fP(8),
+\fBiptaccount\fP(8)
 .PP
 For developers, the book "Writing Netfilter modules" at
-http://jengelh.medozas.de/documents/Netfilter_Modules.pdf provides detailed
+http://inai.de/documents/Netfilter_Modules.pdf provides detailed
 information on how to write such modules/extensions.

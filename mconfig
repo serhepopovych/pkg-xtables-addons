@@ -2,7 +2,6 @@
 #
 build_ACCOUNT=m
 build_CHAOS=m
-build_CHECKSUM=
 build_DELUDE=m
 build_DHCPMAC=m
 build_DNETMAP=m
@@ -13,7 +12,6 @@ build_RAWNAT=m
 build_STEAL=m
 build_SYSRQ=m
 build_TARPIT=m
-build_TEE=
 build_condition=m
 build_fuzzy=m
 build_geoip=m

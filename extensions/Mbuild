@@ -2,7 +2,6 @@
 
 obj-${build_ACCOUNT}     += ACCOUNT/
 obj-${build_CHAOS}       += libxt_CHAOS.so
-obj-${build_CHECKSUM}    += libxt_CHECKSUM.so
 obj-${build_DELUDE}      += libxt_DELUDE.so
 obj-${build_DHCPMAC}     += libxt_DHCPMAC.so libxt_dhcpmac.so
 obj-${build_DNETMAP}     += libxt_DNETMAP.so
@@ -13,7 +12,6 @@ obj-${build_RAWNAT}      += libxt_RAWDNAT.so libxt_RAWSNAT.so
 obj-${build_STEAL}       += libxt_STEAL.so
 obj-${build_SYSRQ}       += libxt_SYSRQ.so
 obj-${build_TARPIT}      += libxt_TARPIT.so
-obj-${build_TEE}         += libxt_TEE.so
 obj-${build_condition}   += libxt_condition.so
 obj-${build_fuzzy}       += libxt_fuzzy.so
 obj-${build_geoip}       += libxt_geoip.so

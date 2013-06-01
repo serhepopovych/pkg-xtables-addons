@@ -204,7 +204,7 @@ lscan_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		unsigned int n;
 
 		n = lscan_mt_full(ctdata->mark & connmark_mask, ctstate,
-		    par->in == init_net__loopback_dev, tcph,
+		    par->in == init_net.loopback_dev, tcph,
 		    skb->len - par->thoff - 4 * tcph->doff);
 
 		ctdata->mark = (ctdata->mark & ~connmark_mask) | n;
@@ -264,7 +264,7 @@ static void __exit lscan_mt_exit(void)
 
 module_init(lscan_mt_init);
 module_exit(lscan_mt_exit);
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_DESCRIPTION("Xtables: Low-level scan (e.g. nmap) match");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_lscan");

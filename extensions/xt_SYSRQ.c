@@ -1,6 +1,6 @@
 /*
  *	"SYSRQ" target extension for Xtables
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2008 - 2010
+ *	Copyright © Jan Engelhardt, 2008 - 2012
  *
  *	Based upon the ipt_SYSRQ idea by Marek Zalem <marek [at] terminus sk>
  *
@@ -24,10 +24,10 @@
 #include <linux/crypto.h>
 #include <linux/scatterlist.h>
 #include <net/ip.h>
+#include <net/ipv6.h>
 #include "compat_xtables.h"
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19) && \
-    (defined(CONFIG_CRYPTO) || defined(CONFIG_CRYPTO_MODULE))
+#if defined(CONFIG_CRYPTO) || defined(CONFIG_CRYPTO_MODULE)
 #	define WITH_CRYPTO 1
 #endif
 #if defined(CONFIG_IP6_NF_IPTABLES) || defined(CONFIG_IP6_NF_IPTABLES_MODULE)
@@ -120,9 +120,7 @@ static unsigned int sysrq_tg(const void *pdata, uint16_t len)
 	ret = crypto_hash_init(&desc);
 	if (ret != 0)
 		goto hash_fail;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 24)
 	sg_init_table(sg, 2);
-#endif
 	sg_set_buf(&sg[0], data, n);
 	i = strlen(sysrq_digest_password);
 	sg_set_buf(&sg[1], sysrq_digest_password, i);
@@ -154,13 +152,7 @@ static unsigned int sysrq_tg(const void *pdata, uint16_t len)
 	sysrq_seqno = new_seqno;
 	for (i = 0; i < len && data[i] != ','; ++i) {
 		printk(KERN_INFO KBUILD_MODNAME ": SysRq %c\n", data[i]);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
 		handle_sysrq(data[i]);
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
-		handle_sysrq(data[i], NULL);
-#else
-		handle_sysrq(data[i], NULL, NULL);
-#endif
 	}
 	return NF_ACCEPT;
 
@@ -191,13 +183,7 @@ static unsigned int sysrq_tg(const void *pdata, uint16_t len)
 		return NF_DROP;
 	}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
 	handle_sysrq(c);
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)
-	handle_sysrq(c, NULL);
-#else
-	handle_sysrq(c, NULL, NULL);
-#endif
 	return NF_ACCEPT;
 }
 #endif
@@ -364,8 +350,9 @@ static int __init sysrq_crypto_init(void)
  fail:
 	sysrq_crypto_exit();
 	return ret;
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 19)
-	printk(KERN_WARNING "xt_SYSRQ does not provide crypto for < 2.6.19\n");
+#else
+	printk(KERN_WARNING "Kernel was compiled without crypto, "
+	       "so xt_SYSRQ won't use crypto.\n");
 #endif
 	return -EINVAL;
 }
@@ -386,7 +373,7 @@ static void __exit sysrq_tg_exit(void)
 module_init(sysrq_tg_init);
 module_exit(sysrq_tg_exit);
 MODULE_DESCRIPTION("Xtables: triggering SYSRQ remotely");
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_AUTHOR("John Haxby <john.haxby@oracle.com");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_SYSRQ");

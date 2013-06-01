@@ -1,7 +1,7 @@
 /*
  * xt_quota2 - enhanced xt_quota that can count upwards and in packets
  * as a minimal accounting match.
- * by Jan Engelhardt <jengelh@medozas.de>, 2008
+ * by Jan Engelhardt , 2008
  *
  * Originally based on xt_quota.c:
  * 	Xtables module to enforce network quotas
@@ -128,9 +128,6 @@ q2_get_counter(const struct xt_quota_mtinfo2 *q)
 	if (p == NULL || IS_ERR(p))
 		goto out;
 
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 29)
-	p->owner        = THIS_MODULE;
-#endif
 	p->data         = e;
 	p->read_proc    = quota_proc_read;
 	p->write_proc   = quota_proc_write;
@@ -250,27 +247,27 @@ static int __init quota_mt2_init(void)
 {
 	int ret;
 
-	proc_xt_quota = proc_mkdir("xt_quota", init_net__proc_net);
+	proc_xt_quota = proc_mkdir("xt_quota", init_net.proc_net);
 	if (proc_xt_quota == NULL)
 		return -EACCES;
 
 	ret = xt_register_matches(quota_mt2_reg, ARRAY_SIZE(quota_mt2_reg));
 	if (ret < 0)
-		remove_proc_entry("xt_quota", init_net__proc_net);
+		remove_proc_entry("xt_quota", init_net.proc_net);
 	return ret;
 }
 
 static void __exit quota_mt2_exit(void)
 {
 	xt_unregister_matches(quota_mt2_reg, ARRAY_SIZE(quota_mt2_reg));
-	remove_proc_entry("xt_quota", init_net__proc_net);
+	remove_proc_entry("xt_quota", init_net.proc_net);
 }
 
 module_init(quota_mt2_init);
 module_exit(quota_mt2_exit);
 MODULE_DESCRIPTION("Xtables: countdown quota match; up counter");
 MODULE_AUTHOR("Sam Johnston <samj@samj.net>");
-MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
+MODULE_AUTHOR("Jan Engelhardt ");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_quota2");
 MODULE_ALIAS("ip6t_quota2");

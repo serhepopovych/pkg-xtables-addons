@@ -27,16 +27,9 @@
 #include <linux/netfilter_ipv4.h>
 #include <linux/netfilter/x_tables.h>
 #include <linux/version.h>
-#include <net/netfilter/nf_nat_rule.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 34)
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
-#endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 3, 0)
-#	include <net/netfilter/nf_nat.h>
-#else
-#	include <linux/netfilter/nf_nat.h>
-#endif
+#include <net/netfilter/nf_nat.h>
 #include "compat_xtables.h"
 #include "xt_DNETMAP.h"
 
@@ -84,7 +77,7 @@ struct dnetmap_entry {
 };
 
 struct dnetmap_prefix {
-	struct nf_nat_ipv4_multi_range_compat prefix;
+	struct nf_nat_range prefix;
 	char prefix_str[16];
 #ifdef CONFIG_PROC_FS
 	char proc_str_data[20];
@@ -109,16 +102,11 @@ struct dnetmap_net {
 	struct list_head *dnetmap_iphash;
 };
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 34)
 static int dnetmap_net_id;
 static inline struct dnetmap_net *dnetmap_pernet(struct net *net)
 {
 	return net_generic(net, dnetmap_net_id);
 }
-#else
-struct dnetmap_net *dnetmap;
-#define dnetmap_pernet(x) dnetmap
-#endif
 
 static DEFINE_SPINLOCK(dnetmap_lock);
 static DEFINE_MUTEX(dnetmap_mutex);
@@ -179,7 +167,7 @@ dnetmap_addr_in_prefix(struct dnetmap_net *dnetmap_net, const __be32 addr,
 
 static struct dnetmap_prefix *
 dnetmap_prefix_lookup(struct dnetmap_net *dnetmap_net,
-		      const struct nf_nat_ipv4_multi_range_compat *mr)
+		      const struct nf_nat_range *mr)
 {
 	struct dnetmap_prefix *p;
 
@@ -258,7 +246,7 @@ static int dnetmap_tg_check(const struct xt_tgchk_param *par)
 {
 	struct dnetmap_net *dnetmap_net = dnetmap_pernet(par->net);
 	const struct xt_DNETMAP_tginfo *tginfo = par->targinfo;
-	const struct nf_nat_ipv4_multi_range_compat *mr = &tginfo->prefix;
+	const struct nf_nat_range *mr = &tginfo->prefix;
 	struct dnetmap_prefix *p;
 	struct dnetmap_entry *e;
 #ifdef CONFIG_PROC_FS
@@ -274,12 +262,8 @@ static int dnetmap_tg_check(const struct xt_tgchk_param *par)
 		return ret;
 	}
 
-	if (!(mr->range[0].flags & NF_NAT_RANGE_MAP_IPS)) {
+	if (!(mr->flags & NF_NAT_RANGE_MAP_IPS)) {
 		pr_debug("DNETMAP:check: bad MAP_IPS.\n");
-		return -EINVAL;
-	}
-	if (mr->rangesize != 1) {
-		pr_debug("DNETMAP:check: bad rangesize %u.\n", mr->rangesize);
 		return -EINVAL;
 	}
 
@@ -307,15 +291,15 @@ static int dnetmap_tg_check(const struct xt_tgchk_param *par)
 	INIT_LIST_HEAD(&p->lru_list);
 	INIT_LIST_HEAD(&p->elist);
 
-	ip_min = ntohl(mr->range[0].min_ip) + (whole_prefix == 0);
-	ip_max = ntohl(mr->range[0].max_ip) - (whole_prefix == 0);
+	ip_min = ntohl(mr->min_addr.ip) + (whole_prefix == 0);
+	ip_max = ntohl(mr->max_addr.ip) - (whole_prefix == 0);
 
-	sprintf(p->prefix_str, NIPQUAD_FMT "/%u", NIPQUAD(mr->range[0].min_ip),
+	sprintf(p->prefix_str, NIPQUAD_FMT "/%u", NIPQUAD(mr->min_addr.ip),
 		33 - ffs(~(ip_min ^ ip_max)));
 #ifdef CONFIG_PROC_FS
-	sprintf(p->proc_str_data, NIPQUAD_FMT "_%u", NIPQUAD(mr->range[0].min_ip),
+	sprintf(p->proc_str_data, NIPQUAD_FMT "_%u", NIPQUAD(mr->min_addr.ip),
 		33 - ffs(~(ip_min ^ ip_max)));
-	sprintf(p->proc_str_stat, NIPQUAD_FMT "_%u_stat", NIPQUAD(mr->range[0].min_ip),
+	sprintf(p->proc_str_stat, NIPQUAD_FMT "_%u_stat", NIPQUAD(mr->min_addr.ip),
 		33 - ffs(~(ip_min ^ ip_max)));
 #endif
 	printk(KERN_INFO KBUILD_MODNAME ": new prefix %s\n", p->prefix_str);
@@ -381,8 +365,8 @@ dnetmap_tg(struct sk_buff **pskb, const struct xt_action_param *par)
 	enum ip_conntrack_info ctinfo;
 	__be32 prenat_ip, postnat_ip, prenat_ip_prev;
 	const struct xt_DNETMAP_tginfo *tginfo = par->targinfo;
-	const struct nf_nat_ipv4_multi_range_compat *mr = &tginfo->prefix;
-	struct nf_nat_ipv4_range newrange;
+	const struct nf_nat_range *mr = &tginfo->prefix;
+	struct nf_nat_range newrange;
 	struct dnetmap_entry *e;
 	struct dnetmap_prefix *p;
 	__s32 jttl;
@@ -419,15 +403,14 @@ dnetmap_tg(struct sk_buff **pskb, const struct xt_action_param *par)
 
 		spin_unlock_bh(&dnetmap_lock);
 
-		newrange = ((struct nf_nat_ipv4_range) {
-			    mr->range[0].flags | NF_NAT_RANGE_MAP_IPS,
-			    e->prenat_addr, e->prenat_addr,
-			    mr->range[0].min, mr->range[0].max});
-
-		/* Hand modified range to generic setup. */
+		memset(&newrange, 0, sizeof(newrange));
+		newrange.flags = mr->flags | NF_NAT_RANGE_MAP_IPS;
+		newrange.min_addr.ip = e->prenat_addr;
+		newrange.max_addr.ip = e->prenat_addr;
+		newrange.min_proto = mr->min_proto;
+		newrange.max_proto = mr->max_proto;
 		return nf_nat_setup_info(ct, &newrange,
 					 HOOK2MANIP(par->hooknum));
-
 	}
 
 	prenat_ip = ip_hdr(skb)->saddr;
@@ -509,12 +492,12 @@ bind_new_prefix:
 
 	spin_unlock_bh(&dnetmap_lock);
 
-	newrange = ((struct nf_nat_ipv4_range) {
-		    mr->range[0].flags | NF_NAT_RANGE_MAP_IPS,
-		    postnat_ip, postnat_ip,
-		    mr->range[0].min, mr->range[0].max});
-
-	/* Hand modified range to generic setup. */
+	memset(&newrange, 0, sizeof(newrange));
+	newrange.flags = mr->flags | NF_NAT_RANGE_MAP_IPS;
+	newrange.min_addr.ip = postnat_ip;
+	newrange.max_addr.ip = postnat_ip;
+	newrange.min_proto = mr->min_proto;
+	newrange.max_proto = mr->max_proto;
 	return nf_nat_setup_info(ct, &newrange, HOOK2MANIP(par->hooknum));
 
 no_rev_map:
@@ -528,7 +511,7 @@ static void dnetmap_tg_destroy(const struct xt_tgdtor_param *par)
 {
 	struct dnetmap_net *dnetmap_net = dnetmap_pernet(par->net);
 	const struct xt_DNETMAP_tginfo *tginfo = par->targinfo;
-	const struct nf_nat_ipv4_multi_range_compat *mr = &tginfo->prefix;
+	const struct nf_nat_range *mr = &tginfo->prefix;
 	struct dnetmap_prefix *p;
 
 	if (!(tginfo->flags & XT_DNETMAP_PREFIX))
@@ -852,7 +835,7 @@ static int __net_init dnetmap_proc_net_init(struct net *net)
 
 static void __net_exit dnetmap_proc_net_exit(struct net *net)
 {
-	proc_net_remove(net, "xt_DNETMAP");
+	remove_proc_entry("xt_DNETMAP", net->proc_net);
 }
 
 #else
@@ -870,13 +853,6 @@ static int __net_init dnetmap_net_init(struct net *net)
 {
 	struct dnetmap_net *dnetmap_net = dnetmap_pernet(net);
 	int i;
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 34)
-	dnetmap = kmalloc(sizeof(struct dnetmap_net),GFP_ATOMIC);
-	if (dnetmap == NULL)
-		return -ENOMEM;
-	dnetmap_net = dnetmap;
-#endif
 
 	dnetmap_net->dnetmap_iphash = kmalloc(sizeof(struct list_head) *
 					      hash_size * 2, GFP_ATOMIC);
@@ -906,20 +882,15 @@ static void __net_exit dnetmap_net_exit(struct net *net)
 	mutex_unlock(&dnetmap_mutex);
 
 	kfree(dnetmap_net->dnetmap_iphash);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 34)
 	kfree(dnetmap_net);
-#endif
-
 	dnetmap_proc_net_exit(net);
 }
 
 static struct pernet_operations dnetmap_net_ops = {
 	.init = dnetmap_net_init,
 	.exit = dnetmap_net_exit,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 34)
 	.id   = &dnetmap_net_id,
 	.size = sizeof(struct dnetmap_net),
-#endif
 };
 
 static struct xt_target dnetmap_tg_reg __read_mostly = {
