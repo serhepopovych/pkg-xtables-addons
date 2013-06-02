@@ -1,6 +1,7 @@
 xtables-addons (2.2-1) UNRELEASED; urgency=low
 
   * New upstream version [March 2013].
+    + compatibility with kernels 3.7+ (Closes: #710722).
   * Standards to version 3.9.4.
   * Dropped unknown package "linux-headers-generic" from Recommends.
   * Removed unnecessary versioned (Build-)Depends.
