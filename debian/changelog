@@ -1,21 +1,22 @@
-xtables-addons (2.2-1) UNRELEASED; urgency=low
+xtables-addons (2.2-1) unstable; urgency=low
 
   * New upstream version [March 2013].
-    + compatibility with kernels 3.7+ (Closes: #710722).
+    + compatible with kernels 3.7+ (Closes: #710722).
   * Standards to version 3.9.4.
   * Dropped unknown package "linux-headers-generic" from Recommends.
   * Removed unnecessary versioned (Build-)Depends.
-  * "bashism_xt_geoip_dl.patch" is renamed and refreshed; DEP-3 headers
-    added.
-  * New patch to fix invalid quota2 record on iptables-save
-    (Closes: #710379), thanks to Denis Ustimenko.
-  * New patch to avoid duplication in man pages.
-  * New patch to lintianise man pages and to correct spelling.
-  * Updated DKMS rules to build in DKMS build directory and not to leave
-    files behind (Closes: #710725).
+  * Updated DKMS rules to build modules in DKMS build directory and not
+    to leave un-owned files behind (Closes: #710725).
+  * New patches:
+    + to fix invalid quota2 record on iptables-save
+      (Closes: #710379), thanks to Denis Ustimenko.
+    + to avoid duplication in man pages.
+    + to lintianise man pages and correct spelling.
+  * "bashism_xt_geoip_dl.patch" is renamed and refreshed;
+    DEP-3 headers added.
   * Updated my email address; bumped copyright years.
 
- -- Dmitry Smirnov <onlyjob@debian.org>  Sat, 01 Jun 2013 21:51:17 +1000
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sun, 02 Jun 2013 18:16:23 +1000
 
 xtables-addons (1.47.1-1) unstable; urgency=low
 
