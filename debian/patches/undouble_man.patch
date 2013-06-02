@@ -1,0 +1,20 @@
+Last-Update: 2013-06-01
+Forwarded: not-needed
+Author: Dmitry Smirnov <onlyjob@member.fsf.org>
+Description: avoid double inclusion of man pages from temporary build directories
+
+--- a/Makefile.mans.in
++++ b/Makefile.mans.in
+@@ -2,10 +2,10 @@
+ # MANUAL
+ 
+ srcdir := @srcdir@
+ 
+-wcman_matches := $(shell find "${srcdir}" -name 'libxt_[a-z]*.man' | sort)
+-wcman_targets := $(shell find "${srcdir}" -name 'libxt_[A-Z]*.man' | sort)
++wcman_matches := $(shell find "${srcdir}/extensions" -name 'libxt_[a-z]*.man' -print | sort)
++wcman_targets := $(shell find "${srcdir}/extensions" -name 'libxt_[A-Z]*.man' -print | sort)
+ wlist_matches := $(patsubst ${srcdir}/libxt_%.man,%,${wcman_matches})
+ wlist_targets := $(patsubst ${srcdir}/libxt_%.man,%,${wcman_targets})
+ 
+ .PHONY: FORCE

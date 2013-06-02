@@ -9,6 +9,7 @@ xtables-addons (2.2-1) UNRELEASED; urgency=low
     added.
   * New patch to fix invalid quota2 record on iptables-save
     (Closes: #710379), thanks to Denis Ustimenko.
+  * New patch to avoid duplication in man pages.
   * Updated DKMS rules to build in DKMS build directory and not to leave
     files behind (Closes: #710725).
   * Updated my email address; bumped copyright years.
