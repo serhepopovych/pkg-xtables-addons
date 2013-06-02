@@ -1,6 +1,6 @@
 Last-Update: 2012-02-04
 Author: Dmitry Smirnov <onlyjob@member.fsf.org>
-Forwarded: no
+Forwarded: yes
 Description: fix FTBFS with automake 1.11.2
  fixes error: "geoip/Makefile.am:3: `pkglibexecdir'
  is not a legitimate directory for `SCRIPTS'"
