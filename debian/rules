@@ -17,7 +17,8 @@ TMPSRC := debian/temp.src
 
 
 override_dh_clean:
-	dh_clean *.8 *.man .manpages.lst extensions/*/Makefile $(DCFG) $(TMPSRC) \
+	$(RM) -r $(TMPSRC)
+	dh_clean *.8 *.man .manpages.lst extensions/*/Makefile $(DCFG) config.log \
           extensions/.*.oo.d extensions/ACCOUNT/.*.oo.d extensions/pknock/.*.oo.d
 
 override_dh_auto_configure:
