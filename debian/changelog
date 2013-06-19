@@ -1,3 +1,18 @@
+xtables-addons (2.3-1) unstable; urgency=low
+
+  * New upstream version [June 2013]
+    + compatible with kernels 3.9+ (Closes: #711431).
+  * Patches removed (applied-upstream):
+    - bashism_xt_geoip_dl.patch
+    - libxt_quota2.patch
+    - man.patch
+    - undouble_man.patch
+  * Disabled "automake-1.11.2.patch" that was needed as workaround for
+    temporary regression in automake.
+  * Better clean-up after interrupted build attempt.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Wed, 19 Jun 2013 10:55:05 +1000
+
 xtables-addons (2.2-1) unstable; urgency=low
 
   * New upstream version [March 2013].

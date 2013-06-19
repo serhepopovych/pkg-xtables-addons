@@ -1,11 +1,12 @@
-Last-Update: 2011-12-06
-Author: Dmitry Smirnov <onlyjob@member.fsf.org>
+Last-Update: 2013-06-19
 Forwarded: not-needed
+Author: Dmitry Smirnov <onlyjob@member.fsf.org>
 Description: skip build-time depmod invocation
 
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -11,8 +11,8 @@
+@@ -10,10 +10,10 @@
+ 
  xtables-addons.8: FORCE
  	${MAKE} -f Makefile.mans all;
  
@@ -14,5 +15,6 @@ Description: skip build-time depmod invocation
 +install-exec-hook: ;
 +#	depmod -a || :;
  
- config.status: Makefile.iptrules.in
+ clean-local-mans:
+ 	${MAKE} -f Makefile.mans clean;
  
