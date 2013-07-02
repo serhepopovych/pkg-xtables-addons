@@ -16,6 +16,8 @@ Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: xtables-addons-dkms
+# "unzip" and "wget" are used by `xt_geoip_dl`.
+           ,unzip, wget
 Suggests: libtext-csv-xs-perl
 Provides: xtables-addons-common-${source:Upstream-Version}
 Breaks: ipset (<< 6.11~)
