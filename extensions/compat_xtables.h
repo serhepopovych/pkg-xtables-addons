@@ -21,9 +21,6 @@
 #	warning You need CONFIG_NF_CONNTRACK.
 #endif
 
-#define ipt_unregister_table(tbl) ipt_unregister_table(&init_net, (tbl))
-#define ip6t_unregister_table(tbl) ip6t_unregister_table(&init_net, (tbl))
-
 #if !defined(NIP6) && !defined(NIP6_FMT)
 #	define NIP6(addr) \
 		ntohs((addr).s6_addr16[0]), \
@@ -44,16 +41,6 @@
 		((const unsigned char *)&addr)[3]
 #	define NIPQUAD_FMT "%u.%u.%u.%u"
 #endif
-
-#define ip_route_me_harder    xtnu_ip_route_me_harder
-#define skb_make_writable     xtnu_skb_make_writable
-#define xt_target             xtnu_target
-#define xt_register_target    xtnu_register_target
-#define xt_unregister_target  xtnu_unregister_target
-#define xt_register_targets   xtnu_register_targets
-#define xt_unregister_targets xtnu_unregister_targets
-
-#define xt_request_find_match xtnu_request_find_match
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0)
 static inline struct inode *file_inode(struct file *f)
