@@ -76,6 +76,8 @@ quota_proc_write(struct file *file, const char __user *input,
 	if (copy_from_user(buf, input, size) != 0)
 		return -EFAULT;
 	buf[sizeof(buf)-1] = '\0';
+	if (size < sizeof(buf))
+		buf[size] = '\0';
 
 	spin_lock_bh(&e->lock);
 	e->quota = simple_strtoull(buf, NULL, 0);
@@ -219,13 +221,14 @@ quota_mt2(const struct sk_buff *skb, struct xt_action_param *par)
 		}
 		ret = true;
 	} else {
-		if (e->quota >= skb->len) {
+		if (e->quota >= ((q->flags & XT_QUOTA_PACKET) ? 1 : skb->len)) {
 			if (!(q->flags & XT_QUOTA_NO_CHANGE))
 				e->quota -= (q->flags & XT_QUOTA_PACKET) ? 1 : skb->len;
 			ret = !ret;
 		} else {
 			/* we do not allow even small packets from now on */
-			e->quota = 0;
+			if (!(q->flags & XT_QUOTA_NO_CHANGE))
+				e->quota = 0;
 		}
 		q->quota = e->quota;
 	}

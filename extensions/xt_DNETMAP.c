@@ -353,9 +353,8 @@ out:
 }
 
 static unsigned int
-dnetmap_tg(struct sk_buff **pskb, const struct xt_action_param *par)
+dnetmap_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
-	struct sk_buff *skb = *pskb;
 	struct net *net = dev_net(par->in ? par->in : par->out);
 	struct dnetmap_net *dnetmap_net = dnetmap_pernet(net);
 	struct nf_conn *ct;
@@ -608,7 +607,6 @@ dnetmap_tg_proc_write(struct file *file, const char __user *input,size_t size, l
 	char buf[sizeof("+192.168.100.100:200.200.200.200")];
 	const char *c = buf;
 	const char *c2;
-	//union nf_inet_addr addr = {};
 	__be32 addr1,addr2;
 	bool add;
 	char str[25];
