@@ -11,7 +11,7 @@ Comment:
 
 Files: debian/*
 Copyright: 2008-2012 Pierre Chifflier <pollux@debian.org>
-           2012-2013 Dmitry Smirnov <onlyjob@debian.org>
+           2012-2014 Dmitry Smirnov <onlyjob@debian.org>
 License: GPL-2+
 
 Files: *
@@ -41,8 +41,6 @@ Files: extensions/libxt_CHAOS.c
        extensions/libxt_LOGMARK.c
        extensions/libxt_lscan.c
        extensions/libxt_quota2c.c
-       extensions/libxt_RAWDNAT.c
-       extensions/libxt_RAWSNAT.c
        extensions/libxt_TARPIT.c
        extensions/libxt_TEE.c
        extensions/xt_CHAOS.c
@@ -53,7 +51,6 @@ Files: extensions/libxt_CHAOS.c
        extensions/xt_ipv4options.c
        extensions/xt_length2.c
        extensions/xt_LOGMARK.c
-       extensions/xt_RAWNAT.c
        extensions/xt_TARPIT.c
 Copyright: 2006-2011 Jan Engelhardt <jengelh@medozas.de>
            2002      Aaron Hopkins <tools@die.net>
@@ -74,9 +71,7 @@ Copyright: 2006-2012 Jan Engelhardt <jengelh@medozas.de>
            2002      Stephane Ouellette <ouellettes@videotron.ca>
 License: GPL-2 or GPL-3
 
-Files: extensions/*table_rawpost.*
-       extensions/libxt_SYSRQ.c
-       extensions/xt_STEAL.c
+Files: extensions/libxt_SYSRQ.c
 Copyright: not-applicable
 License: public-domain
  placed in the Public Domain
