@@ -4,9 +4,10 @@ xtables-addons (2.4-1) unstable; urgency=low
   * Dropped no longer needed "skip-depmod.patch".
   * Added "unzip, wget" to Recommends to satisfy `xt_geoip_dl`
     (Closes: #714654).
+  * Fixed FTBFS in m-a/xtables-addons-source (Closes: #730074).
   * Standards to 3.9.5.
 
- -- Dmitry Smirnov <onlyjob@debian.org>  Sun, 12 Jan 2014 11:45:41 +1100
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 10 Feb 2014 13:05:36 +1100
 
 xtables-addons (2.3-1) unstable; urgency=low
 
