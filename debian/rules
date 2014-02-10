@@ -29,7 +29,7 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	## prepare sources for DKMS and source packages
 	mkdir -p $(TMPSRC) \
-	&& cp -r extensions/* mconfig Makefile.extra Makefile.iptrules $(TMPSRC) \
+	&& cp -r build-aux extensions geoip m4 configure.ac *.in config.h aclocal.m4 mconfig Makefile Makefile.* $(TMPSRC) \
 	&& find $(TMPSRC) -name ".gitignore" -delete
 	## continue with build
 	dh_auto_build
