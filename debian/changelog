@@ -1,3 +1,10 @@
+xtables-addons (2.5-1) unstable; urgency=low
+
+  * New upstream version [April 2014].
+  * Install `iptaccount` to "/usr/sbin" instead of "/sbin".
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Wed, 23 Apr 2014 16:47:32 +1000
+
 xtables-addons (2.4-1) unstable; urgency=low
 
   * New upstream version [January 2014].
