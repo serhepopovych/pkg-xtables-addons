@@ -40,9 +40,8 @@ Files: extensions/libxt_CHAOS.c
        extensions/libxt_ipv4options.c
        extensions/libxt_LOGMARK.c
        extensions/libxt_lscan.c
-       extensions/libxt_quota2c.c
+       extensions/libxt_quota2.c
        extensions/libxt_TARPIT.c
-       extensions/libxt_TEE.c
        extensions/xt_CHAOS.c
        extensions/xt_DHCPMAC.c
        extensions/xt_ECHO.c

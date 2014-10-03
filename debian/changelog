@@ -1,3 +1,10 @@
+xtables-addons (2.6-1) unstable; urgency=medium
+
+  * New upstream version [September 2014].
+  * Standards-Version: 3.9.6.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sat, 04 Oct 2014 00:07:46 +1000
+
 xtables-addons (2.5-1) unstable; urgency=low
 
   * New upstream version [April 2014].
