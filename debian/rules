@@ -64,7 +64,7 @@ $(DCFG):
 	[ -n "${DKMS_MODS}" ] \
 	&& sed -i -e '/####/,$$d' $(DCFG) \
 	&& ( value=0; for module_name in $(DKMS_MODS); \
-	do echo "BUILT_MODULE_LOCATION[$$value]=\"\" \
+	do printf "BUILT_MODULE_LOCATION[$$value]=\"\" \
 			\nBUILT_MODULE_NAME[$$value]=\"$$module_name\" \
 			\nDEST_MODULE_LOCATION[$$value]=\"/updates\"\n"; \
 		value=$$((value+1)); \
