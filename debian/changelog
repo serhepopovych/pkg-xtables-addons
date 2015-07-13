@@ -1,3 +1,15 @@
+xtables-addons (2.7-1) unstable; urgency=medium
+
+  * New upstream version [July 2015].
+    + compatible with kernels up to 4.1 (Closes: #792154).
+  * xtables-addons-source/module-assistant: fixed FTBFS (Closes: #791702).
+  * rules: "echo" replaced with "printf" (Closes: #785561).
+  * rules: use last changelog date for timestamps in tar file and
+    also sort files to get a reproducible order (Closes: #776879).
+    Thanks, Reiner Herrmann.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Tue, 14 Jul 2015 03:24:26 +1000
+
 xtables-addons (2.6-1) unstable; urgency=medium
 
   * New upstream version [September 2014].

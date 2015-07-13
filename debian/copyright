@@ -9,11 +9,6 @@ Comment:
  The information below provides incomplete copyright coverage
  for upstream files.
 
-Files: debian/*
-Copyright: 2008-2012 Pierre Chifflier <pollux@debian.org>
-           2012-2014 Dmitry Smirnov <onlyjob@debian.org>
-License: GPL-2+
-
 Files: *
 Copyright: 2006-2011 Jan Engelhardt <jengelh@medozas.de>
            2000,2001 astaro AG
@@ -78,6 +73,13 @@ License: public-domain
 Files: extensions/ACCOUNT/iptaccount.c
        extensions/ACCOUNT/libxt_ACCOUNT_cl.*
 Copyright: 2004-2006 Intra2net AG
+License: LGPL-2.1
+
+Files: debian/*
+Copyright: 2008-2012 Pierre Chifflier <pollux@debian.org>
+           2012-2015 Dmitry Smirnov <onlyjob@debian.org>
+License: GPL-2+
+
 License: LGPL-2.1
  This program is free software; you can redistribute it and/or
  modify it under the terms of version 2.1 of the GNU Lesser General Public
