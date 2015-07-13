@@ -7,6 +7,7 @@
 PKD  = $(abspath $(dir $(MAKEFILE_LIST)))
 # Package version
 pver := $(shell dpkg-parsechangelog -l$(PKD)/changelog | sed -ne 's,^Version: *\([0-9.]*\).*,\1,p')
+BUILD_DATE := $(shell dpkg-parsechangelog --show-field=Date)
 
 DCFG := debian/xtables-addons-dkms.dkms
 TMPSRC := debian/temp.src
@@ -45,7 +46,7 @@ override_dh_auto_install: $(DCFG)
 	mkdir -p $(SRC_MOD) \
 	&& mv $(TMPSRC) $(SRC_MOD)/xtables-addons \
 	&& cd debian/xtables-addons-source/usr/src \
-	&& tar cjf xtables-addons.tar.bz2 modules \
+	&& find modules -print0 | LC_ALL=C sort -z | tar cjf xtables-addons.tar.bz2 --mtime="$(BUILD_DATE)" --no-recursion --null -T - \
 	&& $(RM) -r modules/xtables-addons/debian
 	## prepare DKMS sources
 	mkdir -p $(SRC_DKMS) \
