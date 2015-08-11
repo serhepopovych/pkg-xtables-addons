@@ -1,0 +1,19 @@
+Last-Update: 2015-08-11
+Forwarded: yes
+Author: Tim Gardner <tim.gardner@canonical.com>
+Description: Linux 4.2 support
+
+--- a/extensions/xt_DNETMAP.c
++++ b/extensions/xt_DNETMAP.c
+@@ -28,8 +28,11 @@
+ #include <linux/netfilter/x_tables.h>
+ #include <linux/seq_file.h>
+ #include <linux/uidgid.h>
+ #include <linux/version.h>
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
++#include <linux/proc_fs.h>
++#endif
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
+ #include <net/netfilter/nf_nat.h>
+ #include "compat_xtables.h"

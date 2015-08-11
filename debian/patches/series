@@ -1,2 +1,3 @@
 #automake-1.11.2.patch
+linux-4.2.patch
 noECHO.patch
