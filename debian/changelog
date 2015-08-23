@@ -1,3 +1,12 @@
+xtables-addons (2.8-1) unstable; urgency=low
+
+  * New upstream release [August 2015].
+    + support for Linux 4.2. Thanks, Tim Gardner.
+    + enable xt_ECHO.
+  * Added "debian/gbp.conf".
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 24 Aug 2015 07:43:20 +1000
+
 xtables-addons (2.7-2) unstable; urgency=medium
 
   * DKMS: Disable "xt_ECHO" on Linux-3.x (Closes: #792154).
