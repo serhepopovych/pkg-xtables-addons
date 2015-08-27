@@ -36,6 +36,7 @@ Description: Extensions targets and matches for iptables [tools, libs]
    module-assistant auto-install xtables-addons-source
 
 Package: xtables-addons-dkms
+Section: kernel
 Architecture: all
 Depends: xtables-addons-common (>= ${source:Upstream-Version}),
          dkms,
