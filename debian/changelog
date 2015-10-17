@@ -1,3 +1,10 @@
+xtables-addons (2.9-1) unstable; urgency=medium
+
+  * New upstream release [October 2015].
+    + support for Linux 4.3.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sat, 17 Oct 2015 18:38:23 +1100
+
 xtables-addons (2.8-1) unstable; urgency=low
 
   * New upstream release [August 2015].
