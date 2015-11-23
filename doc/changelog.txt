@@ -3,6 +3,14 @@ HEAD
 ====
 
 
+v2.10 (2015-11-20)
+==================
+Enhancements:
+- Support for Linux 4.4
+Fixes:
+- xt_ACCOUNT: call free_page with the right amount of pages
+
+
 v2.9 (2015-10-12)
 =================
 Enhancements:
