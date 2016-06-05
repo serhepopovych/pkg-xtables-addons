@@ -76,6 +76,7 @@ echo_tg6(struct sk_buff *oldskb, const struct xt_action_param *par)
 	payload  = skb_header_pointer(oldskb, par->thoff +
 	           sizeof(*oldudp), data_len, NULL);
 	memcpy(skb_put(newskb, data_len), payload, data_len);
+	newip->payload_len = htons(newskb->len);
 
 #if 0
 	/*
@@ -156,8 +157,8 @@ echo_tg4(struct sk_buff *oldskb, const struct xt_action_param *par)
 	newip->version  = oldip->version;
 	newip->ihl      = sizeof(*newip) / 4;
 	newip->tos      = oldip->tos;
-	newip->id       = 0;
-	newip->frag_off = htons(IP_DF);
+	newip->id       = oldip->id;
+	newip->frag_off = 0;
 	newip->protocol = oldip->protocol;
 	newip->check    = 0;
 	newip->saddr    = oldip->daddr;
@@ -173,6 +174,7 @@ echo_tg4(struct sk_buff *oldskb, const struct xt_action_param *par)
 	payload  = skb_header_pointer(oldskb, par->thoff +
 	           sizeof(*oldudp), data_len, NULL);
 	memcpy(skb_put(newskb, data_len), payload, data_len);
+	newip->tot_len = htons(newskb->len);
 
 #if 0
 	/*

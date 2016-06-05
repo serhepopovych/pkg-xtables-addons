@@ -1,4 +1,4 @@
-AC_INIT([xtables-addons], [2.10])
+AC_INIT([xtables-addons], [2.11])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -44,26 +44,20 @@ regular_CFLAGS="-Wall -Waggregate-return -Wmissing-declarations \
 
 if test -n "$kbuilddir"; then
 	AC_MSG_CHECKING([kernel version that we will build against])
-	krel="$(make -sC "$kbuilddir" M=$PWD kernelrelease)";
-	kmajor="${krel%%[[^0-9]]*}";
-	kmajor="$(($kmajor+0))";
-	krel="${krel:${#kmajor}}";
-	krel="${krel#.}";
-	kminor="${krel%%[[^0-9]]*}";
-	kminor="$(($kminor+0))";
-	krel="${krel:${#kminor}}";
-	krel="${krel#.}";
-	kmicro="${krel%%[[^0-9]]*}";
-	kmicro="$(($kmicro+0))";
-	krel="${krel:${#kmicro}}";
-	krel="${krel#.}";
-	kstable="${krel%%[[^0-9]]*}";
-	kstable="$(($kstable+0))";
+	krel="$(make -sC "$kbuilddir" M=$PWD kernelrelease | $AWK -v 'FS=[[^0-9.]]' '{print $1; exit}')"
+	save_IFS="$IFS"
+	IFS='.'
+	set x $krel
+	IFS="$save_IFS"
+	kmajor="$(($2+0))"
+	kminor="$(($3+0))"
+	kmicro="$(($4+0))"
+	kstable="$(($5+0))"
 	if test -z "$kmajor" -o -z "$kminor" -o -z "$kmicro"; then
 		echo "WARNING: Version detection did not succeed. Continue at own luck.";
 	else
 		echo "$kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-		if test "$kmajor" -gt 4 -o "$kmajor" -eq 4 -a "$kminor" -gt 3; then
+		if test "$kmajor" -gt 4 -o "$kmajor" -eq 7 -a "$kminor" -gt 3; then
 			echo "WARNING: That kernel version is not officially supported yet. Continue at own luck.";
 		elif test "$kmajor" -eq 4 -a "$kminor" -le 3; then
 			:;
