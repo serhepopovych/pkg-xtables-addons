@@ -1,3 +1,12 @@
+xtables-addons (2.11-1) unstable; urgency=medium
+
+  * New upstream release [May 2016].
+  * Standards-Version: 3.9.8.
+  * Vcs URLs to HTTPS.
+  * Updated gbp.conf.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 06 Jun 2016 00:49:16 +1000
+
 xtables-addons (2.10-1) unstable; urgency=medium
 
   * New upstream release [November 2015].
