@@ -1,3 +1,13 @@
+xtables-addons (2.11-2) unstable; urgency=medium
+
+  * Re-build with correction for iptables (>= 1.6.0-3) compatibility
+    (Closes: #834223).
+    Thanks Sven Hartge, Sam Morris, Alex Volkov.
+  * Depends:
+    = iptables-dev (>= 1.6.0-3~)
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sun, 28 Aug 2016 18:03:28 +1000
+
 xtables-addons (2.11-1) unstable; urgency=medium
 
   * New upstream release [May 2016].
