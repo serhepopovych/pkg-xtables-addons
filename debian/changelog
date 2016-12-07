@@ -1,3 +1,11 @@
+xtables-addons (2.11-3) unstable; urgency=medium
+
+  * Re-build for auto-iptables transition (Closes: #845516).
+  * rules: make build reproducible (Closes: #803601).
+    Thanks, Reiner Herrmann.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Wed, 07 Dec 2016 11:18:28 +1100
+
 xtables-addons (2.11-2) unstable; urgency=medium
 
   * Re-build with correction for iptables (>= 1.6.0-3) compatibility
