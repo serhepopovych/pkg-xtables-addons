@@ -46,7 +46,7 @@ override_dh_auto_install: $(DCFG)
 	mkdir -p $(SRC_MOD) \
 	&& mv $(TMPSRC) $(SRC_MOD)/xtables-addons \
 	&& cd debian/xtables-addons-source/usr/src \
-	&& find modules -print0 | LC_ALL=C sort -z | tar cjf xtables-addons.tar.bz2 --mtime="$(BUILD_DATE)" --no-recursion --null -T - \
+	&& find modules -print0 | LC_ALL=C sort -z | tar cjf xtables-addons.tar.bz2 --mtime="$(BUILD_DATE)" --mode=go=rX,u+rw,a-s --no-recursion --null -T - \
 	&& $(RM) -r modules/xtables-addons/debian
 	## prepare DKMS sources
 	mkdir -p $(SRC_DKMS) \
