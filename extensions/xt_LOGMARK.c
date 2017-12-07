@@ -52,14 +52,24 @@ static void logmark_ct(const struct nf_conn *ct, enum ip_conntrack_info ctinfo)
 		printk("EXPECTED");
 		prev = true;
 	}
-	if (ct->status & IPS_SEEN_REPLY)
-		printk("%s""SEEN_REPLY", prev++ ? "," : "");
-	if (ct->status & IPS_ASSURED)
-		printk("%s""ASSURED", prev++ ? "," : "");
-	if (ct->status & IPS_CONFIRMED)
-		printk("%s""CONFIRMED", prev++ ? "," : "");
+	if (ct->status & IPS_SEEN_REPLY) {
+		printk("%s""SEEN_REPLY", prev ? "," : "");
+		prev = true;
+	}
+	if (ct->status & IPS_ASSURED) {
+		printk("%s""ASSURED", prev ? "," : "");
+		prev = true;
+	}
+	if (ct->status & IPS_CONFIRMED) {
+		printk("%s""CONFIRMED", prev ? "," : "");
+		prev = true;
+	}
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,9,0)
+	printk(" lifetime=%lus", nf_ct_expires(ct) / HZ);
+#else
 	printk(" lifetime=%lus",
 	       (jiffies - ct->timeout.expires) / HZ);
+#endif
 }
 
 static unsigned int
@@ -72,15 +82,21 @@ logmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	printk("<%u>%.*s""iif=%d hook=%s nfmark=0x%x "
 	       "secmark=0x%x classify=0x%x",
 	       info->level, (unsigned int)sizeof(info->prefix), info->prefix,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
+	       skb_ifindex(skb), hook_names[par->state->hook],
+#else
 	       skb_ifindex(skb), hook_names[par->hooknum],
+#endif
 	       skb_nfmark(skb), skb_secmark(skb), skb->priority);
 
 	ct = nf_ct_get(skb, &ctinfo);
 	printk(" ctdir=%s", dir_names[ctinfo >= IP_CT_IS_REPLY]);
 	if (ct == NULL)
 		printk(" ct=NULL ctmark=NULL ctstate=INVALID ctstatus=NONE");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
 	else if (nf_ct_is_untracked(ct))
 		printk(" ct=UNTRACKED ctmark=NULL ctstate=UNTRACKED ctstatus=NONE");
+#endif
 	else
 		logmark_ct(ct, ctinfo);
 

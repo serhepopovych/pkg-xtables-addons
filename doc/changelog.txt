@@ -3,6 +3,30 @@ HEAD
 ====
 
 
+v2.14 (2017-11-22)
+==================
+Enhancements:
+- support for Linux up to 4.14
+Fixes:
+- xt_DNETMAP: fix some reports from PVSStudio (a static checker)
+
+
+v2.13 (2017-06-29)
+==================
+Enhancements:
+- support for Linux up to 4.12
+- xt_condition: namespace support
+Fixes:
+- xt_geoip: check for allocation overflow
+- xt_DNETMAP: fix a buffer overflow
+
+
+v2.12 (2017-01-11)
+==================
+Enhancements:
+- support for Linux up to 4.10
+
+
 v2.11 (2016-05-20)
 ==================
 Enhancements:

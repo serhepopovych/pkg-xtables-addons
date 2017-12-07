@@ -35,7 +35,7 @@
 		ntohs((addr).s6_addr16[5]), \
 		ntohs((addr).s6_addr16[6]), \
 		ntohs((addr).s6_addr16[7])
-#	define NIP6_FMT "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x"
+#	define NIP6_FMT "%04hx:%04hx:%04hx:%04hx:%04hx:%04hx:%04hx:%04hx"
 #endif
 #if !defined(NIPQUAD) && !defined(NIPQUAD_FMT)
 #	define NIPQUAD(addr) \
@@ -43,7 +43,7 @@
 		((const unsigned char *)&addr)[1], \
 		((const unsigned char *)&addr)[2], \
 		((const unsigned char *)&addr)[3]
-#	define NIPQUAD_FMT "%u.%u.%u.%u"
+#	define NIPQUAD_FMT "%hhu.%hhu.%hhu.%hhu"
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0)
@@ -82,10 +82,14 @@ static inline void proc_remove(struct proc_dir_entry *de)
 
 static inline struct net *par_net(const struct xt_action_param *par)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
+	return par->state->net;
+#else
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0)
 	return par->net;
 #else
 	return dev_net((par->in != NULL) ? par->in : par->out);
+#endif
 #endif
 }
 
