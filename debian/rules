@@ -12,9 +12,8 @@ BUILD_DATE := $(shell dpkg-parsechangelog --show-field=Date)
 DCFG := debian/xtables-addons-dkms.dkms
 TMPSRC := debian/temp.src
 
-# '--with autotools_dev' may be used instead of '--with autoreconf' but not together
 %:
-	dh $@ --with dkms --with autoreconf
+	dh $@ --with dkms
 
 
 override_dh_clean:

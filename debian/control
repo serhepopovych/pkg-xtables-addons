@@ -3,7 +3,7 @@ Section: admin
 Priority: extra
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
-Build-Depends: debhelper (>= 10), dh-autoreconf,
+Build-Depends: debhelper (>= 10),
     dkms, bzip2, pkg-config,
     iptables-dev (>= 1.6.0-3~)
 Standards-Version: 4.1.2
