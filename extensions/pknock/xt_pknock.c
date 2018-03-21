@@ -357,11 +357,10 @@ has_logged_during_this_minute(const struct peer *peer)
  *
  * @r: rule
  */
-static void
-peer_gc(unsigned long r)
+static void peer_gc(struct timer_list *tl)
 {
 	unsigned int i;
-	struct xt_pknock_rule *rule = (struct xt_pknock_rule *)r;
+	struct xt_pknock_rule *rule = from_timer(rule, tl, timer);
 	struct peer *peer;
 	struct list_head *pos, *n;
 
@@ -468,11 +467,7 @@ add_rule(struct xt_pknock_mtinfo *info)
 	rule->peer_head      = alloc_hashtable(peer_hashsize);
 	if (rule->peer_head == NULL)
 		goto out;
-
-	init_timer(&rule->timer);
-	rule->timer.function	= peer_gc;
-	rule->timer.data	= (unsigned long)rule;
-
+	timer_setup(&rule->timer, peer_gc, 0);
 	rule->status_proc = proc_create_data(info->rule_name, 0, pde,
 	                    &pknock_proc_ops, rule);
 	if (rule->status_proc == NULL)
@@ -699,13 +694,7 @@ msg_to_userspace_nl(const struct xt_pknock_mtinfo *info,
 	scnprintf(msg.rule_name, info->rule_name_len + 1, info->rule_name);
 
 	memcpy(m + 1, &msg, m->len);
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)
 	cn_netlink_send(m, 0, multicast_group, GFP_ATOMIC);
-#else
-	cn_netlink_send(m, multicast_group, GFP_ATOMIC);
-#endif
-
 	kfree(m);
 #endif
 	return true;

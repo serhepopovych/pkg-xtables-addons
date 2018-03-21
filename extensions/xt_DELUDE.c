@@ -107,13 +107,8 @@ static void delude_send_reset(struct net *net, struct sk_buff *oldskb,
 
 	addr_type = RTN_UNSPEC;
 #ifdef CONFIG_BRIDGE_NETFILTER
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
 	if (hook != NF_INET_FORWARD || (nskb->nf_bridge != NULL &&
 	    nskb->nf_bridge->physoutdev))
-#else
-	if (hook != NF_INET_FORWARD || (nskb->nf_bridge != NULL &&
-	    nskb->nf_bridge->mask & BRNF_BRIDGED))
-#endif
 #else
 	if (hook != NF_INET_FORWARD)
 #endif
@@ -151,13 +146,7 @@ delude_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	 * a problem, as that is supported since Linux 2.6.35. But since we do not
 	 * actually want to have a connection open, we are still going to drop it.
 	 */
-	delude_send_reset(par_net(par), skb,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
-	                  par->state->hook
-#else
-	                  par->hooknum
-#endif
-	                  );
+	delude_send_reset(par_net(par), skb, par->state->hook);
 	return NF_DROP;
 }
 

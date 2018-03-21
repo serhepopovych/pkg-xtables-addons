@@ -1,6 +1,10 @@
 
 HEAD
 ====
+Enhancements:
+- support for Linux 4.15, 4.16
+Changes:
+- remove support for Linux 3.7--4.14
 
 
 v2.14 (2017-11-22)
@@ -127,5 +131,5 @@ Changes:
 Enhancements:
 - Support for Linux 3.7
 
-If you want to use Xtables-addons with kernels older than 3.7,
-use the addons 1.x series (maintained but without new features).
+If you want to use Xtables-addons with kernels older than 4.15,
+use the addons 2.x series.

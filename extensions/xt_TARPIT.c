@@ -249,13 +249,8 @@ static void tarpit_tcp4(struct net *net, struct sk_buff *oldskb,
 		niph->id = ~oldhdr->id + 1;
 
 #ifdef CONFIG_BRIDGE_NETFILTER
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
 	if (hook != NF_INET_FORWARD || (nskb->nf_bridge != NULL &&
 	    nskb->nf_bridge->physoutdev != NULL))
-#else
-	if (hook != NF_INET_FORWARD || (nskb->nf_bridge != NULL &&
-	    nskb->nf_bridge->mask & BRNF_BRIDGED))
-#endif
 #else
 	if (hook != NF_INET_FORWARD)
 #endif
@@ -283,17 +278,8 @@ static void tarpit_tcp4(struct net *net, struct sk_buff *oldskb,
 		goto free_nskb;
 
 	nf_ct_attach(nskb, oldskb);
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0)
 	NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_OUT, net, nskb->sk, nskb, NULL,
 		skb_dst(nskb)->dev, dst_output);
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
-	NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_OUT, nskb->sk, nskb, NULL,
-		skb_dst(nskb)->dev, dst_output_sk);
-#else
-	NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_OUT, nskb, NULL,
-		skb_dst(nskb)->dev, dst_output);
-#endif
 	return;
 
  free_nskb:
@@ -406,17 +392,8 @@ static void tarpit_tcp6(struct net *net, struct sk_buff *oldskb,
 	nskb->ip_summed = CHECKSUM_NONE;
 
 	nf_ct_attach(nskb, oldskb);
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0)
 	NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT, net, nskb->sk, nskb, NULL,
 	        skb_dst(nskb)->dev, dst_output);
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
-	NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT, nskb->sk, nskb, NULL,
-	        skb_dst(nskb)->dev, dst_output_sk);
-#else
-	NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT, nskb, NULL,
-	        skb_dst(nskb)->dev, dst_output);
-#endif
 	return;
 
  free_nskb:
@@ -454,12 +431,7 @@ tarpit_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 	/* We are not interested in fragments */
 	if (iph->frag_off & htons(IP_OFFSET))
 		return NF_DROP;
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
 	tarpit_tcp4(par_net(par), skb, par->state->hook, info->variant);
-#else
-	tarpit_tcp4(par_net(par), skb, par->hooknum, info->variant);
-#endif
 	return NF_DROP;
 }
 
@@ -500,12 +472,7 @@ tarpit_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 		pr_debug("addr is not unicast.\n");
 		return NF_DROP;
 	}
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
 	tarpit_tcp6(par_net(par), skb, par->state->hook, info->variant);
-#else
-	tarpit_tcp6(par_net(par), skb, par->hooknum, info->variant);
-#endif
 	return NF_DROP;
 }
 #endif
