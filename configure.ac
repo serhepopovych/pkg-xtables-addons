@@ -1,4 +1,4 @@
-AC_INIT([xtables-addons], [3.0])
+AC_INIT([xtables-addons], [3.1])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -26,7 +26,7 @@ fi
 
 AC_CHECK_HEADERS([linux/netfilter/x_tables.h], [],
 	[AC_MSG_ERROR([You need to have linux/netfilter/x_tables.h, see INSTALL file for details])])
-PKG_CHECK_MODULES([libxtables], [xtables >= 1.4.5])
+PKG_CHECK_MODULES([libxtables], [xtables >= 1.6.0])
 xtlibdir="$(pkg-config --variable=xtlibdir xtables)"
 
 AC_ARG_WITH([xtlibdir],
@@ -57,9 +57,9 @@ if test -n "$kbuilddir"; then
 		echo "WARNING: Version detection did not succeed. Continue at own luck.";
 	else
 		echo "$kmajor.$kminor.$kmicro.$kstable in $kbuilddir";
-		if test "$kmajor" -gt 4 -o "$kmajor" -eq 4 -a "$kminor" -gt 16; then
+		if test "$kmajor" -gt 4 -o "$kmajor" -eq 4 -a "$kminor" -gt 18; then
 			echo "WARNING: That kernel version is not officially supported yet. Continue at own luck.";
-		elif test "$kmajor" -eq 4 -a "$kminor" -ge 15; then
+		elif test "$kmajor" -eq 4 -a "$kminor" -ge 18; then
 			:
 		else
 			echo "WARNING: That kernel version is not officially supported.";
