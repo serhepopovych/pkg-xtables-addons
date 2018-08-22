@@ -1,3 +1,12 @@
+xtables-addons (3.1-0.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * New upstream release
+    + Support for linux 4.18 (Closes: #906445)
+    + Update cross.patch
+
+ -- Thadeu Lima de Souza Cascardo <cascardo@debian.org>  Wed, 22 Aug 2018 11:19:11 -0300
+
 xtables-addons (3.0-0.1) unstable; urgency=medium
 
   * Non-maintainer upload.
