@@ -20,6 +20,7 @@ Copyright: 2006-2011 Jan Engelhardt <jengelh@medozas.de>
            2002-2004 Netfilter Core Team <coreteam@netfilter.org>
            1999-2001 Paul `Rusty' Russell
            2010      Red Hat, Inc
+           2018      Philip Prindeville
 License: GPL-2
 
 Files: extensions/libxt_CHAOS.c
