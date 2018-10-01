@@ -1,6 +1,6 @@
 Source: xtables-addons
 Section: admin
-Priority: extra
+Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
 Build-Depends: debhelper (>= 10),
