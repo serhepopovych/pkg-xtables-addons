@@ -15,9 +15,12 @@ Package: xtables-addons-common
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: xtables-addons-dkms
-# "unzip" and "wget" are used by `xt_geoip_dl`.
-           ,unzip, wget
+Recommends: ${misc:Recommends}
+    ,xtables-addons-dkms
+# "libnet-cidr-lite-perl" is used by `xt_geoip_build`:
+    ,libnet-cidr-lite-perl
+# "unzip" and "wget" are used by `xt_geoip_dl`:
+    ,unzip, wget
 Suggests: libtext-csv-xs-perl
 Provides: xtables-addons-common-${source:Upstream-Version}
 Breaks: ipset (<< 6.11~)
