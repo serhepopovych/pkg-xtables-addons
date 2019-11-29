@@ -1,3 +1,15 @@
+xtables-addons (3.6-1) unstable; urgency=medium
+
+  * New upstream release.
+    + support for Linux up to 5.4.
+  * Corrected NEWS (Closes: #931842).
+    Thanks, Alex Volkov.
+  * Recommends += "libnet-cidr-lite-perl" (Closes: #910293).
+    Thanks, Chris.
+  * Fixed "xtables-addons-dkms.dkms.in" template.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Fri, 29 Nov 2019 13:03:26 +1100
+
 xtables-addons (3.5-0.1) unstable; urgency=medium
 
   [ Ondřej Nový ]
@@ -532,4 +544,3 @@ xtables-addons (1.5.7-1) unstable; urgency=low
   * Initial release (Closes: #502402)
 
  -- Pierre Chifflier <pollux@debian.org>  Sun, 19 Oct 2008 16:11:52 +0200
-
