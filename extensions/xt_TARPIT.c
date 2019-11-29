@@ -205,7 +205,11 @@ static void tarpit_tcp4(struct net *net, struct sk_buff *oldskb,
 		return;
 
 	/* This packet will not be the same as the other: clear nf fields */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
+	nf_reset_ct(nskb);
+#else
 	nf_reset(nskb);
+#endif
 	skb_nfmark(nskb) = 0;
 	skb_init_secmark(nskb);
 	skb_shinfo(nskb)->gso_size = 0;
@@ -249,8 +253,13 @@ static void tarpit_tcp4(struct net *net, struct sk_buff *oldskb,
 		niph->id = ~oldhdr->id + 1;
 
 #ifdef CONFIG_BRIDGE_NETFILTER
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
+	if (hook != NF_INET_FORWARD || ((struct nf_bridge_info *)skb_ext_find(nskb, SKB_EXT_BRIDGE_NF) != NULL &&
+	    ((struct nf_bridge_info *)skb_ext_find(nskb, SKB_EXT_BRIDGE_NF))->physoutdev))
+#else
 	if (hook != NF_INET_FORWARD || (nskb->nf_bridge != NULL &&
 	    nskb->nf_bridge->physoutdev != NULL))
+#endif
 #else
 	if (hook != NF_INET_FORWARD)
 #endif
@@ -341,7 +350,11 @@ static void tarpit_tcp6(struct net *net, struct sk_buff *oldskb,
 	}
 
 	/* This packet will not be the same as the other: clear nf fields */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
+	nf_reset_ct(nskb);
+#else
 	nf_reset(nskb);
+#endif
 	skb_nfmark(nskb) = 0;
 	skb_init_secmark(nskb);
 	skb_shinfo(nskb)->gso_size = 0;
