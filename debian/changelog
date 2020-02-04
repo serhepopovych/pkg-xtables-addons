@@ -1,3 +1,11 @@
+xtables-addons (3.8-1) unstable; urgency=medium
+
+  * New upstream release.
+  * DH to version 12.
+  * Standards-Version: 4.5.0.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Tue, 04 Feb 2020 15:29:59 +1100
+
 xtables-addons (3.7-1) unstable; urgency=medium
 
   * New upstream release.
