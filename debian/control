@@ -5,7 +5,7 @@ Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
 Build-Depends: debhelper-compat (= 12),
     dkms, bzip2, pkg-config,
-    iptables-dev (>= 1.6.0-3~)
+    libxtables-dev
 Standards-Version: 4.5.0
 Homepage: http://xtables-addons.sourceforge.net/
 Vcs-Browser: https://salsa.debian.org/debian/xtables-addons
@@ -61,7 +61,7 @@ Depends: ${misc:Depends},
     debhelper (>= 8),
     make,
     pkg-config,
-    iptables-dev,
+    libxtables-dev,
     bzip2
 Recommends: module-assistant
 Description: Extensions targets and matches for iptables [modules sources]

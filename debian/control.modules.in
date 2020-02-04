@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
 Build-Depends: debhelper-compat (= 12),
-    iptables-dev (>= 1.4.5),
+    libxtables-dev,
     pkg-config,
     kbuild
 Standards-Version: 4.5.0
