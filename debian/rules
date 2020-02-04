@@ -39,7 +39,7 @@ SRC_DKMS := debian/xtables-addons-dkms/usr/src
 override_dh_auto_install: $(DCFG)
 	## prepare module sources
 	mkdir -p $(TMPSRC)/debian \
-	&& cp debian/changelog debian/copyright debian/compat \
+	&& cp debian/changelog debian/copyright \
 		debian/control.modules.in debian/control $(TMPSRC)/debian/ \
 	&& cp debian/rules.modules $(TMPSRC)/debian/rules
 	mkdir -p $(SRC_MOD) \

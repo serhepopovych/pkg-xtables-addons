@@ -3,7 +3,7 @@ Section: kernel
 Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
-Build-Depends: debhelper (>= 9),
+Build-Depends: debhelper-compat (= 12),
     iptables-dev (>= 1.4.5),
     pkg-config,
     kbuild
