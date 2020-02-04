@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 9),
     iptables-dev (>= 1.4.5),
     pkg-config,
     kbuild
-Standards-Version: 3.9.8
+Standards-Version: 4.5.0
 
 Package: xtables-addons-modules-_KVERS_
 Architecture: any
