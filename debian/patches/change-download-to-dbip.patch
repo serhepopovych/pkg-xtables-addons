@@ -1,0 +1,28 @@
+Last-Update: 2020-04-17
+Forwarded: needs-forwarding
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=950780
+Author: Simone Rossetto <simros85@gmail.com>
+Description: download the csv database provided by db-ip.com, the same
+ file required by the "build script".
+
+--- a/geoip/xt_geoip_dl
++++ b/geoip/xt_geoip_dl
+@@ -1,7 +1,14 @@
+ #!/bin/sh
++# Download free "IP to Country Lite Database" from db-ip.com, licensed under CC-BY-4.0
+ 
+-rm -rf GeoLite2-Country-CSV_*
++# try to download this month file
++wget -O dbip-country-lite.csv.gz "https://download.db-ip.com/free/dbip-country-lite-$(date +'%Y-%m').csv.gz"
+ 
+-wget -q http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip
+-unzip -q GeoLite2-Country-CSV.zip
+-rm -f GeoLite2-Country-CSV.zip
++# in case of error try to download previous month file
++if [ $? -ne 0 ]; then
++  wget -O dbip-country-lite.csv.gz "https://download.db-ip.com/free/dbip-country-lite-$(date -d '-1 month' +'%Y-%m').csv.gz"
++fi
++
++# uncompress and exit
++gunzip dbip-country-lite.csv.gz
++exit $?
