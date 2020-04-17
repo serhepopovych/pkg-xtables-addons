@@ -1,3 +1,11 @@
+xtables-addons (3.9-1) unstable; urgency=medium
+
+  * New upstream release.
+  * New patch to download geodata from db-ip.com (Closes: #950780).
+    Thanks, Simone Rossetto.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Fri, 17 Apr 2020 14:34:48 +1000
+
 xtables-addons (3.8-2) unstable; urgency=medium
 
   * iptables-dev --> libxtables-dev (Closes: #950637).
