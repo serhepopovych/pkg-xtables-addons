@@ -3,7 +3,7 @@ Section: admin
 Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
-Build-Depends: bzip2, debhelper-compat (= 12), dkms, libxtables-dev, pkg-config
+Build-Depends: bzip2, debhelper-compat (= 13), dkms, libxtables-dev, pkg-config
 Standards-Version: 4.5.0
 Rules-Requires-Root: no
 Homepage: http://xtables-addons.sourceforge.net/
