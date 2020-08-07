@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: xtables-addons
-Upstream-Contact: Jan Engelhardt <jengelh@medozas.de>
-Source: http://xtables-addons.sourceforge.net/
+Upstream-Contact: Jan Engelhardt <jengelh@inai.de>
+Source: http://inai.de/projects/xtables-addons/
 Comment:
  This package was downloaded from http://jengelh.medozas.de/projects/xtables/
  and debianized by Pierre Chifflier <pollux@debian.org> on 19 Oct 2008 16:11:52.

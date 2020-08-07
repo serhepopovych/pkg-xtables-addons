@@ -6,7 +6,7 @@ Uploaders: Dmitry Smirnov <onlyjob@debian.org>
 Build-Depends: bzip2, debhelper-compat (= 13), dkms, libxtables-dev, pkg-config
 Standards-Version: 4.5.0
 Rules-Requires-Root: no
-Homepage: http://xtables-addons.sourceforge.net/
+Homepage: http://inai.de/projects/xtables-addons/
 Vcs-Browser: https://salsa.debian.org/debian/xtables-addons
 Vcs-Git: https://salsa.debian.org/debian/xtables-addons.git
 
