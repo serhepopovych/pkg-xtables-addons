@@ -13,7 +13,7 @@ Vcs-Git: https://salsa.debian.org/debian/xtables-addons.git
 Package: xtables-addons-common
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ${perl:Depends}, ${shlibs:Depends}
 # "libnet-cidr-lite-perl" is used by `xt_geoip_build`;
 # "unzip" and "wget" are used by `xt_geoip_dl`.
 Recommends: libnet-cidr-lite-perl, unzip, wget, xtables-addons-dkms
