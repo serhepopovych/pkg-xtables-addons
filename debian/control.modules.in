@@ -1,8 +1,8 @@
 Source: xtables-addons
 Section: kernel
 Priority: optional
-Maintainer: Pierre Chifflier <pollux@debian.org>
-Uploaders: Dmitry Smirnov <onlyjob@debian.org>
+Maintainer: Debian Netfilter Packaging Team <pkg-netfilter-team@lists.alioth.debian.org>
+Uploaders: Jeremy Sowden <jeremy@azazel.net>
 Build-Depends: debhelper-compat (= 13), kbuild, libxtables-dev, pkg-config
 Standards-Version: 4.5.0
 
