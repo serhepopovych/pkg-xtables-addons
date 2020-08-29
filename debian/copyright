@@ -79,6 +79,7 @@ License: LGPL-2.1
 Files: debian/*
 Copyright: 2008-2012 Pierre Chifflier <pollux@debian.org>
            2012-2020 Dmitry Smirnov <onlyjob@debian.org>
+           2020 Jeremy Sowden <jeremy@azazel.net>
 License: GPL-2+
 
 License: LGPL-2.1
