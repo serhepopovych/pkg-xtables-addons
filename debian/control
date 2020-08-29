@@ -16,11 +16,7 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 # "libnet-cidr-lite-perl" is used by `xt_geoip_build`;
 # "unzip" and "wget" are used by `xt_geoip_dl`.
-Recommends: libnet-cidr-lite-perl,
-            unzip,
-            wget,
-            xtables-addons-dkms,
-            ${misc:Recommends}
+Recommends: libnet-cidr-lite-perl, unzip, wget, xtables-addons-dkms
 Suggests: libtext-csv-xs-perl
 Provides: xtables-addons-common-${source:Upstream-Version}
 Breaks: ipset (<< 6.11~)
