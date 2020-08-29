@@ -1,0 +1,15 @@
+/*~
+/.\#*
+/\#*\#
+/autoreconf.after
+/autoreconf.before
+/*.debhelper
+/.debhelper/
+/debhelper-build-stamp
+/*.debhelper.log
+/files
+/*.substvars
+/temp.src/
+/tmp/
+/xtables-addons-*/
+/xtables-addons-dkms.dkms
