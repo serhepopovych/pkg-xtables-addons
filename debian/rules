@@ -17,7 +17,6 @@ TMPSRC := debian/temp.src
 
 override_dh_auto_clean:
 	dh_auto_clean --no-parallel
-	$(RM) .manpages.lst extensions/*/Makefile
 
 override_dh_clean:
 	dh_clean $(TMPSRC)/ $(DCFG)
