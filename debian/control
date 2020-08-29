@@ -3,9 +3,7 @@ Section: admin
 Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
-Build-Depends: debhelper-compat (= 12),
-    dkms, bzip2, pkg-config,
-    libxtables-dev
+Build-Depends: bzip2, debhelper-compat (= 12), dkms, libxtables-dev, pkg-config
 Standards-Version: 4.5.0
 Homepage: http://xtables-addons.sourceforge.net/
 Vcs-Browser: https://salsa.debian.org/debian/xtables-addons
@@ -14,13 +12,14 @@ Vcs-Git: https://salsa.debian.org/debian/xtables-addons.git
 Package: xtables-addons-common
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: ${misc:Recommends}
-    ,xtables-addons-dkms
-# "libnet-cidr-lite-perl" is used by `xt_geoip_build`:
-    ,libnet-cidr-lite-perl
-# "unzip" and "wget" are used by `xt_geoip_dl`:
-    ,unzip, wget
+Depends: ${misc:Depends}, ${shlibs:Depends}
+# "libnet-cidr-lite-perl" is used by `xt_geoip_build`;
+# "unzip" and "wget" are used by `xt_geoip_dl`.
+Recommends: libnet-cidr-lite-perl,
+            unzip,
+            wget,
+            xtables-addons-dkms,
+            ${misc:Recommends}
 Suggests: libtext-csv-xs-perl
 Provides: xtables-addons-common-${source:Upstream-Version}
 Breaks: ipset (<< 6.11~)
@@ -41,9 +40,9 @@ Description: Extensions targets and matches for iptables [tools, libs]
 Package: xtables-addons-dkms
 Section: kernel
 Architecture: all
-Depends: xtables-addons-common (>= ${source:Upstream-Version}),
-         dkms,
+Depends: dkms,
          make,
+         xtables-addons-common (>= ${source:Upstream-Version}),
          ${misc:Depends}
 Recommends: linux-headers
 Description: Extensions targets and matches for iptables
@@ -57,12 +56,12 @@ Description: Extensions targets and matches for iptables
 
 Package: xtables-addons-source
 Architecture: all
-Depends: ${misc:Depends},
-    debhelper (>= 8),
-    make,
-    pkg-config,
-    libxtables-dev,
-    bzip2
+Depends: bzip2,
+         debhelper (>= 8),
+         libxtables-dev,
+         make,
+         pkg-config,
+         ${misc:Depends}
 Recommends: module-assistant
 Description: Extensions targets and matches for iptables [modules sources]
  Xtables-addons provides extra modules for iptables not present in the

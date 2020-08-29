@@ -3,10 +3,7 @@ Section: kernel
 Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
-Build-Depends: debhelper-compat (= 12),
-    libxtables-dev,
-    pkg-config,
-    kbuild
+Build-Depends: debhelper-compat (= 12), kbuild, libxtables-dev, pkg-config
 Standards-Version: 4.5.0
 
 Package: xtables-addons-modules-_KVERS_
