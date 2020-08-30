@@ -16,9 +16,8 @@ PACKAGE = xtables-addons-modules
 -include /usr/share/modass/include/generic.make
 -include /usr/share/modass/include/common-rules.make
 
-kdist_clean: override_dh_auto_clean
-	dh_prep
-	dh_clean
+kdist_clean:
+	dh clean
 
 kdist_config: prep-deb-files
 
