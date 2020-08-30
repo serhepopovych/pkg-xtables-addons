@@ -27,8 +27,13 @@ override_dh_clean:
 override_dh_auto_configure:
 	dh_auto_configure -- --without-kbuild
 
-override_dh_auto_build:
-	## prepare sources for DKMS and source packages
+override_dh_auto_build: build_source
+	dh_auto_build
+
+override_dh_auto_install: install_dkms
+	dh_auto_install
+
+build_source:
 	mkdir -p $(SOURCE_BUILD_DIR)
 	cp -r \
 		aclocal.m4 \
@@ -47,11 +52,6 @@ override_dh_auto_build:
 		mconfig \
 		$(SOURCE_BUILD_DIR)
 	find $(SOURCE_BUILD_DIR) -name .gitignore -delete
-	## continue with build
-	dh_auto_build
-
-override_dh_auto_install: $(DKMS_CONF)
-	## prepare module sources
 	mkdir -p $(SOURCE_BUILD_DIR)/debian
 	cp \
 		debian/changelog \
@@ -60,6 +60,13 @@ override_dh_auto_install: $(DKMS_CONF)
 		debian/copyright \
 		$(SOURCE_BUILD_DIR)/debian
 	cp debian/rules.modules $(SOURCE_BUILD_DIR)/debian/rules
+
+install_dkms: install_source $(DKMS_CONF)
+	mkdir -p $(DKMS_SRC_DIR)
+	$(RM) -r $(SOURCE_MODULES_DIR)/xtables-addons/debian
+	mv $(SOURCE_MODULES_DIR)/xtables-addons $(DKMS_SRC_DIR)/xtables-addons-$(DEB_VERSION_UPSTREAM)
+
+install_source:
 	mkdir -p $(SOURCE_MODULES_DIR)
 	mv $(SOURCE_BUILD_DIR) $(SOURCE_MODULES_DIR)/xtables-addons
 	cd $(SOURCE_SRC_DIR); find modules -print0 | \
@@ -68,14 +75,9 @@ override_dh_auto_install: $(DKMS_CONF)
 			--mtime="$(BUILD_DATE)" \
 			--mode=go=rX,u+rw,a-s \
 			--no-recursion --null -T -
-	$(RM) -r $(SOURCE_MODULES_DIR)/xtables-addons/debian
-	## prepare DKMS sources
-	mkdir -p $(DKMS_SRC_DIR)
-	mv $(SOURCE_MODULES_DIR)/xtables-addons $(DKMS_SRC_DIR)/xtables-addons-$(DEB_VERSION_UPSTREAM)
-	$(RM) -r $(SOURCE_MODULES_DIR)
-	## continue with install
-	dh_auto_install
 
 $(DKMS_CONF):
 	sed -e 's/__VERSION__/$(DEB_VERSION_UPSTREAM)/g' $(DKMS_CONF).in >$(DKMS_CONF)
 	cat $(DKMS_CONF).modules >>$(DKMS_CONF)
+
+.PHONY: build_source install_dkms install_source
