@@ -17,11 +17,11 @@ TMPSRC := debian/temp.src
 
 override_dh_auto_clean:
 	dh_auto_clean --no-parallel
+	$(RM) *.8 *.man .manpages.lst extensions/*/Makefile config.log \
+          extensions/.*.oo.d extensions/*/.*.oo.d
 
 override_dh_clean:
-	$(RM) -r $(TMPSRC)
-	dh_clean *.8 *.man .manpages.lst extensions/*/Makefile $(DCFG) config.log \
-          extensions/.*.oo.d extensions/ACCOUNT/.*.oo.d extensions/pknock/.*.oo.d
+	dh_clean $(TMPSRC)/ $(DCFG)
 
 override_dh_auto_configure:
 	[ -d /lib/modules/`uname -r`/build ] \
