@@ -26,12 +26,12 @@ binary-modules:
 	dh binary-arch
 
 override_dh_auto_build:
-	dh_auto_build -- $(MAKEARGS)
+	$(MAKE) $(MAKEARGS)
 
 override_dh_auto_install:
-	$(MAKE) INSTALL_MOD_PATH=$(CURDIR)/debian/$(PKGNAME) \
-		INSTALL_MOD_DIR=extra/xtables-addons \
-		$(MAKEARGS) modules_install
+	$(MAKE) $(MAKEARGS) modules_install \
+		INSTALL_MOD_PATH=$(CURDIR)/debian/$(PKGNAME) \
+		INSTALL_MOD_DIR=extra/xtables-addons
 
 override_dh_auto_clean:
 	$(MAKE) $(MAKEARGS) clean
