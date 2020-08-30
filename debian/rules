@@ -15,6 +15,9 @@ TMPSRC := debian/temp.src
 %:
 	dh $@ --with dkms
 
+override_dh_auto_clean:
+	dh_auto_clean --no-parallel
+
 override_dh_clean:
 	$(RM) -r $(TMPSRC)
 	dh_clean *.8 *.man .manpages.lst extensions/*/Makefile $(DCFG) config.log \
