@@ -1,6 +1,24 @@
+v3.10 (2020-07-28)
+==================
+- Support for up to Linux 5.8
 
-HEAD
-====
+
+v3.9 (2020-02-25)
+=================
+- Support for Linux 5.6 procfs changes
+
+
+v3.8 (2020-02-03)
+=================
+- Support for Linux 5.5
+- xt_geoip_build now expects the DBIP format as input,
+  Maxmind is thrown out.
+
+
+v3.7 (2019-12-01)
+=================
+Fixes:
+- xt_geoip: fix in6_addr little-endian byte swapping
 
 
 v3.6 (2019-11-20)
