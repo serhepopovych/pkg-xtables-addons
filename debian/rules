@@ -22,9 +22,7 @@ override_dh_clean:
 	dh_clean $(TMPSRC)/ $(DCFG)
 
 override_dh_auto_configure:
-	[ -d /lib/modules/`uname -r`/build ] \
-	&& dh_auto_configure \
-	|| dh_auto_configure -- --without-kbuild
+	dh_auto_configure -- --without-kbuild
 
 override_dh_auto_build:
 	## prepare sources for DKMS and source packages
@@ -54,17 +52,6 @@ override_dh_auto_install: $(DCFG)
 	## continue with install
 	dh_auto_install
 
-
-DKMS_MODS=$(shell find . -name "*.ko" -print | LC_ALL=C sort | sed 's|.*/\([^/]*\)\.ko|\1|')
-
 $(DCFG):
-	sed -e 's/__VERSION__/$(pver)/g' $(DCFG).in > $(DCFG)
-	# use the list of generated modules (if not empty) to create a dkms config file.
-	[ -n "${DKMS_MODS}" ] \
-	&& sed -i -e '/####/,$$d' $(DCFG) \
-	&& ( value=0; for module_name in $(DKMS_MODS); \
-	do printf "BUILT_MODULE_LOCATION[$$value]=\"\" \
-			\nBUILT_MODULE_NAME[$$value]=\"$$module_name\" \
-			\nDEST_MODULE_LOCATION[$$value]=\"/updates\"\n"; \
-		value=$$((value+1)); \
-	done ) >> $(DCFG) || exit 0;
+	sed -e 's/__VERSION__/$(pver)/g' $(DCFG).in >$(DCFG)
+	cat $(DCFG).modules >>$(DCFG)

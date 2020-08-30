@@ -1,0 +1,20 @@
+#!/bin/sh
+
+MODULES=$( find . -name "*.ko" -print | LC_ALL=C sort | sed 's|.*/\([^/]*\)\.ko|\1|' )
+
+#
+# Generate a list of modules for the dkms config file.
+#
+
+i=0
+
+for mod in ${MODULES}; do
+
+    echo
+    echo BUILT_MODULE_LOCATION[$i]='""'
+    echo BUILT_MODULE_NAME[$i]='"'$mod'"'
+    echo DEST_MODULE_LOCATION[$i]='"/updates"'
+
+    i=$((i + 1))
+
+done

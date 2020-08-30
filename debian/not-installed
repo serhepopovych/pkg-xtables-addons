@@ -1,3 +1,2 @@
-lib/modules/*/extra/*.ko
 usr/lib/*/libxt_ACCOUNT_cl.so
 usr/lib/*/libxt_ACCOUNT_cl.la
