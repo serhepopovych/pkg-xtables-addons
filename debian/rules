@@ -4,10 +4,9 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-PKD  = $(abspath $(dir $(MAKEFILE_LIST)))
-# Package version
-pver := $(shell dpkg-parsechangelog -l$(PKD)/changelog | sed -ne 's,^Version: *\([0-9.]*\).*,\1,p')
-BUILD_DATE := $(shell dpkg-parsechangelog --show-field=Date)
+include /usr/share/dpkg/pkg-info.mk
+
+BUILD_DATE := $(shell date +%c --date '@$(SOURCE_DATE_EPOCH)' --utc)
 
 DCFG := debian/xtables-addons-dkms.dkms
 TMPSRC := debian/temp.src
@@ -70,11 +69,11 @@ override_dh_auto_install: $(DCFG)
 	$(RM) -r modules/xtables-addons/debian
 	## prepare DKMS sources
 	mkdir -p $(SRC_DKMS)
-	mv $(SRC_MOD)/xtables-addons $(SRC_DKMS)/xtables-addons-$(pver)
+	mv $(SRC_MOD)/xtables-addons $(SRC_DKMS)/xtables-addons-$(DEB_VERSION_UPSTREAM)
 	$(RM) -r $(SRC_MOD)
 	## continue with install
 	dh_auto_install
 
 $(DCFG):
-	sed -e 's/__VERSION__/$(pver)/g' $(DCFG).in >$(DCFG)
+	sed -e 's/__VERSION__/$(DEB_VERSION_UPSTREAM)/g' $(DCFG).in >$(DCFG)
 	cat $(DCFG).modules >>$(DCFG)
