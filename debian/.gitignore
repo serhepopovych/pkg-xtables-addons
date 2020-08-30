@@ -9,7 +9,6 @@
 /*.debhelper.log
 /files
 /*.substvars
-/temp.src/
 /tmp/
 /xtables-addons-*/
 /xtables-addons-dkms.dkms

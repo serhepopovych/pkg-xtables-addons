@@ -8,8 +8,12 @@ include /usr/share/dpkg/pkg-info.mk
 
 BUILD_DATE := $(shell date +%c --date '@$(SOURCE_DATE_EPOCH)' --utc)
 
-DCFG := debian/xtables-addons-dkms.dkms
-TMPSRC := debian/temp.src
+DKMS_CONF    = debian/xtables-addons-dkms.dkms
+DKMS_SRC_DIR = debian/xtables-addons-dkms/usr/src
+
+SOURCE_BUILD_DIR   = debian/xtables-addons-source.build
+SOURCE_SRC_DIR     = debian/xtables-addons-source/usr/src
+SOURCE_MODULES_DIR = $(SOURCE_SRC_DIR)/modules
 
 %:
 	dh $@ --with dkms
@@ -18,14 +22,14 @@ override_dh_auto_clean:
 	dh_auto_clean --no-parallel
 
 override_dh_clean:
-	dh_clean $(TMPSRC)/ $(DCFG)
+	dh_clean $(SOURCE_BUILD_DIR)/ $(DKMS_CONF)
 
 override_dh_auto_configure:
 	dh_auto_configure -- --without-kbuild
 
 override_dh_auto_build:
 	## prepare sources for DKMS and source packages
-	mkdir -p $(TMPSRC)
+	mkdir -p $(SOURCE_BUILD_DIR)
 	cp -r \
 		aclocal.m4 \
 		build-aux \
@@ -41,39 +45,37 @@ override_dh_auto_build:
 		Makefile.iptrules \
 		Makefile.mans \
 		mconfig \
-		$(TMPSRC)
-	find $(TMPSRC) -name .gitignore -delete
+		$(SOURCE_BUILD_DIR)
+	find $(SOURCE_BUILD_DIR) -name .gitignore -delete
 	## continue with build
 	dh_auto_build
 
-SRC_MOD := debian/xtables-addons-source/usr/src/modules
-SRC_DKMS := debian/xtables-addons-dkms/usr/src
-override_dh_auto_install: $(DCFG)
+override_dh_auto_install: $(DKMS_CONF)
 	## prepare module sources
-	mkdir -p $(TMPSRC)/debian
+	mkdir -p $(SOURCE_BUILD_DIR)/debian
 	cp \
 		debian/changelog \
 		debian/control \
 		debian/control.modules.in \
 		debian/copyright \
-		$(TMPSRC)/debian
-	cp debian/rules.modules $(TMPSRC)/debian/rules
-	mkdir -p $(SRC_MOD)
-	mv $(TMPSRC) $(SRC_MOD)/xtables-addons
-	cd debian/xtables-addons-source/usr/src; find modules -print0 | \
+		$(SOURCE_BUILD_DIR)/debian
+	cp debian/rules.modules $(SOURCE_BUILD_DIR)/debian/rules
+	mkdir -p $(SOURCE_MODULES_DIR)
+	mv $(SOURCE_BUILD_DIR) $(SOURCE_MODULES_DIR)/xtables-addons
+	cd $(SOURCE_SRC_DIR); find modules -print0 | \
 		LC_ALL=C sort -z | \
 		tar cjf xtables-addons.tar.bz2 \
 			--mtime="$(BUILD_DATE)" \
 			--mode=go=rX,u+rw,a-s \
 			--no-recursion --null -T -
-	$(RM) -r modules/xtables-addons/debian
+	$(RM) -r $(SOURCE_MODULES_DIR)/xtables-addons/debian
 	## prepare DKMS sources
-	mkdir -p $(SRC_DKMS)
-	mv $(SRC_MOD)/xtables-addons $(SRC_DKMS)/xtables-addons-$(DEB_VERSION_UPSTREAM)
-	$(RM) -r $(SRC_MOD)
+	mkdir -p $(DKMS_SRC_DIR)
+	mv $(SOURCE_MODULES_DIR)/xtables-addons $(DKMS_SRC_DIR)/xtables-addons-$(DEB_VERSION_UPSTREAM)
+	$(RM) -r $(SOURCE_MODULES_DIR)
 	## continue with install
 	dh_auto_install
 
-$(DCFG):
-	sed -e 's/__VERSION__/$(DEB_VERSION_UPSTREAM)/g' $(DCFG).in >$(DCFG)
-	cat $(DCFG).modules >>$(DCFG)
+$(DKMS_CONF):
+	sed -e 's/__VERSION__/$(DEB_VERSION_UPSTREAM)/g' $(DKMS_CONF).in >$(DKMS_CONF)
+	cat $(DKMS_CONF).modules >>$(DKMS_CONF)
