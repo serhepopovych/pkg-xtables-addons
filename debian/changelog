@@ -1,3 +1,11 @@
+xtables-addons (3.10-1) UNRELEASED; urgency=medium
+
+  * Update gbp.conf in order to merge upstream into debian and create
+    pristine-tar deltas.
+  * New upstream version 3.10
+
+ -- Jeremy Sowden <jeremy@azazel.net>  Sun, 30 Aug 2020 12:34:34 +0100
+
 xtables-addons (3.9-1) unstable; urgency=medium
 
   * New upstream release.
