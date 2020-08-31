@@ -41,7 +41,6 @@ build_source:
 		config.h \
 		configure.ac \
 		extensions \
-		geoip \
 		*.in \
 		m4 \
 		Makefile \
@@ -51,6 +50,8 @@ build_source:
 		Makefile.mans \
 		mconfig \
 		$(SOURCE_BUILD_DIR)
+	sed -i -e 's, geoip/Makefile$$,,' $(SOURCE_BUILD_DIR)/configure.ac
+	sed -i -e 's, geoip$$,,' $(SOURCE_BUILD_DIR)/Makefile.am
 	find $(SOURCE_BUILD_DIR) -name .gitignore -delete
 	mkdir -p $(SOURCE_BUILD_DIR)/debian
 	cp \
