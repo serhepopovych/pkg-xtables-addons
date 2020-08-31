@@ -1,5 +1,7 @@
 From: Helmut Grohne <helmut@subdivi.de>
 Subject: consider $ac_tool_prefix for pkg-config
+Forwarded: https://lore.kernel.org/netfilter-devel/20200831103635.524666-1-jeremy@azazel.net/T/#u
+Last-Update: 2020-08-31
 
 Index: xtables-addons-2.12/configure.ac
 ===================================================================
