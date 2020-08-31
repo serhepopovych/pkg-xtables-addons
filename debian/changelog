@@ -3,8 +3,49 @@ xtables-addons (3.10-1) UNRELEASED; urgency=medium
   * Update gbp.conf in order to merge upstream into debian and create
     pristine-tar deltas.
   * New upstream version 3.10
+    + Support for Linux 5.8
+  * Refresh patches.
+  * Run wrap-and-sort.
+  * Add Rules-requires-root: no.
+  * Bump compat to 13.
+  * Update upstream details: the project has moved from sf.net to inai.de.
+  * Remove undefined ${misc:Recommends}.
+  * Update man-page paths: the upstream build installs them in the right place.
+  * Add d/not-installed.
+  * Install xt_geoip_fetch.
+  * Install the GeoIP scripts into /usr/libexec, not /usr/lib. This
+    fixes a lintian warning and is consistent with the paths in the
+    man-pages.
+  * The package has been adopted by me on behalf of the Netfilter team:
+    update maintainer and uploaders accordingly (closes: #910000).
+  * Add myself to d/copyright.
+  * Add d/.gitignore
+  * Rename default branch to debian.
+  * d/rules extensively refactored.
+    + Remove dh_shlibdeps override: it is no longer required.
+    + Add dh_auto_clean override to disable parallel builds for
+      `make distclean`.  Fixes building twice.
+    + Add patch to get make to clean some extra build artefacts and remove
+      all the artefacts cleaned by make from the dh_clean override.
+    + Remove get-orig-source target.
+    + Always configure without kbuild.
+    + Use separate rules, instead of chaining them with `&&`.
+    + Use pkg-info.mk in preference to explicitly parsing change-log.
+    + Gather variables into one block and rename some of them.
+    + Add separate targets for each group of rules.
+    + The geoip userspace scripts and man-pages are packaged in -common, and
+      are not required for the -source and -dkms packages, so omit them.
+      Fixes ${perl:Depends} warning.
+  * d/rules.modules tidied up.
+    + Remove lots of comments.
+    + Use `$(MAKE) $(MAKEARGS)` consistently.
+    + Remove DEPMOD from m-a make arguments.
+    + Use `dh clean` for `kdist_clean`.
+  * Remove unused automake patch.
+  * Forward cross-build patch.
+  * Add the -dkms package to README.Debian.
 
- -- Jeremy Sowden <jeremy@azazel.net>  Sun, 30 Aug 2020 12:34:34 +0100
+ -- Jeremy Sowden <jeremy@azazel.net>  Sat, 05 Sep 2020 13:29:10 +0100
 
 xtables-addons (3.9-1) unstable; urgency=medium
 
