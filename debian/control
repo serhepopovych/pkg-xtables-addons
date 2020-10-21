@@ -1,5 +1,5 @@
 Source: xtables-addons
-Section: admin
+Section: net
 Priority: optional
 Maintainer: Debian Netfilter Packaging Team <pkg-netfilter-team@lists.alioth.debian.org>
 Uploaders: Jeremy Sowden <jeremy@azazel.net>
