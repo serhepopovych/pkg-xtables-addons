@@ -44,8 +44,9 @@ xtables-addons (3.10-1) UNRELEASED; urgency=medium
   * Remove unused automake patch.
   * Forward cross-build patch.
   * Add the -dkms package to README.Debian.
+  * Change section to "net"
 
- -- Jeremy Sowden <jeremy@azazel.net>  Sat, 05 Sep 2020 13:29:10 +0100
+ -- Jeremy Sowden <jeremy@azazel.net>  Wed, 21 Oct 2020 21:59:30 +0100
 
 xtables-addons (3.9-1) unstable; urgency=medium
 
