@@ -1,0 +1,62 @@
+Last-Update: 2020-10-22
+Author: Jeremy Sowden <jeremy@azazel.net>
+Description: the pknlusr programme hard-codes the netlink multicast group ID.
+ This patch adds support for passing it at the command-line.
+Forwarded: https://lore.kernel.org/netfilter-devel/20201022173006.635720-3-jeremy@azazel.net/
+
+--- a/extensions/pknock/pknlusr.c
++++ b/extensions/pknock/pknlusr.c
+@@ -7,6 +7,8 @@
+ #include <arpa/inet.h>
+ #include <linux/netlink.h>
+ #include <linux/connector.h>
++#include <libgen.h>
++#include <limits.h>
+ 
+ #include "xt_pknock.h"
+ 
+@@ -19,7 +21,19 @@
+ 
+ static struct xt_pknock_nl_msg *nlmsg;
+ 
+-int main(void)
++static void
++usage(const char *argv0)
++{
++	char *prog;
++	if (!(prog = strdup (argv0))) {
++		perror("strdup()");
++	} else {
++		fprintf(stderr, "%s [ group-id ]\n", basename(prog));
++		free(prog);
++	}
++}
++
++int main(int argc, char **argv)
+ {
+ 	socklen_t addrlen;
+ 	int status;
+@@ -30,6 +44,23 @@
+ 	const char *ip;
+ 	char ipbuf[48];
+ 
++	if (argc > 2) {
++		usage(argv[0]);
++		exit(EXIT_FAILURE);
++	}
++
++	if (argc == 2) {
++		long n;
++		char *end;
++
++		n = strtol(argv[1], &end, 10);
++		if (*end || n < INT_MIN || n > INT_MAX) {
++			usage(argv[0]);
++			exit(EXIT_FAILURE);
++		}
++		group = n;
++	}
++
+ 	sock_fd = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_CONNECTOR);
+ 
+ 	if (sock_fd == -1) {
