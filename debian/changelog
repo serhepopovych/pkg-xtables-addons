@@ -1,9 +1,7 @@
-xtables-addons (3.10-1) UNRELEASED; urgency=medium
+xtables-addons (3.11-1) unstable; urgency=medium
 
   * Update gbp.conf in order to merge upstream into debian and create
     pristine-tar deltas.
-  * New upstream version 3.10
-    + Support for Linux 5.8
   * Refresh patches.
   * Run wrap-and-sort.
   * Add Rules-requires-root: no.
@@ -45,8 +43,14 @@ xtables-addons (3.10-1) UNRELEASED; urgency=medium
   * Forward cross-build patch.
   * Add the -dkms package to README.Debian.
   * Change section to "net"
+  * New upstream version 3.11
+    + Support for Linux 5.9
+  * Drop upstreamed patches.
+  * Add patch for pknlusr to accept group ID at the command-line.
+  * Add a patch to create a man-page for pknlusr.
+  * Add a note to d/NEWS about moving the xt_geoip scripts.
 
- -- Jeremy Sowden <jeremy@azazel.net>  Wed, 21 Oct 2020 21:59:30 +0100
+ -- Jeremy Sowden <jeremy@azazel.net>  Thu, 22 Oct 2020 20:38:27 +0100
 
 xtables-addons (3.9-1) unstable; urgency=medium
 
