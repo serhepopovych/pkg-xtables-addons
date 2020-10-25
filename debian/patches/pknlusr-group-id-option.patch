@@ -1,4 +1,4 @@
-Last-Update: 2020-10-22
+Last-Update: 2020-10-25
 Author: Jeremy Sowden <jeremy@azazel.net>
 Description: the pknlusr programme hard-codes the netlink multicast group ID.
  This patch adds support for passing it at the command-line.
@@ -6,42 +6,49 @@ Forwarded: https://lore.kernel.org/netfilter-devel/20201022173006.635720-3-jerem
 
 --- a/extensions/pknock/pknlusr.c
 +++ b/extensions/pknock/pknlusr.c
-@@ -7,6 +7,8 @@
+@@ -7,10 +7,16 @@
  #include <arpa/inet.h>
  #include <linux/netlink.h>
  #include <linux/connector.h>
++#include <errno.h>
 +#include <libgen.h>
 +#include <limits.h>
  
  #include "xt_pknock.h"
  
-@@ -19,7 +21,19 @@
+-#define GROUP 1
++#define DEFAULT_GROUP_ID 1
++#define MIN_GROUP_ID DEFAULT_GROUP_ID
++#define MAX_GROUP_ID \
++	(sizeof((struct sockaddr_nl){0}.nl_groups) * CHAR_BIT)
+ 
+ static struct sockaddr_nl src_addr, dest_addr;
+ static int sock_fd;
+@@ -19,17 +25,42 @@
  
  static struct xt_pknock_nl_msg *nlmsg;
  
 -int main(void)
-+static void
-+usage(const char *argv0)
-+{
-+	char *prog;
-+	if (!(prog = strdup (argv0))) {
-+		perror("strdup()");
-+	} else {
-+		fprintf(stderr, "%s [ group-id ]\n", basename(prog));
-+		free(prog);
-+	}
-+}
-+
 +int main(int argc, char **argv)
  {
  	socklen_t addrlen;
  	int status;
-@@ -30,6 +44,23 @@
+-	int group = GROUP;
++	unsigned int group_id = DEFAULT_GROUP_ID;
+ 
+ 	int buf_size;
+ 
  	const char *ip;
  	char ipbuf[48];
  
 +	if (argc > 2) {
-+		usage(argv[0]);
++		char *prog = strdup(argv[0]);
++		if (prog == NULL) {
++			perror("strdup()");
++		} else {
++			fprintf(stderr, "%s [ group-id ]\n", basename(prog));
++			free(prog);
++		}
 +		exit(EXIT_FAILURE);
 +	}
 +
@@ -49,14 +56,34 @@ Forwarded: https://lore.kernel.org/netfilter-devel/20201022173006.635720-3-jerem
 +		long n;
 +		char *end;
 +
++		errno = 0;
 +		n = strtol(argv[1], &end, 10);
-+		if (*end || n < INT_MIN || n > INT_MAX) {
-+			usage(argv[0]);
++		if (*end || (errno && (n == LONG_MIN || n == LONG_MAX)) ||
++		    n < MIN_GROUP_ID || n > MAX_GROUP_ID) {
++			fputs("Group ID invalid.\n", stderr);
 +			exit(EXIT_FAILURE);
 +		}
-+		group = n;
++		group_id = n;
 +	}
 +
  	sock_fd = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_CONNECTOR);
  
  	if (sock_fd == -1) {
+@@ -40,7 +71,7 @@
+ 	memset(&src_addr, 0, sizeof(src_addr));
+ 	src_addr.nl_family = AF_NETLINK;
+ 	src_addr.nl_pid = getpid();
+-	src_addr.nl_groups = group;
++	src_addr.nl_groups = 1U << (group_id - 1);
+ 
+ 	status = bind(sock_fd, (struct sockaddr*)&src_addr, sizeof(src_addr));
+ 
+@@ -53,7 +84,7 @@
+ 	memset(&dest_addr, 0, sizeof(dest_addr));
+ 	dest_addr.nl_family = AF_NETLINK;
+ 	dest_addr.nl_pid = 0;
+-	dest_addr.nl_groups = group;
++	dest_addr.nl_groups = 1U << (group_id - 1);
+ 
+ 	buf_size = sizeof(struct xt_pknock_nl_msg) + sizeof(struct cn_msg) + sizeof(struct nlmsghdr);
+ 	buf = malloc(buf_size);

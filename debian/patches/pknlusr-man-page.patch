@@ -1,39 +1,33 @@
-Last-Update: 2020-10-22
+Last-Update: 2020-10-25
 Author: Jeremy Sowden <jeremy@azazel.net>
 Description: This patch adds a man-page for the pknlusr programme.
 Forwarded: https://lore.kernel.org/netfilter-devel/20201022173006.635720-4-jeremy@azazel.net/
 
 --- a/extensions/pknock/Makefile.am
 +++ b/extensions/pknock/Makefile.am
-@@ -6,3 +6,5 @@
+@@ -6,3 +6,4 @@
  include ../../Makefile.extra
  
  sbin_PROGRAMS = pknlusr
-+
-+dist_man8_MANS = pknlusr.8
++dist_man_MANS = pknlusr.8
 --- /dev/null
 +++ b/extensions/pknock/pknlusr.8
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,18 @@
 +.TH pknlusr 8 "2020-10-22" "xtables-addons" "xtables-addons"
-+.
 +.SH NAME
-+pknlusr \- userspace monitor for successful xt_pknock matches
-+.
-+.SH SYNOPSIS
-+.SY pknlusr
-+.RI [ group-id ]
-+.YS
-+.
-+.SH DESCRIPTION
++.PP
++pknlusr \(em userspace monitor for successful xt_pknock matches
++.SH Synopsis
++.PP
++\fBpknlusr\fP [\fIgroup-id\fP]
++.SH Description
 +\fIxt_pknock\fP is an xtables match extension that implements so-called \fIport
-+knocking\fP.  It can be configured to send information about each successful
-+match via a netlink socket to userspace.  \fBpknluser\fP listens for these
++knocking\fP. It can be configured to send information about each successful
++match via a netlink socket to userspace. \fBpknluser\fP listens for these
 +notifications.
-+.
-+.SH OPTIONS
-+.TP 9
-+.B group-id
-+The ID of the netlink multicast group used by \fIxt_pknock\fP.  Defaults to \fB1\fP.
-+.
-+.SH SEE ALSO
-+.IR xtables-addons (8)
++.PP
++By default, \fBpknlusr\fP listens for messages sent to netlink multicast group
++1. Another group ID may be passed as a command-line argument.
++.SH See also
++.PP
++xtables-addons(8)
