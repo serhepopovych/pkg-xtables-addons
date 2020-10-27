@@ -70,12 +70,11 @@ install_dkms: install_source $(DKMS_CONF)
 install_source:
 	mkdir -p $(SOURCE_MODULES_DIR)
 	mv $(SOURCE_BUILD_DIR) $(SOURCE_MODULES_DIR)/xtables-addons
-	cd $(SOURCE_SRC_DIR); find modules -print0 | \
-		LC_ALL=C sort -z | \
-		tar cjf xtables-addons.tar.bz2 \
-			--mtime="$(BUILD_DATE)" \
-			--mode=go=rX,u+rw,a-s \
-			--no-recursion --null -T -
+	tar cjf $(SOURCE_SRC_DIR)/xtables-addons.tar.bz2 \
+		--mtime="$(BUILD_DATE)" \
+		--mode=go=rX,u+rw,a-s \
+		--sort=name \
+		-C $(SOURCE_SRC_DIR) modules
 
 $(DKMS_CONF):
 	sed -e 's/__VERSION__/$(DEB_VERSION_UPSTREAM)/g' $(DKMS_CONF).in >$(DKMS_CONF)
