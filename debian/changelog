@@ -34,6 +34,7 @@ xtables-addons (3.11-1) unstable; urgency=medium
     + The geoip userspace scripts and man-pages are packaged in -common, and
       are not required for the -source and -dkms packages, so omit them.
       Fixes ${perl:Depends} warning.
+    + Tell tar to sort directory entries by name when creating source archive.
   * d/rules.modules tidied up.
     + Remove lots of comments.
     + Use `$(MAKE) $(MAKEARGS)` consistently.
@@ -50,7 +51,7 @@ xtables-addons (3.11-1) unstable; urgency=medium
   * Add a patch to create a man-page for pknlusr.
   * Add a note to d/NEWS about moving the xt_geoip scripts.
 
- -- Jeremy Sowden <jeremy@azazel.net>  Thu, 22 Oct 2020 20:38:27 +0100
+ -- Jeremy Sowden <jeremy@azazel.net>  Tue, 27 Oct 2020 13:30:55 +0000
 
 xtables-addons (3.9-1) unstable; urgency=medium
 
