@@ -6,7 +6,7 @@
 
 include /usr/share/dpkg/pkg-info.mk
 
-BUILD_DATE := $(shell date +%c --date '@$(SOURCE_DATE_EPOCH)' --utc)
+BUILD_DATE := $(shell date --iso-8601=seconds --date '@$(SOURCE_DATE_EPOCH)' --utc)
 
 DKMS_CONF    = debian/xtables-addons-dkms.dkms
 DKMS_SRC_DIR = debian/xtables-addons-dkms/usr/src
