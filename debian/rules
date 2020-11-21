@@ -73,6 +73,8 @@ install_source:
 	tar cjf $(SOURCE_SRC_DIR)/xtables-addons.tar.bz2 \
 		--mtime="$(BUILD_DATE)" \
 		--mode=go=rX,u+rw,a-s \
+		--owner=root:0 \
+		--group=root:0 \
 		--sort=name \
 		-C $(SOURCE_SRC_DIR) modules
 
