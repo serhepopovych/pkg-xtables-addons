@@ -34,33 +34,37 @@ override_dh_auto_install: install_dkms
 	dh_auto_install
 
 build_source:
-	mkdir -p $(SOURCE_BUILD_DIR)
-	cp -r \
-		aclocal.m4 \
-		build-aux \
-		config.h \
-		configure.ac \
-		extensions \
-		*.in \
-		m4 \
-		Makefile \
-		Makefile.am \
-		Makefile.extra \
-		Makefile.iptrules \
-		Makefile.mans \
+	mkdir -p \
+		$(SOURCE_BUILD_DIR) \
+		$(SOURCE_BUILD_DIR)/debian \
+		$(SOURCE_BUILD_DIR)/extensions \
+		$(SOURCE_BUILD_DIR)/extensions/ACCOUNT \
+		$(SOURCE_BUILD_DIR)/extensions/pknock
+	cp \
 		mconfig \
 		$(SOURCE_BUILD_DIR)
-	sed -i -e 's, geoip/Makefile$$,,' $(SOURCE_BUILD_DIR)/configure.ac
-	sed -i -e 's, geoip$$,,' $(SOURCE_BUILD_DIR)/Makefile.am
-	find $(SOURCE_BUILD_DIR) -name .gitignore -delete
-	mkdir -p $(SOURCE_BUILD_DIR)/debian
+	cp \
+		extensions/Kbuild \
+		extensions/compat_*.[ch] \
+		extensions/xt_*.[ch] \
+		$(SOURCE_BUILD_DIR)/extensions
+	cp \
+		extensions/ACCOUNT/Kbuild \
+		extensions/ACCOUNT/xt_*.[ch] \
+		$(SOURCE_BUILD_DIR)/extensions/ACCOUNT
+	cp \
+		extensions/pknock/Kbuild \
+		extensions/pknock/xt_*.[ch] \
+		$(SOURCE_BUILD_DIR)/extensions/pknock
 	cp \
 		debian/changelog \
 		debian/control \
 		debian/control.modules.in \
 		debian/copyright \
 		$(SOURCE_BUILD_DIR)/debian
-	cp debian/rules.modules $(SOURCE_BUILD_DIR)/debian/rules
+	cp \
+		debian/rules.modules \
+		$(SOURCE_BUILD_DIR)/debian/rules
 
 install_dkms: install_source $(DKMS_CONF)
 	mkdir -p $(DKMS_SRC_DIR)
