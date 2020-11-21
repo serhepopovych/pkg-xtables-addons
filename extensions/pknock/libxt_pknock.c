@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include <xtables.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
@@ -70,7 +69,6 @@ parse_ports(const char *portstring, uint16_t *ports, const char *proto)
 
 	if (cp != NULL)
 		xtables_error(PARAMETER_PROBLEM, "too many ports specified");
-
 	free(buffer);
 	return i;
 }
@@ -91,12 +89,11 @@ proto_to_name(uint8_t proto)
 static const char *
 check_proto(uint16_t pnum, uint8_t invflags)
 {
-	char *proto;
-
 	if (invflags & XT_INV_PROTO)
 		xtables_error(PARAMETER_PROBLEM, PKNOCK "only works with TCP and UDP.");
 
-	if ((proto = proto_to_name(pnum)) != NULL)
+	const char *proto = proto_to_name(pnum);
+	if (proto != NULL)
 		return proto;
 	else if (pnum == 0)
 		xtables_error(PARAMETER_PROBLEM, PKNOCK "needs `-p tcp' or `-p udp'");
@@ -123,7 +120,7 @@ __pknock_parse(int c, char **argv, int invert, unsigned int *flags,
 		info->ports_count = parse_ports(optarg, info->port, proto);
 		info->option |= XT_PKNOCK_KNOCKPORT;
 		*flags |= XT_PKNOCK_KNOCKPORT;
-#if DEBUG
+#ifdef DEBUG
 		printf("ports_count: %d\n", info->ports_count);
 #endif
 		break;
@@ -162,7 +159,7 @@ __pknock_parse(int c, char **argv, int invert, unsigned int *flags,
 		info->rule_name_len = strlen(info->rule_name);
 		info->option |= XT_PKNOCK_NAME;
 		*flags |= XT_PKNOCK_NAME;
-#if DEBUG
+#ifdef DEBUG
 		printf("info->rule_name: %s\n", info->rule_name);
 #endif
 		break;
@@ -213,7 +210,6 @@ __pknock_parse(int c, char **argv, int invert, unsigned int *flags,
 
 	if (invert)
 		xtables_error(PARAMETER_PROBLEM, PKNOCK "does not support invert.");
-
 	return 1;
 }
 
@@ -267,7 +263,7 @@ static void pknock_mt_check(unsigned int flags)
 }
 
 static void pknock_mt_print(const void *ip,
-						const struct xt_entry_match *match, int numeric)
+    const struct xt_entry_match *match, int numeric)
 {
 	const struct xt_pknock_mtinfo *info = (void *)match->data;
 	int i;
