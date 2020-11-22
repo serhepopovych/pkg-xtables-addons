@@ -3,8 +3,14 @@ xtables-addons (3.13-1) UNRELEASED; urgency=medium
   * New upstream version 3.13 (closes: #975376).
     + Support for Linux 5.10, 5.9.9, 5.4.78 and 4.19.158.
     + Support for MaxMind GeoIP databases.
+  * Drop upstreamed patches.
+  * Fix reproducible builds.
+    + Explicitly set owner and group for source tar-ball.
+    + Explicitly set format of build-date for source tar-ball.
+    + Only include the files necesssary to build the kernel modules in
+      -dkms and -source packages (closes: #776688).
 
- -- Jeremy Sowden <jeremy@azazel.net>  Sat, 21 Nov 2020 09:39:55 +0000
+ -- Jeremy Sowden <jeremy@azazel.net>  Sun, 22 Nov 2020 11:57:56 +0000
 
 xtables-addons (3.11-1) unstable; urgency=medium
 
