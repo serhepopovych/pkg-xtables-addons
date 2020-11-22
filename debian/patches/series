@@ -1,2 +1,3 @@
 change-download-to-dbip.patch
 remove-superfluous-xt_geoip_fetch_maxmind-script.patch
+fix-man-page-typo.patch

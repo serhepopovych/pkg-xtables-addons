@@ -1,0 +1,19 @@
+Last-Update: 2020-11-22
+Forwarded: https://lore.kernel.org/netfilter-devel/20201122140530.250248-1-jeremy@azazel.net/
+Author: Jeremy Sowden <jeremy@azazel.net>
+Description: fix man-page typo'.
+
+--- a/geoip/xt_geoip_fetch.1
++++ b/geoip/xt_geoip_fetch.1
+@@ -9,7 +9,7 @@ xt_geoip_fetch \(em dump a country database to stdout
+ .SH Description
+ .PP
+ xt_geoip_fetch unpacks a country's IPv4 or IPv6 databases and dumps
+-them to standard output as a sorted, non-overlaping list of ranges (which
++them to standard output as a sorted, non-overlapping list of ranges (which
+ is how they're represented in the database) suitable for browsing or
+ further processing.
+ .PP Options
+-- 
+2.29.2
+
