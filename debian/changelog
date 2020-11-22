@@ -9,8 +9,12 @@ xtables-addons (3.13-1) UNRELEASED; urgency=medium
     + Explicitly set format of build-date for source tar-ball.
     + Only include the files necesssary to build the kernel modules in
       -dkms and -source packages (closes: #776688).
+  * Add patch to remove superfluous xt_geoip_fetch_maxmind script.
+  * Add patch to fix man-page typo.
+  * Add patch to add man-pages for MaxMind scripts.
+  * Add patch to fix xt_geoip_dl_maxmind.
 
- -- Jeremy Sowden <jeremy@azazel.net>  Sun, 22 Nov 2020 11:57:56 +0000
+ -- Jeremy Sowden <jeremy@azazel.net>  Sun, 22 Nov 2020 14:23:45 +0000
 
 xtables-addons (3.11-1) unstable; urgency=medium
 
