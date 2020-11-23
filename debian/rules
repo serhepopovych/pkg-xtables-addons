@@ -4,6 +4,8 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
 include /usr/share/dpkg/pkg-info.mk
 
 BUILD_DATE := $(shell date --iso-8601=seconds --date '@$(SOURCE_DATE_EPOCH)' --utc)
