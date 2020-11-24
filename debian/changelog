@@ -1,4 +1,4 @@
-xtables-addons (3.13-1) UNRELEASED; urgency=medium
+xtables-addons (3.13-1) unstable; urgency=medium
 
   * New upstream version 3.13 (closes: #975376).
     + Support for Linux 5.10, 5.9.9, 5.4.78 and 4.19.158.
@@ -13,8 +13,9 @@ xtables-addons (3.13-1) UNRELEASED; urgency=medium
   * Add patch to fix man-page typo.
   * Add patch to add man-pages for MaxMind scripts.
   * Add patch to fix xt_geoip_dl_maxmind.
+  * Enable hardening.
 
- -- Jeremy Sowden <jeremy@azazel.net>  Sun, 22 Nov 2020 14:23:45 +0000
+ -- Jeremy Sowden <jeremy@azazel.net>  Tue, 24 Nov 2020 17:29:29 +0000
 
 xtables-addons (3.11-1) unstable; urgency=medium
 
