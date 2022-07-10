@@ -1,3 +1,10 @@
+xtables-addons (3.13-1+deb11u1) bullseye; urgency=medium
+
+  * d/patches: add patch to correct `security_skb_classify_flow` argument
+    (closes: #1014680)
+
+ -- Jeremy Sowden <jeremy@azazel.net>  Sun, 10 Jul 2022 13:55:40 +0100
+
 xtables-addons (3.13-1) unstable; urgency=medium
 
   * New upstream version 3.13.
