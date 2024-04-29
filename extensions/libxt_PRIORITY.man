@@ -1,0 +1,29 @@
+This module allows you to set/modify the skb\->priority value (and thus classify the
+packet into a specific class of qdisc). It is extended version of CLASSIFY target
+with capabilities to modify skb\->priority in the same way as skb\->nfmark in MARK
+target.
+.TP
+\fB\-\-set\-xprio\fP \fIvalue\fP[\fB/\fP\fImask\fP]
+Zeroes out the bits given by \fImask\fP and XORs \fIvalue\fP into the TC packet
+priority. If \fImask\fP is omitted, 0xFFFFFFFF is assumed.
+.TP
+\fB\-\-set\-prio\fP \fImajor\fP\fB:\fP\fIminor\fP or \fIvalue\fP[\fB/\fP\fImask\fP]
+Two form of arguments are supported at the moment. The first one
+uses the major and minor class to set value. Values are always
+interpreted as hexadecimal even if no 0x prefix is given. The second one
+zeroes out the bits given by \fImask\fP and ORs \fIvalue\fP into the TC packet
+priority. If \fImask\fP is omitted, 0xFFFFFFFF is assumed.
+.PP
+The following mnemonics are available:
+.TP
+\fB\-\-and\-prio\fP \fIbits\fP
+Binary AND the TC packet priority with \fIbits\fP. (Mnemonic for \fB\-\-set\-xprio
+0/\fP\fIinvbits\fP, where \fIinvbits\fP is the binary negation of \fIbits\fP.)
+.TP
+\fB\-\-or\-prio\fP \fIbits\fP
+Binary OR the TC packet priority with \fIbits\fP. (Mnemonic for \fB\-\-set\-xprio\fP
+\fIbits\fP\fB/\fP\fIbits\fP.)
+.TP
+\fB\-\-xor\-prio\fP \fIbits\fP
+Binary XOR the TC packet priority with \fIbits\fP. (Mnemonic for \fB\-\-set\-xprio\fP
+\fIbits\fP\fB/0\fP.)
