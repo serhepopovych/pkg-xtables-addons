@@ -4,3 +4,4 @@ fix-man-page-typo.patch
 add-man-pages-for-MaxMind-scripts.patch
 use-correct-download-URL-for-MaxMind-DB-s.patch
 correct-security_skb_classify_flow-argument.patch
+0001-xt_PRIORITY-Add-new-module.patch

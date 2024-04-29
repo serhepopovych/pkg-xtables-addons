@@ -1,3 +1,10 @@
+xtables-addons (3.13-netctl-1+deb11u1) bullseye; urgency=medium
+
+  * Build for netctl.
+  * Add PRIORITY target which is extended version of CLASSIFY.
+
+ -- Serhey Popovych <serhe.popovych@gmail.com>  Wed, 24 Apr 2024 18:15:19 +0000
+
 xtables-addons (3.13-1+deb11u1) bullseye; urgency=medium
 
   * d/patches: add patch to correct `security_skb_classify_flow` argument
